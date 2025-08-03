@@ -19,6 +19,41 @@ Centralized state management for game logic
 - LocalStorage integration
 - State persistence
 
+### ⏰ [03 - Timer System](./03-timer-system.md)
+Game timing and countdown mechanisms
+- Countdown timers
+- Performance timing
+- RequestAnimationFrame patterns
+- Timer cleanup and memory management
+
+### 📱 [04 - Responsive Design](./04-responsive-design.md)
+Mobile-first responsive game design
+- Viewport optimization
+- Touch-friendly controls
+- Flexible layouts
+- Device-specific adaptations
+
+### 🎬 [05 - Animation Patterns](./05-animation-patterns.md)
+Smooth game animations and transitions
+- CSS keyframe animations
+- JavaScript animation patterns
+- Performance optimized animations
+- Mobile animation considerations
+
+### 🧩 [06 - UI Components](./06-ui-components.md)
+Reusable game interface components
+- Button patterns
+- Modal systems
+- Progress indicators
+- Message displays
+
+### 📈 [07 - Level Progression](./07-level-progression.md)
+Automatic difficulty progression system
+- Achievement-based advancement
+- Auto-restart functionality
+- Visual progression feedback
+- Educational game patterns
+
 ### ⏱️ [03 - Timer System](./03-timer-system.md)
 Robust timer management for game mechanics
 - Countdown timers
