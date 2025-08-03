@@ -67,9 +67,10 @@
             position: relative;
             width: 100%;
             max-width: 500px;
-            aspect-ratio: 1;
+            aspect-ratio: 1/1;
             margin: 0 auto;
             direction: ltr;
+            box-sizing: border-box;
         }
 
         .square {
@@ -85,6 +86,10 @@
             cursor: pointer;
             transition: all 0.3s ease;
             padding: 2px;
+            width: 100%;
+            height: 100%;
+            box-sizing: border-box;
+            overflow: hidden;
         }
 
         .square:hover {
@@ -311,81 +316,102 @@
             font-size: 0.9em;
         }
 
-        @media (max-width: 900px) {
-            .game-container {
-                flex-direction: column;
-                align-items: center;
-                padding: 10px;
-                gap: 15px;
-            }
-            
-            .board-section {
-                min-width: auto;
-                width: 100%;
-            }
-            
-            .board {
-                width: 100%;
-                max-width: min(90vw, 400px);
-            }
-            
-            .controls-section {
-                width: 100%;
-                max-width: min(90vw, 400px);
-            }
-            
-            h1 {
-                margin-bottom: 10px;
-            }
-            
-            .player-info {
-                padding: 15px;
-            }
-            
-            .dice {
-                width: 60px;
-                height: 60px;
-                font-size: 2em;
-            }
-            
-            .button {
-                padding: 12px 20px;
-                font-size: 1em;
-            }
-            
-            .square {
-                border-radius: 2px;
-            }
-            
-            .square:hover {
-                transform: none;
-            }
-        }
-        
-        @media (max-width: 480px) {
+        @media (max-width: 768px) {
             body {
                 padding: 5px;
             }
             
             .game-container {
+                flex-direction: column;
+                align-items: center;
                 padding: 10px;
-                border-radius: 15px;
+                gap: 10px;
+                max-width: 100%;
+            }
+            
+            h1 {
+                font-size: 1.8em;
+                margin-bottom: 10px;
+            }
+            
+            .board-section {
+                min-width: unset;
+                width: 100%;
+                max-width: calc(100vw - 20px);
             }
             
             .board {
-                padding: 3px;
-                gap: 0.5px;
+                width: calc(100vw - 30px);
+                max-width: 400px;
+                height: calc(100vw - 30px);
+                max-height: 400px;
+                padding: 4px;
+                gap: 1px;
             }
             
             .square {
-                font-size: clamp(0.4em, 2.5vw, 0.7em);
-                padding: 1px;
+                font-size: 0.6em;
+                padding: 0;
+                border-radius: 1px;
+                min-width: 0;
+                min-height: 0;
+                line-height: 1;
+                text-align: center;
+            }
+            
+            .square small {
+                font-size: 0.9em;
+            }
+            
+            .square:hover {
+                transform: none;
             }
             
             .player-piece {
-                width: min(20px, 35%);
-                height: min(20px, 35%);
-                font-size: clamp(0.6em, 2.5vw, 1em);
+                width: 18px;
+                height: 18px;
+                font-size: 0.7em;
+                top: 1px;
+                left: 1px;
+                right: auto;
+                bottom: auto;
+            }
+            
+            .player1 { top: 1px; left: 1px; }
+            .player2 { top: 1px; right: 1px; left: auto; }
+            .player3 { bottom: 1px; left: 1px; top: auto; }
+            .player4 { bottom: 1px; right: 1px; top: auto; left: auto; }
+            
+            .controls-section {
+                width: 100%;
+                max-width: 400px;
+                padding: 0 10px;
+            }
+            
+            .player-info {
+                padding: 12px;
+                font-size: 0.9em;
+            }
+            
+            .player-info h3 {
+                font-size: 1.2em;
+            }
+            
+            .dice-container {
+                margin: 15px 0;
+            }
+            
+            .dice {
+                width: 60px;
+                height: 60px;
+                font-size: 1.8em;
+                border-radius: 10px;
+            }
+            
+            .button {
+                padding: 10px 20px;
+                font-size: 0.95em;
+                margin-top: 8px;
             }
             
             .game-setup select, .game-setup button {
@@ -395,14 +421,52 @@
             }
             
             .history {
-                max-height: 100px;
-                padding: 10px;
+                max-height: 80px;
+                padding: 8px;
+                font-size: 0.8em;
+                margin-top: 10px;
+            }
+            
+            .history-item {
+                padding: 3px;
                 font-size: 0.85em;
             }
             
             .message {
-                font-size: 1em;
-                padding: 10px;
+                font-size: 0.95em;
+                padding: 8px;
+                margin-top: 10px;
+            }
+        }
+        
+        @media (max-width: 400px) {
+            .board {
+                width: calc(100vw - 20px);
+                height: calc(100vw - 20px);
+                max-width: 350px;
+                max-height: 350px;
+                padding: 3px;
+                gap: 0.5px;
+            }
+            
+            .square {
+                font-size: 0.5em;
+            }
+            
+            .player-piece {
+                width: 15px;
+                height: 15px;
+                font-size: 0.6em;
+            }
+            
+            h1 {
+                font-size: 1.5em;
+            }
+            
+            .dice {
+                width: 50px;
+                height: 50px;
+                font-size: 1.5em;
             }
         }
     </style>
@@ -537,18 +601,21 @@
                     // Mark special squares
                     if (snakes[num]) {
                         square.classList.add('snake-start');
-                        square.innerHTML += ' 🐍';
+                        const isMobile = window.innerWidth <= 768;
+                        square.innerHTML = isMobile ? `<small>${num}</small>` : `${num} 🐍`;
                     } else if (Object.values(snakes).includes(num)) {
                         square.classList.add('snake-end');
                     } else if (ladders[num]) {
                         square.classList.add('ladder-start');
-                        square.innerHTML += ' 🪜';
+                        const isMobile = window.innerWidth <= 768;
+                        square.innerHTML = isMobile ? `<small>${num}</small>` : `${num} 🪜`;
                     } else if (Object.values(ladders).includes(num)) {
                         square.classList.add('ladder-end');
                     }
                     
                     if (num === 100) {
-                        square.innerHTML = '🏆 100';
+                        const isMobile = window.innerWidth <= 768;
+                        square.innerHTML = isMobile ? '100' : '🏆 100';
                     }
                     
                     board.appendChild(square);
