@@ -20,7 +20,9 @@ echo -e "${BLUE}📊 Pattern Library Prompt Patterns v1.0${NC}"
    echo -e "${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 # ## Task Overview
 # #
-think carefully and implement patterns in ./patterns
+think carefully and 
+# - Review all patterns in ./patterns
+# - Optimize markdown patterns for clarity and maintainability
    - Ask yourself:
    - Will you play this game again?
    - Is the game fun?
@@ -32,39 +34,34 @@ think carefully and implement patterns in ./patterns
 
 # Task Execution Workflow
 
+
+
+start with "#Priority 1: Deploy Error Handling" from session-notes/pattern-optimization-session.md## Next Steps
+### 
+**Think carefully Step-by-Step**
+   - Analyze the current task requirements
+   - Minimize the scope to essential features
+   - Identify key patterns to apply
+   - Identify patterns that can be reused
+   - Identify dependencies and potential risks
+   - Document assumptions and constraints
+   - Document before claude auto-compact
+
 0. **Initialize Environment**
    - Ensure all dependencies are installed
    - Validate environment setup
    - Check existing code coverage
    - Verify dependencies installed
    - Review existing patterns in ./patterns
-
-
-1. **Think carefully Step-by-Step**
-   - Analyze the current task requirements
-   - Minimize the scope to essential features
-   - Identify key patterns to apply
-   - Review existing patterns in ./patterns
-   - Identify patterns that can be reused
-   - Ensure all patterns are documented and tested
    - Ensure all patterns are version controlled
-   - Ensure all patterns are easily discoverable
-   - Ensure all patterns are easily accessible
-   - Ensure all patterns are easily maintainable
-   - Identify dependencies and potential risks
-   - Document assumptions and constraints
 
 1. **Review Historical Context**
    - Examine previous session logs.
    - Review git history for related changes
    - Identify patterns from past issues
+   - Analyze previous patterns applied
 
-2. **Pre-Implementation Audit**
-   - Validate environment setup
-   - Check existing code coverage
-   - Verify dependencies installed
-
-3. **Run Tests**
+2. **Run Tests**
    - Execute tests in ./tests
    - Validate test coverage
    - Ensure all tests pass
@@ -80,12 +77,12 @@ think carefully and implement patterns in ./patterns
      ```  
    - Identify failing tests
 
-4. **Continuous Validation**
+3. **Continuous Validation**
    - Run tests after each change
    - Monitor test status
    - Track performance metrics
 
-5. **Run Quality Checks**
+4. **Run Quality Checks**
    ```
    WHILE issues_detected():
        - Identify root cause
@@ -94,24 +91,25 @@ think carefully and implement patterns in ./patterns
        - Re-run validation
        - Verify fix effectiveness
    ```
-6. **Pattern Optimization**
+5. **Pattern Optimization**
    - Review patterns in ./patterns
    - Identify patterns for optimization
    - Apply optimization techniques
    - Ensure patterns are reusable and maintainable
    - Document optimized patterns
    
-7. **Post-Cleanup Validation**
+6. **Post-Cleanup Validation**
    ```
    IF cleanup_introduced_issues():
        GOTO Phase 3: Quality Assurance
    ```
-8. **Documentation Update**
+7. **Documentation Update**
    - Document all changes made
    - Update ./README.md
    - Update ./Gameniue/docs/CLAUDE.md
    - Ensure all patterns are documented
-9. **Final Review**
+
+8. **Final Review**
    - Review all changes made
    - Ensure all patterns are optimized
    - Ensure all patterns are documented
@@ -119,7 +117,7 @@ think carefully and implement patterns in ./patterns
    - Ensure all patterns are version controlled
    - Ensure all patterns are easily discoverable
 
-10. **Next Test Preparation**
+9. **Next Test Preparation**
     - Document lessons learned
     - Update task methodology if needed
     - Document session summary note in ./session-notes

@@ -1,0 +1,62 @@
+{
+  "timestamp": "2025-08-03T21:27:52.576Z",
+  "results": {
+    "success": [
+      {
+        "file": "/Users/yehudamizrahi/Gameniue/games/color-match-game.html",
+        "status": "success",
+        "backup": "/Users/yehudamizrahi/Gameniue/games/color-match-game.html.backup.1754256472565"
+      },
+      {
+        "file": "/Users/yehudamizrahi/Gameniue/games/math-quiz-game.html",
+        "status": "success",
+        "backup": "/Users/yehudamizrahi/Gameniue/games/math-quiz-game.html.backup.1754256472567"
+      },
+      {
+        "file": "/Users/yehudamizrahi/Gameniue/games/memory-match-game.html",
+        "status": "success",
+        "backup": "/Users/yehudamizrahi/Gameniue/games/memory-match-game.html.backup.1754256472568"
+      },
+      {
+        "file": "/Users/yehudamizrahi/Gameniue/games/puzzle-slider-game.html",
+        "status": "success",
+        "backup": "/Users/yehudamizrahi/Gameniue/games/puzzle-slider-game.html.backup.1754256472570"
+      },
+      {
+        "file": "/Users/yehudamizrahi/Gameniue/games/quick-draw-game.html",
+        "status": "success",
+        "backup": "/Users/yehudamizrahi/Gameniue/games/quick-draw-game.html.backup.1754256472572"
+      },
+      {
+        "file": "/Users/yehudamizrahi/Gameniue/games/simon-says-game.html",
+        "status": "success",
+        "backup": "/Users/yehudamizrahi/Gameniue/games/simon-says-game.html.backup.1754256472573"
+      },
+      {
+        "file": "/Users/yehudamizrahi/Gameniue/games/snakes-and-ladders-game.html",
+        "status": "success",
+        "backup": "/Users/yehudamizrahi/Gameniue/games/snakes-and-ladders-game.html.backup.1754256472573"
+      },
+      {
+        "file": "/Users/yehudamizrahi/Gameniue/games/tic-tac-toe-game.html",
+        "status": "success",
+        "backup": "/Users/yehudamizrahi/Gameniue/games/tic-tac-toe-game.html.backup.1754256472574"
+      },
+      {
+        "file": "/Users/yehudamizrahi/Gameniue/games/word-scramble-game.html",
+        "status": "success",
+        "backup": "/Users/yehudamizrahi/Gameniue/games/word-scramble-game.html.backup.1754256472575"
+      }
+    ],
+    "skipped": [],
+    "failed": [],
+    "errors": []
+  },
+  "summary": {
+    "total": 9,
+    "success": 9,
+    "skipped": 0,
+    "failed": 0,
+    "errors": 0
+  }
+}
