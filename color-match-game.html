@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>התאמת צבעים - משחק מהירות</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        /* Back button */
+        .back-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .back-button button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .back-button button:hover {
+            transform: scale(1.05);
+        }
+
+        .game-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 30px;
+            padding: 40px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #f9ca24);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 3s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .stats-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            gap: 15px;
+        }
+
+        .stat-box {
+            background: linear-gradient(135deg, #ffd93d 0%, #ff6bcb 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 15px;
+            text-align: center;
+            flex: 1;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .stat-box h3 {
+            font-size: 0.9em;
+            margin-bottom: 5px;
+            opacity: 0.9;
+        }
+
+        .stat-box p {
+            font-size: 1.8em;
+            font-weight: bold;
+        }
+
+        .game-modes {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .mode-btn {
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .mode-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .mode-btn.active {
+            background: linear-gradient(135deg, #6c5ce7 0%, #5f3dc4 100%);
+        }
+
+        .timer-bar {
+            width: 100%;
+            height: 20px;
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            margin-bottom: 30px;
+            overflow: hidden;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .timer-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #2ecc71, #f39c12, #e74c3c);
+            width: 100%;
+            transition: width 0.1s linear;
+        }
+
+        .color-display {
+            background: white;
+            padding: 60px;
+            border-radius: 25px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .color-display::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, transparent 0%, rgba(0,0,0,0.05) 100%);
+            animation: rotate 10s linear infinite;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .color-word {
+            font-size: 4em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            position: relative;
+            z-index: 1;
+            transition: all 0.3s ease;
+        }
+
+        .instruction {
+            font-size: 1.2em;
+            color: #7f8c8d;
+            position: relative;
+            z-index: 1;
+        }
+
+        .color-options {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .color-btn {
+            padding: 25px;
+            border: none;
+            border-radius: 20px;
+            font-size: 1.3em;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .color-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .color-btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .color-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+        }
+
+        .color-btn.correct {
+            animation: correctFlash 0.6s ease;
+        }
+
+        .color-btn.incorrect {
+            animation: wrongShake 0.5s ease;
+        }
+
+        @keyframes correctFlash {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); box-shadow: 0 0 30px rgba(46, 204, 113, 0.8); }
+        }
+
+        @keyframes wrongShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .controls {
+            text-align: center;
+        }
+
+        .start-btn {
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-size: 1.3em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .start-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .start-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .message {
+            text-align: center;
+            font-size: 1.3em;
+            font-weight: bold;
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .message.show {
+            display: block;
+            animation: slideIn 0.5s ease;
+        }
+
+        .message.success {
+            background: linear-gradient(135deg, #55efc4 0%, #00b894 100%);
+            color: white;
+        }
+
+        .message.error {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            color: white;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .level-indicator {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+            color: #7f8c8d;
+        }
+
+        .power-up {
+            position: fixed;
+            font-size: 3em;
+            animation: powerUpFloat 2s ease;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        @keyframes powerUpFloat {
+            0% {
+                transform: translateY(0) scale(0);
+                opacity: 0;
+            }
+            50% {
+                transform: translateY(-50px) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) scale(0);
+                opacity: 0;
+            }
+        }
+
+        /* Color definitions */
+        .color-red { background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%); }
+        .color-blue { background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%); }
+        .color-green { background: linear-gradient(135deg, #55efc4 0%, #00b894 100%); }
+        .color-yellow { background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%); }
+        .color-purple { background: linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%); }
+        .color-orange { background: linear-gradient(135deg, #fab1a0 0%, #e17055 100%); }
+    </style>
+</head>
+<body>
+    <div class="back-button">
+        <button onclick="window.location.href='index.html'">🏠 חזרה לדף הראשי</button>
+    </div>
+
+    <div class="game-container">
+        <h1>🎨 התאמת צבעים 🎨</h1>
+
+        <div class="stats-row">
+            <div class="stat-box">
+                <h3>ניקוד</h3>
+                <p id="score">0</p>
+            </div>
+            <div class="stat-box">
+                <h3>רמה</h3>
+                <p id="level">1</p>
+            </div>
+            <div class="stat-box">
+                <h3>רצף</h3>
+                <p id="streak">0</p>
+            </div>
+        </div>
+
+        <div class="game-modes">
+            <button class="mode-btn active" onclick="setMode('meaning')">משמעות</button>
+            <button class="mode-btn" onclick="setMode('color')">צבע</button>
+            <button class="mode-btn" onclick="setMode('mixed')">מעורב</button>
+        </div>
+
+        <div class="timer-bar">
+            <div class="timer-fill" id="timerFill"></div>
+        </div>
+
+        <div class="level-indicator" id="levelIndicator">
+            לחץ על הצבע הנכון!
+        </div>
+
+        <div class="color-display">
+            <div class="color-word" id="colorWord">התחל משחק</div>
+            <div class="instruction" id="instruction">לחץ על כפתור ההתחלה</div>
+        </div>
+
+        <div class="color-options" id="colorOptions">
+            <button class="color-btn color-red" onclick="selectColor('red')">אדום</button>
+            <button class="color-btn color-blue" onclick="selectColor('blue')">כחול</button>
+            <button class="color-btn color-green" onclick="selectColor('green')">ירוק</button>
+            <button class="color-btn color-yellow" onclick="selectColor('yellow')">צהוב</button>
+            <button class="color-btn color-purple" onclick="selectColor('purple')">סגול</button>
+            <button class="color-btn color-orange" onclick="selectColor('orange')">כתום</button>
+        </div>
+
+        <div class="controls">
+            <button class="start-btn" id="startBtn" onclick="startGame()">התחל משחק</button>
+        </div>
+
+        <div class="message" id="message"></div>
+    </div>
+
+    <script>
+        // Game configuration
+        const colors = {
+            red: { name: 'אדום', hex: '#ff6b6b' },
+            blue: { name: 'כחול', hex: '#74b9ff' },
+            green: { name: 'ירוק', hex: '#55efc4' },
+            yellow: { name: 'צהוב', hex: '#ffeaa7' },
+            purple: { name: 'סגול', hex: '#a29bfe' },
+            orange: { name: 'כתום', hex: '#fab1a0' }
+        };
+
+        // Game state
+        let score = 0;
+        let level = 1;
+        let streak = 0;
+        let gameMode = 'meaning';
+        let currentQuestion = null;
+        let correctAnswer = null;
+        let gameActive = false;
+        let timer = null;
+        let timePerQuestion = 5000; // 5 seconds initially
+
+        // Sound effects
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playSound(frequency, duration = 0.2, type = 'sine') {
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.type = type;
+            oscillator.frequency.value = frequency;
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + duration);
+        }
+
+        function playCorrectSound() {
+            const notes = [523, 659, 784];
+            notes.forEach((note, i) => {
+                setTimeout(() => playSound(note, 0.15), i * 50);
+            });
+        }
+
+        function playWrongSound() {
+            playSound(200, 0.5, 'sawtooth');
+        }
+
+        function playLevelUpSound() {
+            const notes = [523, 659, 784, 1047];
+            notes.forEach((note, i) => {
+                setTimeout(() => playSound(note, 0.2), i * 100);
+            });
+        }
+
+        function setMode(mode) {
+            gameMode = mode;
+            document.querySelectorAll('.mode-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            resetGame();
+        }
+
+        function startGame() {
+            gameActive = true;
+            score = 0;
+            level = 1;
+            streak = 0;
+            timePerQuestion = 5000;
+            
+            updateStats();
+            document.getElementById('startBtn').disabled = true;
+            document.getElementById('colorOptions').style.opacity = '1';
+            
+            nextQuestion();
+        }
+
+        function resetGame() {
+            gameActive = false;
+            clearInterval(timer);
+            
+            document.getElementById('startBtn').disabled = false;
+            document.getElementById('colorWord').textContent = 'התחל משחק';
+            document.getElementById('instruction').textContent = 'לחץ על כפתור ההתחלה';
+            document.getElementById('colorWord').style.color = '#2c3e50';
+            document.getElementById('timerFill').style.width = '100%';
+            document.getElementById('colorOptions').style.opacity = '0.5';
+            
+            updateStats();
+        }
+
+        function nextQuestion() {
+            if (!gameActive) return;
+            
+            clearInterval(timer);
+            
+            // Generate question based on mode
+            const colorKeys = Object.keys(colors);
+            const wordColor = colorKeys[Math.floor(Math.random() * colorKeys.length)];
+            const displayColor = colorKeys[Math.floor(Math.random() * colorKeys.length)];
+            
+            currentQuestion = {
+                word: colors[wordColor].name,
+                color: colors[displayColor].hex,
+                wordKey: wordColor,
+                colorKey: displayColor
+            };
+            
+            // Set correct answer based on mode
+            if (gameMode === 'meaning') {
+                correctAnswer = wordColor;
+                document.getElementById('instruction').textContent = 'לחץ על משמעות המילה';
+            } else if (gameMode === 'color') {
+                correctAnswer = displayColor;
+                document.getElementById('instruction').textContent = 'לחץ על צבע הכיתוב';
+            } else {
+                // Mixed mode - randomly choose
+                if (Math.random() < 0.5) {
+                    correctAnswer = wordColor;
+                    document.getElementById('instruction').textContent = 'לחץ על משמעות המילה';
+                } else {
+                    correctAnswer = displayColor;
+                    document.getElementById('instruction').textContent = 'לחץ על צבע הכיתוב';
+                }
+            }
+            
+            // Display question
+            document.getElementById('colorWord').textContent = currentQuestion.word;
+            document.getElementById('colorWord').style.color = currentQuestion.color;
+            
+            // Start timer
+            startTimer();
+            
+            // Enable buttons
+            document.querySelectorAll('.color-btn').forEach(btn => {
+                btn.disabled = false;
+                btn.classList.remove('correct', 'incorrect');
+            });
+        }
+
+        function startTimer() {
+            const startTime = Date.now();
+            const duration = timePerQuestion - (level - 1) * 200; // Decrease time as level increases
+            
+            timer = setInterval(() => {
+                const elapsed = Date.now() - startTime;
+                const remaining = Math.max(0, duration - elapsed);
+                const percentage = (remaining / duration) * 100;
+                
+                document.getElementById('timerFill').style.width = percentage + '%';
+                
+                if (remaining <= 0) {
+                    clearInterval(timer);
+                    timeOut();
+                }
+            }, 50);
+        }
+
+        function selectColor(color) {
+            if (!gameActive) return;
+            
+            clearInterval(timer);
+            
+            const buttons = document.querySelectorAll('.color-btn');
+            buttons.forEach(btn => btn.disabled = true);
+            
+            const selectedButton = event.target;
+            
+            if (color === correctAnswer) {
+                // Correct answer
+                selectedButton.classList.add('correct');
+                streak++;
+                score += 10 * level;
+                
+                playCorrectSound();
+                
+                if (streak > 0 && streak % 10 === 0) {
+                    level++;
+                    showPowerUp('⭐', event.pageX, event.pageY);
+                    playLevelUpSound();
+                    showMessage(`מעולה! עלית לרמה ${level}!`, 'success');
+                }
+                
+                updateStats();
+                
+                setTimeout(nextQuestion, 1000);
+            } else {
+                // Wrong answer
+                selectedButton.classList.add('incorrect');
+                streak = 0;
+                
+                playWrongSound();
+                
+                // Show correct answer
+                buttons.forEach(btn => {
+                    if (btn.textContent === colors[correctAnswer].name) {
+                        btn.classList.add('correct');
+                    }
+                });
+                
+                showMessage('לא נכון! נסה שוב', 'error');
+                updateStats();
+                
+                setTimeout(nextQuestion, 2000);
+            }
+        }
+
+        function timeOut() {
+            if (!gameActive) return;
+            
+            gameActive = false;
+            playWrongSound();
+            
+            showMessage(`נגמר הזמן! ניקוד סופי: ${score}`, 'error');
+            
+            document.querySelectorAll('.color-btn').forEach(btn => {
+                btn.disabled = true;
+                if (btn.textContent === colors[correctAnswer].name) {
+                    btn.classList.add('correct');
+                }
+            });
+            
+            setTimeout(resetGame, 3000);
+        }
+
+        function updateStats() {
+            document.getElementById('score').textContent = score;
+            document.getElementById('level').textContent = level;
+            document.getElementById('streak').textContent = streak;
+            
+            // Update level indicator
+            const levelText = level <= 5 ? 'מתחיל' : 
+                            level <= 10 ? 'מתקדם' : 
+                            level <= 15 ? 'מומחה' : 'אלוף';
+            document.getElementById('levelIndicator').textContent = `רמה ${level} - ${levelText}`;
+        }
+
+        function showMessage(text, type) {
+            const message = document.getElementById('message');
+            message.textContent = text;
+            message.className = `message ${type} show`;
+            
+            setTimeout(() => {
+                message.className = 'message';
+            }, 2000);
+        }
+
+        function showPowerUp(emoji, x, y) {
+            const powerUp = document.createElement('div');
+            powerUp.className = 'power-up';
+            powerUp.textContent = emoji;
+            powerUp.style.left = x + 'px';
+            powerUp.style.top = y + 'px';
+            
+            document.body.appendChild(powerUp);
+            
+            setTimeout(() => {
+                powerUp.remove();
+            }, 2000);
+        }
+
+        // Initialize
+        document.getElementById('colorOptions').style.opacity = '0.5';
+        updateStats();
+    </script>
+</body>
+</html>

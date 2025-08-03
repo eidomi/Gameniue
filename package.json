@@ -1,0 +1,12 @@
+{
+  "name": "hebrew-games-collection",
+  "version": "1.0.0",
+  "description": "10 Fun and Thinking Games in Hebrew",
+  "scripts": {
+    "dev": "python -m http.server 8000",
+    "build": "echo 'No build required for static HTML'"
+  },
+  "keywords": ["games", "hebrew", "educational", "fun"],
+  "author": "Yehuda Mizrahi",
+  "license": "MIT"
+}

@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>בלבול מילים - משחק מילים</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        /* Back button */
+        .back-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .back-button button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .back-button button:hover {
+            transform: scale(1.05);
+        }
+
+        .game-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 25px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            max-width: 700px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 30px;
+            gap: 15px;
+        }
+
+        .stat-box {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            flex: 1;
+        }
+
+        .stat-box h3 {
+            font-size: 0.9em;
+            margin-bottom: 5px;
+            opacity: 0.9;
+        }
+
+        .stat-box p {
+            font-size: 1.8em;
+            font-weight: bold;
+        }
+
+        .category-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .category-btn {
+            background: linear-gradient(135deg, #a8e6cf 0%, #dcedc1 100%);
+            color: #2c3e50;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .category-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .category-btn.active {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            color: white;
+        }
+
+        .word-display {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .scrambled-word {
+            font-size: 3em;
+            font-weight: bold;
+            letter-spacing: 10px;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .hint {
+            font-size: 1.2em;
+            opacity: 0.9;
+            margin-top: 10px;
+            min-height: 30px;
+        }
+
+        .input-section {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            align-items: stretch;
+        }
+
+        .word-input {
+            flex: 1;
+            padding: 15px 25px;
+            font-size: 1.3em;
+            border: 3px solid #e9ecef;
+            border-radius: 50px;
+            text-align: center;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+
+        .word-input:focus {
+            outline: none;
+            border-color: #4facfe;
+            transform: scale(1.02);
+            box-shadow: 0 5px 15px rgba(79, 172, 254, 0.3);
+        }
+
+        .word-input.correct {
+            border-color: #2ecc71;
+            background: rgba(46, 204, 113, 0.1);
+        }
+
+        .word-input.incorrect {
+            border-color: #e74c3c;
+            background: rgba(231, 76, 60, 0.1);
+            animation: shake 0.5s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .submit-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .control-btn {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .control-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .control-btn.hint-btn {
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+        }
+
+        .control-btn.skip-btn {
+            background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+        }
+
+        .message {
+            text-align: center;
+            font-size: 1.3em;
+            font-weight: bold;
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .message.show {
+            display: block;
+            animation: slideIn 0.5s ease;
+        }
+
+        .message.success {
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+            color: white;
+        }
+
+        .message.error {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .timer-bar {
+            width: 100%;
+            height: 10px;
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .timer-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #2ecc71, #f39c12, #e74c3c);
+            width: 100%;
+            transition: width 1s linear;
+        }
+
+        .letter-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .letter-btn {
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            color: white;
+            border: none;
+            padding: 15px 20px;
+            border-radius: 15px;
+            font-size: 1.5em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            min-width: 50px;
+            text-transform: uppercase;
+        }
+
+        .letter-btn:hover:not(.used) {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .letter-btn.used {
+            opacity: 0.3;
+            cursor: not-allowed;
+            transform: scale(0.9);
+        }
+    </style>
+</head>
+<body>
+    <div class="back-button">
+        <button onclick="window.location.href='index.html'">🏠 חזרה לדף הראשי</button>
+    </div>
+
+    <div class="game-container">
+        <h1>🔤 בלבול מילים 🔤</h1>
+
+        <div class="stats">
+            <div class="stat-box">
+                <h3>נקודות</h3>
+                <p id="score">0</p>
+            </div>
+            <div class="stat-box">
+                <h3>רצף נוכחי</h3>
+                <p id="streak">0</p>
+            </div>
+            <div class="stat-box">
+                <h3>שלב</h3>
+                <p id="level">1</p>
+            </div>
+        </div>
+
+        <div class="category-selector">
+            <button class="category-btn active" onclick="setCategory('animals')">חיות</button>
+            <button class="category-btn" onclick="setCategory('food')">אוכל</button>
+            <button class="category-btn" onclick="setCategory('countries')">מדינות</button>
+            <button class="category-btn" onclick="setCategory('sports')">ספורט</button>
+            <button class="category-btn" onclick="setCategory('all')">הכל</button>
+        </div>
+
+        <div class="timer-bar">
+            <div class="timer-fill" id="timerFill"></div>
+        </div>
+
+        <div class="word-display">
+            <div class="scrambled-word" id="scrambledWord">?????</div>
+            <div class="hint" id="hint"></div>
+        </div>
+
+        <div class="letter-buttons" id="letterButtons"></div>
+
+        <div class="input-section">
+            <input type="text" class="word-input" id="wordInput" placeholder="הקלד את המילה כאן" readonly>
+            <button class="submit-btn" id="submitBtn" onclick="checkAnswer()">בדוק</button>
+        </div>
+
+        <div class="controls">
+            <button class="control-btn hint-btn" id="hintBtn" onclick="showHint()">💡 רמז (3)</button>
+            <button class="control-btn skip-btn" onclick="skipWord()">⏭️ דלג</button>
+            <button class="control-btn" onclick="clearInput()">🔄 נקה</button>
+        </div>
+
+        <div class="message" id="message"></div>
+    </div>
+
+    <script>
+        // Word database
+        const words = {
+            animals: [
+                { word: 'כלב', hint: 'חיית מחמד נאמנה' },
+                { word: 'חתול', hint: 'חיית מחמד שאוהבת חלב' },
+                { word: 'פיל', hint: 'החיה היבשתית הגדולה ביותר' },
+                { word: 'אריה', hint: 'מלך החיות' },
+                { word: 'דולפין', hint: 'יונק ימי חכם' },
+                { word: 'נמר', hint: 'חתול גדול עם פסים' },
+                { word: 'קוף', hint: 'חיה שאוהבת בננות' },
+                { word: 'סוס', hint: 'חיה שרוכבים עליה' },
+                { word: 'ציפור', hint: 'יש לה כנפיים ויכולה לעוף' },
+                { word: 'דג', hint: 'חי במים' }
+            ],
+            food: [
+                { word: 'פיצה', hint: 'מאכל איטלקי עגול' },
+                { word: 'המבורגר', hint: 'כריך עם בשר' },
+                { word: 'סלט', hint: 'מאכל בריא עם ירקות' },
+                { word: 'פלאפל', hint: 'כדורי חומוס מטוגנים' },
+                { word: 'חומוס', hint: 'ממרח מחומוס' },
+                { word: 'שניצל', hint: 'עוף בפירורי לחם' },
+                { word: 'פסטה', hint: 'מאכל איטלקי' },
+                { word: 'סושי', hint: 'מאכל יפני עם אורז ודגים' },
+                { word: 'עוגה', hint: 'קינוח מתוק' },
+                { word: 'גלידה', hint: 'קינוח קר' }
+            ],
+            countries: [
+                { word: 'ישראל', hint: 'המדינה שלנו' },
+                { word: 'ספרד', hint: 'מדינה באירופה, בירתה מדריד' },
+                { word: 'יפן', hint: 'ארץ השמש העולה' },
+                { word: 'ברזיל', hint: 'המדינה הגדולה בדרום אמריקה' },
+                { word: 'מצרים', hint: 'ארץ הפירמידות' },
+                { word: 'איטליה', hint: 'המגף של אירופה' },
+                { word: 'אוסטרליה', hint: 'יבשת ומדינה' },
+                { word: 'קנדה', hint: 'השכנה הצפונית של ארה"ב' },
+                { word: 'הודו', hint: 'מדינה גדולה באסיה' },
+                { word: 'יוון', hint: 'ערש הדמוקרטיה' }
+            ],
+            sports: [
+                { word: 'כדורגל', hint: 'המשחק הפופולרי בעולם' },
+                { word: 'כדורסל', hint: 'משחק עם סל וכדור' },
+                { word: 'טניס', hint: 'משחק עם מחבט וכדור' },
+                { word: 'שחייה', hint: 'ספורט במים' },
+                { word: 'ריצה', hint: 'הספורט הבסיסי ביותר' },
+                { word: 'אופניים', hint: 'ספורט על שני גלגלים' },
+                { word: 'כדורעף', hint: 'משחק עם רשת באמצע' },
+                { word: 'גולף', hint: 'משחק עם מקלות וכדור קטן' },
+                { word: 'אגרוף', hint: 'קרב בין שני מתאגרפים' },
+                { word: 'יוגה', hint: 'פעילות גופנית ורוחנית' }
+            ]
+        };
+
+        // Game state
+        let currentCategory = 'animals';
+        let currentWord = null;
+        let scrambledLetters = [];
+        let playerWord = [];
+        let score = 0;
+        let streak = 0;
+        let level = 1;
+        let hints = 3;
+        let timer = null;
+        let timeLeft = 30;
+
+        // Sound effects
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playSound(frequency, duration = 0.2, type = 'sine') {
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.type = type;
+            oscillator.frequency.value = frequency;
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + duration);
+        }
+
+        function playCorrectSound() {
+            const notes = [523, 659, 784];
+            notes.forEach((note, i) => {
+                setTimeout(() => playSound(note, 0.15), i * 100);
+            });
+        }
+
+        function playWrongSound() {
+            playSound(200, 0.5, 'sawtooth');
+        }
+
+        function playClickSound() {
+            playSound(800, 0.1);
+        }
+
+        function setCategory(category) {
+            currentCategory = category;
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            newWord();
+        }
+
+        function getAllWords() {
+            let allWords = [];
+            Object.values(words).forEach(category => {
+                allWords = allWords.concat(category);
+            });
+            return allWords;
+        }
+
+        function scrambleWord(word) {
+            const letters = word.split('');
+            for (let i = letters.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [letters[i], letters[j]] = [letters[j], letters[i]];
+            }
+            // Make sure it's actually scrambled
+            if (letters.join('') === word && word.length > 2) {
+                return scrambleWord(word);
+            }
+            return letters;
+        }
+
+        function newWord() {
+            clearInput();
+            document.getElementById('wordInput').classList.remove('correct', 'incorrect');
+            document.getElementById('message').className = 'message';
+            
+            const wordList = currentCategory === 'all' ? getAllWords() : words[currentCategory];
+            currentWord = wordList[Math.floor(Math.random() * wordList.length)];
+            scrambledLetters = scrambleWord(currentWord.word);
+            playerWord = [];
+            
+            displayLetterButtons();
+            document.getElementById('hint').textContent = '';
+            
+            startTimer();
+        }
+
+        function displayLetterButtons() {
+            const container = document.getElementById('letterButtons');
+            container.innerHTML = '';
+            
+            scrambledLetters.forEach((letter, index) => {
+                const button = document.createElement('button');
+                button.className = 'letter-btn';
+                button.textContent = letter;
+                button.dataset.index = index;
+                button.onclick = () => addLetter(index);
+                container.appendChild(button);
+            });
+        }
+
+        function addLetter(index) {
+            const button = document.querySelector(`[data-index="${index}"]`);
+            if (button.classList.contains('used')) return;
+            
+            playClickSound();
+            button.classList.add('used');
+            playerWord.push({ letter: scrambledLetters[index], index: index });
+            updateInput();
+        }
+
+        function clearInput() {
+            playerWord = [];
+            updateInput();
+            document.querySelectorAll('.letter-btn').forEach(btn => {
+                btn.classList.remove('used');
+            });
+        }
+
+        function updateInput() {
+            const input = document.getElementById('wordInput');
+            input.value = playerWord.map(item => item.letter).join('');
+        }
+
+        function checkAnswer() {
+            const playerAnswer = playerWord.map(item => item.letter).join('');
+            const input = document.getElementById('wordInput');
+            
+            if (playerAnswer === currentWord.word) {
+                // Correct answer
+                playCorrectSound();
+                input.classList.add('correct');
+                score += 10 * level;
+                streak++;
+                
+                if (streak % 5 === 0) {
+                    level++;
+                    showMessage(`מעולה! עלית לשלב ${level}!`, 'success');
+                } else {
+                    showMessage('נכון! כל הכבוד!', 'success');
+                }
+                
+                updateStats();
+                setTimeout(newWord, 2000);
+            } else {
+                // Wrong answer
+                playWrongSound();
+                input.classList.add('incorrect');
+                streak = 0;
+                updateStats();
+                showMessage('לא נכון, נסה שוב!', 'error');
+                setTimeout(() => {
+                    input.classList.remove('incorrect');
+                    document.getElementById('message').className = 'message';
+                }, 2000);
+            }
+        }
+
+        function showHint() {
+            if (hints <= 0) return;
+            
+            hints--;
+            document.getElementById('hintBtn').textContent = `💡 רמז (${hints})`;
+            document.getElementById('hint').textContent = currentWord.hint;
+            
+            if (hints === 0) {
+                document.getElementById('hintBtn').disabled = true;
+            }
+        }
+
+        function skipWord() {
+            streak = 0;
+            updateStats();
+            showMessage(`המילה הייתה: ${currentWord.word}`, 'error');
+            setTimeout(newWord, 2000);
+        }
+
+        function startTimer() {
+            clearInterval(timer);
+            timeLeft = 30 - (level - 1) * 2; // Less time as level increases
+            timeLeft = Math.max(timeLeft, 10); // Minimum 10 seconds
+            
+            updateTimerDisplay();
+            
+            timer = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    skipWord();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const percentage = (timeLeft / (30 - (level - 1) * 2)) * 100;
+            document.getElementById('timerFill').style.width = percentage + '%';
+        }
+
+        function updateStats() {
+            document.getElementById('score').textContent = score;
+            document.getElementById('streak').textContent = streak;
+            document.getElementById('level').textContent = level;
+        }
+
+        function showMessage(text, type) {
+            const message = document.getElementById('message');
+            message.textContent = text;
+            message.className = `message ${type} show`;
+        }
+
+        // Initialize game
+        newWord();
+    </script>
+</body>
+</html>

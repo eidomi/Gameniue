@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ציור מהיר - משחק יצירתי</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        /* Back button */
+        .back-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .back-button button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .back-button button:hover {
+            transform: scale(1.05);
+        }
+
+        .game-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 30px;
+            padding: 40px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            max-width: 800px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            background: linear-gradient(45deg, #f093fb, #f5576c, #4facfe, #00f2fe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .game-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 15px;
+            text-align: center;
+            flex: 1;
+            min-width: 150px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .info-box h3 {
+            font-size: 0.9em;
+            margin-bottom: 5px;
+            opacity: 0.9;
+        }
+
+        .info-box p {
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .timer-bar {
+            width: 100%;
+            height: 15px;
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .timer-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #2ecc71, #f39c12, #e74c3c);
+            width: 100%;
+            transition: width 0.1s linear;
+        }
+
+        .word-display {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .current-word {
+            font-size: 2.5em;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .word-category {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .canvas-container {
+            background: white;
+            border-radius: 20px;
+            padding: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+
+        #drawingCanvas {
+            display: block;
+            cursor: crosshair;
+            border-radius: 15px;
+            background: white;
+            touch-action: none;
+        }
+
+        .drawing-tools {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .tool-btn {
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .tool-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .color-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            padding: 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .color-btn.active::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 1.5em;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        .size-btn {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            color: #2c3e50;
+        }
+
+        .size-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .clear-btn {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            color: white;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .control-btn {
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+            color: white;
+            border: none;
+            padding: 15px 35px;
+            border-radius: 50px;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .control-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .control-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .control-btn.skip {
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+        }
+
+        .guess-section {
+            display: none;
+            margin-bottom: 20px;
+        }
+
+        .guess-input {
+            width: 100%;
+            padding: 15px 25px;
+            font-size: 1.3em;
+            border: 3px solid #e9ecef;
+            border-radius: 50px;
+            text-align: center;
+            transition: all 0.3s ease;
+            margin-bottom: 15px;
+        }
+
+        .guess-input:focus {
+            outline: none;
+            border-color: #667eea;
+            transform: scale(1.02);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .message {
+            text-align: center;
+            font-size: 1.3em;
+            font-weight: bold;
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .message.show {
+            display: block;
+            animation: slideIn 0.5s ease;
+        }
+
+        .message.success {
+            background: linear-gradient(135deg, #55efc4 0%, #00b894 100%);
+            color: white;
+        }
+
+        .message.info {
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+            color: white;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .mode-selector {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .mode-btn {
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .mode-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .mode-btn.active {
+            background: linear-gradient(135deg, #6c5ce7 0%, #5f3dc4 100%);
+        }
+    </style>
+</head>
+<body>
+    <div class="back-button">
+        <button onclick="window.location.href='index.html'">🏠 חזרה לדף הראשי</button>
+    </div>
+
+    <div class="game-container">
+        <h1>✏️ ציור מהיר ✏️</h1>
+
+        <div class="mode-selector">
+            <button class="mode-btn active" onclick="setMode('draw')">🎨 מצב ציור</button>
+            <button class="mode-btn" onclick="setMode('guess')">🤔 מצב ניחוש</button>
+        </div>
+
+        <div class="game-info">
+            <div class="info-box">
+                <h3>ניקוד</h3>
+                <p id="score">0</p>
+            </div>
+            <div class="info-box">
+                <h3>סיבוב</h3>
+                <p id="round">1/10</p>
+            </div>
+            <div class="info-box">
+                <h3>זמן</h3>
+                <p id="timer">60</p>
+            </div>
+        </div>
+
+        <div class="timer-bar">
+            <div class="timer-fill" id="timerFill"></div>
+        </div>
+
+        <div class="word-display" id="wordDisplay">
+            <div class="current-word" id="currentWord">לחץ התחל כדי להתחיל</div>
+            <div class="word-category" id="wordCategory"></div>
+        </div>
+
+        <div class="canvas-container">
+            <canvas id="drawingCanvas" width="740" height="400"></canvas>
+        </div>
+
+        <div class="drawing-tools">
+            <button class="tool-btn color-btn active" style="background: #2c3e50" onclick="setColor('#2c3e50')"></button>
+            <button class="tool-btn color-btn" style="background: #e74c3c" onclick="setColor('#e74c3c')"></button>
+            <button class="tool-btn color-btn" style="background: #3498db" onclick="setColor('#3498db')"></button>
+            <button class="tool-btn color-btn" style="background: #2ecc71" onclick="setColor('#2ecc71')"></button>
+            <button class="tool-btn color-btn" style="background: #f39c12" onclick="setColor('#f39c12')"></button>
+            <button class="tool-btn color-btn" style="background: #9b59b6" onclick="setColor('#9b59b6')"></button>
+            
+            <button class="tool-btn size-btn active" onclick="setSize(3)">דק</button>
+            <button class="tool-btn size-btn" onclick="setSize(8)">בינוני</button>
+            <button class="tool-btn size-btn" onclick="setSize(15)">עבה</button>
+            
+            <button class="tool-btn clear-btn" onclick="clearCanvas()">🗑️ נקה</button>
+        </div>
+
+        <div class="guess-section" id="guessSection">
+            <input type="text" class="guess-input" id="guessInput" placeholder="נחש מה הציור...">
+            <button class="control-btn" onclick="submitGuess()">שלח ניחוש</button>
+        </div>
+
+        <div class="controls">
+            <button class="control-btn" id="startBtn" onclick="startGame()">התחל משחק</button>
+            <button class="control-btn skip" id="skipBtn" onclick="skipWord()" style="display: none;">⏭️ דלג</button>
+        </div>
+
+        <div class="message" id="message"></div>
+    </div>
+
+    <script>
+        // Word database
+        const words = {
+            'חיות': ['כלב', 'חתול', 'פיל', 'ג׳ירפה', 'אריה', 'דג', 'ציפור', 'פרפר', 'סוס', 'פרה'],
+            'אוכל': ['פיצה', 'המבורגר', 'גלידה', 'עוגה', 'תפוח', 'בננה', 'לחם', 'ביצה', 'גבינה', 'עגבנייה'],
+            'חפצים': ['כסא', 'שולחן', 'מחשב', 'טלפון', 'ספר', 'עט', 'כדור', 'שעון', 'משקפיים', 'מפתח'],
+            'טבע': ['עץ', 'פרח', 'שמש', 'ענן', 'גשם', 'הר', 'ים', 'כוכב', 'ירח', 'קשת'],
+            'תחבורה': ['מכונית', 'אוטובוס', 'אופניים', 'מטוס', 'רכבת', 'אונייה', 'מסוק'],
+            'ספורט': ['כדור', 'רשת', 'מחבט', 'נעליים', 'גביע', 'מדליה', 'דגל'],
+            'בית': ['דלת', 'חלון', 'מיטה', 'כורסה', 'מקרר', 'תנור', 'מנורה', 'שטיח']
+        };
+
+        // Drawing samples for AI mode
+        const drawingSamples = [
+            { word: 'שמש', strokes: [[370,100,370,100],[365,95,360,85,350,70,340,55,330,45],[390,110,400,120,410,135,420,150],[370,120,370,135,370,150,370,165],[350,115,340,125,330,135,320,145],[390,105,400,95,410,85,420,75]] },
+            { word: 'בית', strokes: [[300,300,300,200],[300,200,370,150,440,200],[440,200,440,300],[300,300,440,300],[330,250,330,280,360,280,360,250,330,250],[380,250,380,280,410,280,410,250,380,250]] },
+            { word: 'עץ', strokes: [[370,350,370,250],[370,250,320,200,270,150],[370,250,420,200,470,150],[320,200,340,180,360,160],[420,200,400,180,380,160]] }
+        ];
+
+        // Game state
+        let gameMode = 'draw';
+        let canvas, ctx;
+        let isDrawing = false;
+        let currentColor = '#2c3e50';
+        let currentSize = 3;
+        let score = 0;
+        let round = 0;
+        let maxRounds = 10;
+        let currentWord = '';
+        let currentCategory = '';
+        let timer = null;
+        let timeLeft = 60;
+        let gameActive = false;
+
+        // Sound effects
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playSound(frequency, duration = 0.2, type = 'sine') {
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.type = type;
+            oscillator.frequency.value = frequency;
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + duration);
+        }
+
+        function playCorrectSound() {
+            const notes = [523, 659, 784];
+            notes.forEach((note, i) => {
+                setTimeout(() => playSound(note, 0.15), i * 100);
+            });
+        }
+
+        function playDrawSound() {
+            playSound(800 + Math.random() * 400, 0.05);
+        }
+
+        // Initialize canvas
+        window.onload = function() {
+            canvas = document.getElementById('drawingCanvas');
+            ctx = canvas.getContext('2d');
+            
+            // Set canvas size
+            const container = document.querySelector('.canvas-container');
+            canvas.width = container.clientWidth - 20;
+            
+            setupCanvas();
+        };
+
+        function setupCanvas() {
+            // Mouse events
+            canvas.addEventListener('mousedown', startDrawing);
+            canvas.addEventListener('mousemove', draw);
+            canvas.addEventListener('mouseup', stopDrawing);
+            canvas.addEventListener('mouseout', stopDrawing);
+            
+            // Touch events
+            canvas.addEventListener('touchstart', handleTouch);
+            canvas.addEventListener('touchmove', handleTouch);
+            canvas.addEventListener('touchend', stopDrawing);
+            
+            // Initial canvas setup
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+        }
+
+        function startDrawing(e) {
+            if (!gameActive || gameMode !== 'draw') return;
+            
+            isDrawing = true;
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+        }
+
+        function draw(e) {
+            if (!isDrawing) return;
+            
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            ctx.lineWidth = currentSize;
+            ctx.strokeStyle = currentColor;
+            ctx.lineTo(x, y);
+            ctx.stroke();
+            
+            playDrawSound();
+        }
+
+        function stopDrawing() {
+            isDrawing = false;
+        }
+
+        function handleTouch(e) {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const mouseEvent = new MouseEvent(e.type === 'touchstart' ? 'mousedown' : 
+                                            e.type === 'touchmove' ? 'mousemove' : 'mouseup', {
+                clientX: touch.clientX,
+                clientY: touch.clientY
+            });
+            canvas.dispatchEvent(mouseEvent);
+        }
+
+        function setColor(color) {
+            currentColor = color;
+            document.querySelectorAll('.color-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+
+        function setSize(size) {
+            currentSize = size;
+            document.querySelectorAll('.size-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+
+        function clearCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        function setMode(mode) {
+            gameMode = mode;
+            document.querySelectorAll('.mode-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Show/hide relevant sections
+            if (mode === 'guess') {
+                document.querySelector('.drawing-tools').style.display = 'none';
+                document.getElementById('guessSection').style.display = 'block';
+                canvas.style.cursor = 'default';
+            } else {
+                document.querySelector('.drawing-tools').style.display = 'flex';
+                document.getElementById('guessSection').style.display = 'none';
+                canvas.style.cursor = 'crosshair';
+            }
+            
+            resetGame();
+        }
+
+        function startGame() {
+            gameActive = true;
+            score = 0;
+            round = 0;
+            
+            document.getElementById('startBtn').style.display = 'none';
+            document.getElementById('skipBtn').style.display = 'inline-block';
+            
+            updateStats();
+            nextRound();
+        }
+
+        function resetGame() {
+            gameActive = false;
+            clearInterval(timer);
+            clearCanvas();
+            
+            document.getElementById('startBtn').style.display = 'inline-block';
+            document.getElementById('skipBtn').style.display = 'none';
+            document.getElementById('currentWord').textContent = 'לחץ התחל כדי להתחיל';
+            document.getElementById('wordCategory').textContent = '';
+            document.getElementById('timerFill').style.width = '100%';
+            document.getElementById('message').className = 'message';
+            
+            updateStats();
+        }
+
+        function nextRound() {
+            if (round >= maxRounds) {
+                endGame();
+                return;
+            }
+            
+            round++;
+            clearCanvas();
+            selectNewWord();
+            
+            if (gameMode === 'guess') {
+                document.getElementById('guessInput').value = '';
+                document.getElementById('currentWord').textContent = '?????';
+                simulateDrawing();
+            } else {
+                document.getElementById('currentWord').textContent = currentWord;
+            }
+            
+            startTimer();
+            updateStats();
+        }
+
+        function selectNewWord() {
+            const categories = Object.keys(words);
+            currentCategory = categories[Math.floor(Math.random() * categories.length)];
+            const categoryWords = words[currentCategory];
+            currentWord = categoryWords[Math.floor(Math.random() * categoryWords.length)];
+            
+            document.getElementById('wordCategory').textContent = `קטגוריה: ${currentCategory}`;
+        }
+
+        function startTimer() {
+            clearInterval(timer);
+            timeLeft = gameMode === 'draw' ? 60 : 45;
+            
+            timer = setInterval(() => {
+                timeLeft--;
+                updateTimer();
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    timeUp();
+                }
+            }, 1000);
+        }
+
+        function updateTimer() {
+            document.getElementById('timer').textContent = timeLeft;
+            const percentage = (timeLeft / (gameMode === 'draw' ? 60 : 45)) * 100;
+            document.getElementById('timerFill').style.width = percentage + '%';
+        }
+
+        function updateStats() {
+            document.getElementById('score').textContent = score;
+            document.getElementById('round').textContent = `${round}/${maxRounds}`;
+        }
+
+        function skipWord() {
+            if (!gameActive) return;
+            
+            showMessage(`המילה הייתה: ${currentWord}`, 'info');
+            
+            setTimeout(() => {
+                document.getElementById('message').className = 'message';
+                nextRound();
+            }, 2000);
+        }
+
+        function timeUp() {
+            if (gameMode === 'draw') {
+                score += 5; // Partial points for drawing
+                showMessage('הזמן נגמר! קיבלת 5 נקודות על הציור', 'info');
+            } else {
+                showMessage(`הזמן נגמר! המילה הייתה: ${currentWord}`, 'info');
+            }
+            
+            setTimeout(() => {
+                document.getElementById('message').className = 'message';
+                nextRound();
+            }, 2000);
+        }
+
+        function submitGuess() {
+            if (!gameActive || gameMode !== 'guess') return;
+            
+            const guess = document.getElementById('guessInput').value.trim();
+            
+            if (guess.toLowerCase() === currentWord.toLowerCase()) {
+                clearInterval(timer);
+                const points = Math.max(10, Math.floor(timeLeft / 3));
+                score += points;
+                
+                playCorrectSound();
+                showMessage(`נכון! קיבלת ${points} נקודות!`, 'success');
+                
+                setTimeout(() => {
+                    document.getElementById('message').className = 'message';
+                    nextRound();
+                }, 2000);
+            } else {
+                document.getElementById('guessInput').value = '';
+                document.getElementById('guessInput').placeholder = 'נסה שוב...';
+            }
+        }
+
+        function simulateDrawing() {
+            // Simple AI drawing simulation
+            const sample = drawingSamples[Math.floor(Math.random() * drawingSamples.length)];
+            let strokeIndex = 0;
+            let pointIndex = 0;
+            
+            const drawInterval = setInterval(() => {
+                if (strokeIndex >= sample.strokes.length) {
+                    clearInterval(drawInterval);
+                    return;
+                }
+                
+                const stroke = sample.strokes[strokeIndex];
+                
+                if (pointIndex === 0) {
+                    ctx.beginPath();
+                    ctx.moveTo(stroke[0], stroke[1]);
+                    pointIndex = 2;
+                } else if (pointIndex < stroke.length) {
+                    ctx.lineWidth = 5;
+                    ctx.strokeStyle = '#2c3e50';
+                    ctx.lineTo(stroke[pointIndex], stroke[pointIndex + 1]);
+                    ctx.stroke();
+                    pointIndex += 2;
+                } else {
+                    strokeIndex++;
+                    pointIndex = 0;
+                }
+            }, 100);
+        }
+
+        function endGame() {
+            gameActive = false;
+            clearInterval(timer);
+            
+            let rating = score >= 80 ? 'מעולה!' : score >= 50 ? 'טוב מאוד!' : 'כל הכבוד!';
+            showMessage(`המשחק הסתיים! ניקוד סופי: ${score} - ${rating}`, 'success');
+            
+            setTimeout(() => {
+                resetGame();
+            }, 3000);
+        }
+
+        function showMessage(text, type) {
+            const message = document.getElementById('message');
+            message.textContent = text;
+            message.className = `message ${type} show`;
+        }
+
+        // Keyboard support for guess mode
+        document.getElementById('guessInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                submitGuess();
+            }
+        });
+    </script>
+</body>
+</html>

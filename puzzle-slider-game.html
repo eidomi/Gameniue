@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>פאזל הזזה - משחק חשיבה</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        /* Back button */
+        .back-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .back-button button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .back-button button:hover {
+            transform: scale(1.05);
+        }
+
+        .game-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 30px;
+            padding: 40px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .stats-panel {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-box {
+            background: linear-gradient(135deg, #fc466b 0%, #3f5efb 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .stat-box h3 {
+            font-size: 0.9em;
+            margin-bottom: 5px;
+            opacity: 0.9;
+        }
+
+        .stat-box p {
+            font-size: 1.8em;
+            font-weight: bold;
+        }
+
+        .size-selector {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .size-btn {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .size-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .size-btn.active {
+            background: linear-gradient(135deg, #ee0979 0%, #ff6a00 100%);
+        }
+
+        .puzzle-container {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: inset 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .puzzle-grid {
+            display: grid;
+            gap: 5px;
+            max-width: 400px;
+            margin: 0 auto;
+            aspect-ratio: 1;
+        }
+
+        .puzzle-tile {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        .puzzle-tile::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%);
+            transform: translateX(-100%);
+            transition: transform 0.6s;
+        }
+
+        .puzzle-tile:hover::before {
+            transform: translateX(100%);
+        }
+
+        .puzzle-tile:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .puzzle-tile.empty {
+            background: transparent;
+            box-shadow: none;
+            cursor: default;
+        }
+
+        .puzzle-tile.empty:hover {
+            transform: none;
+        }
+
+        .puzzle-tile.sliding {
+            animation: slideAnimation 0.3s ease;
+        }
+
+        @keyframes slideAnimation {
+            0% { transform: scale(1); }
+            50% { transform: scale(0.95); }
+            100% { transform: scale(1); }
+        }
+
+        .puzzle-tile.correct {
+            background: linear-gradient(135deg, #55efc4 0%, #00b894 100%);
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .control-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .control-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .control-btn.shuffle {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .control-btn.hint {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        }
+
+        .message {
+            text-align: center;
+            font-size: 1.3em;
+            font-weight: bold;
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .message.show {
+            display: block;
+            animation: slideIn 0.5s ease;
+        }
+
+        .message.success {
+            background: linear-gradient(135deg, #55efc4 0%, #00b894 100%);
+            color: white;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .timer {
+            text-align: center;
+            font-size: 2em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        .preview-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            display: none;
+            z-index: 1001;
+        }
+
+        .preview-modal.show {
+            display: block;
+            animation: modalIn 0.3s ease;
+        }
+
+        @keyframes modalIn {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+
+        .preview-grid {
+            display: grid;
+            gap: 2px;
+            width: 200px;
+            height: 200px;
+            margin: 20px auto;
+        }
+
+        .preview-tile {
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            border-radius: 5px;
+        }
+
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            z-index: 1000;
+        }
+
+        .modal-backdrop.show {
+            display: block;
+        }
+
+        .win-animation {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 5em;
+            color: #f39c12;
+            display: none;
+            z-index: 1002;
+        }
+
+        .win-animation.show {
+            display: block;
+            animation: winPulse 2s ease;
+        }
+
+        @keyframes winPulse {
+            0% {
+                transform: translate(-50%, -50%) scale(0) rotate(0deg);
+                opacity: 0;
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.5) rotate(180deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(0) rotate(360deg);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="back-button">
+        <button onclick="window.location.href='index.html'">🏠 חזרה לדף הראשי</button>
+    </div>
+
+    <div class="game-container">
+        <h1>🧩 פאזל הזזה 🧩</h1>
+
+        <div class="stats-panel">
+            <div class="stat-box">
+                <h3>מהלכים</h3>
+                <p id="moves">0</p>
+            </div>
+            <div class="stat-box">
+                <h3>זמן</h3>
+                <p id="timer">0:00</p>
+            </div>
+            <div class="stat-box">
+                <h3>שיא</h3>
+                <p id="bestMoves">-</p>
+            </div>
+        </div>
+
+        <div class="size-selector">
+            <button class="size-btn active" onclick="setSize(3)">3x3</button>
+            <button class="size-btn" onclick="setSize(4)">4x4</button>
+            <button class="size-btn" onclick="setSize(5)">5x5</button>
+        </div>
+
+        <div class="puzzle-container">
+            <div class="puzzle-grid" id="puzzleGrid"></div>
+        </div>
+
+        <div class="controls">
+            <button class="control-btn shuffle" onclick="shufflePuzzle()">🔀 ערבב</button>
+            <button class="control-btn hint" onclick="showPreview()">👁️ הצג פתרון</button>
+            <button class="control-btn" onclick="resetPuzzle()">🔄 אפס</button>
+        </div>
+
+        <div class="message" id="message"></div>
+    </div>
+
+    <div class="modal-backdrop" id="modalBackdrop" onclick="hidePreview()"></div>
+    <div class="preview-modal" id="previewModal">
+        <h3 style="text-align: center; margin-bottom: 10px;">פתרון הפאזל</h3>
+        <div class="preview-grid" id="previewGrid"></div>
+        <button class="control-btn" onclick="hidePreview()" style="width: 100%; margin-top: 20px;">סגור</button>
+    </div>
+
+    <div class="win-animation" id="winAnimation">🎉</div>
+
+    <script>
+        // Game configuration
+        let gridSize = 3;
+        let tiles = [];
+        let emptyIndex = -1;
+        let moves = 0;
+        let timer = null;
+        let startTime = null;
+        let isGameActive = false;
+        let bestMoves = {};
+
+        // Sound effects
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playSound(frequency, duration = 0.2, type = 'sine') {
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.type = type;
+            oscillator.frequency.value = frequency;
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + duration);
+        }
+
+        function playMoveSound() {
+            playSound(600, 0.1);
+        }
+
+        function playWinSound() {
+            const notes = [523, 659, 784, 1047, 784, 1047];
+            notes.forEach((note, i) => {
+                setTimeout(() => playSound(note, 0.3), i * 150);
+            });
+        }
+
+        // Initialize
+        loadBestScores();
+        initializePuzzle();
+
+        function loadBestScores() {
+            const saved = localStorage.getItem('puzzleBestMoves');
+            if (saved) {
+                bestMoves = JSON.parse(saved);
+            }
+            updateBestScore();
+        }
+
+        function saveBestScore() {
+            localStorage.setItem('puzzleBestMoves', JSON.stringify(bestMoves));
+        }
+
+        function updateBestScore() {
+            const best = bestMoves[gridSize];
+            document.getElementById('bestMoves').textContent = best || '-';
+        }
+
+        function setSize(size) {
+            gridSize = size;
+            document.querySelectorAll('.size-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            resetPuzzle();
+            initializePuzzle();
+            updateBestScore();
+        }
+
+        function initializePuzzle() {
+            const grid = document.getElementById('puzzleGrid');
+            grid.innerHTML = '';
+            grid.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
+            
+            tiles = [];
+            const totalTiles = gridSize * gridSize;
+            
+            // Create tiles
+            for (let i = 0; i < totalTiles - 1; i++) {
+                tiles.push(i + 1);
+            }
+            tiles.push(null); // Empty space
+            emptyIndex = totalTiles - 1;
+            
+            renderPuzzle();
+        }
+
+        function renderPuzzle() {
+            const grid = document.getElementById('puzzleGrid');
+            grid.innerHTML = '';
+            
+            tiles.forEach((tile, index) => {
+                const tileElement = document.createElement('div');
+                tileElement.className = 'puzzle-tile';
+                
+                if (tile === null) {
+                    tileElement.classList.add('empty');
+                } else {
+                    tileElement.textContent = tile;
+                    tileElement.onclick = () => moveTile(index);
+                    
+                    // Check if tile is in correct position
+                    if (tile === index + 1) {
+                        tileElement.classList.add('correct');
+                    }
+                }
+                
+                grid.appendChild(tileElement);
+            });
+        }
+
+        function moveTile(index) {
+            if (!isGameActive) return;
+            
+            const row = Math.floor(index / gridSize);
+            const col = index % gridSize;
+            const emptyRow = Math.floor(emptyIndex / gridSize);
+            const emptyCol = emptyIndex % gridSize;
+            
+            // Check if tile is adjacent to empty space
+            const isAdjacent = 
+                (row === emptyRow && Math.abs(col - emptyCol) === 1) ||
+                (col === emptyCol && Math.abs(row - emptyRow) === 1);
+            
+            if (isAdjacent) {
+                // Swap tiles
+                tiles[emptyIndex] = tiles[index];
+                tiles[index] = null;
+                emptyIndex = index;
+                
+                moves++;
+                updateStats();
+                
+                playMoveSound();
+                
+                // Add sliding animation
+                const tileElements = document.querySelectorAll('.puzzle-tile');
+                tileElements[index].classList.add('sliding');
+                setTimeout(() => {
+                    tileElements[index].classList.remove('sliding');
+                }, 300);
+                
+                renderPuzzle();
+                
+                // Check if puzzle is solved
+                if (checkWin()) {
+                    winGame();
+                }
+            }
+        }
+
+        function checkWin() {
+            for (let i = 0; i < tiles.length - 1; i++) {
+                if (tiles[i] !== i + 1) {
+                    return false;
+                }
+            }
+            return tiles[tiles.length - 1] === null;
+        }
+
+        function shufflePuzzle() {
+            // Ensure puzzle is solvable by making valid moves
+            const shuffleMoves = gridSize * gridSize * 20;
+            
+            for (let i = 0; i < shuffleMoves; i++) {
+                const possibleMoves = [];
+                const row = Math.floor(emptyIndex / gridSize);
+                const col = emptyIndex % gridSize;
+                
+                // Check all four directions
+                if (row > 0) possibleMoves.push(emptyIndex - gridSize); // Up
+                if (row < gridSize - 1) possibleMoves.push(emptyIndex + gridSize); // Down
+                if (col > 0) possibleMoves.push(emptyIndex - 1); // Left
+                if (col < gridSize - 1) possibleMoves.push(emptyIndex + 1); // Right
+                
+                // Make random valid move
+                const randomMove = possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
+                tiles[emptyIndex] = tiles[randomMove];
+                tiles[randomMove] = null;
+                emptyIndex = randomMove;
+            }
+            
+            moves = 0;
+            isGameActive = true;
+            startTimer();
+            updateStats();
+            renderPuzzle();
+            
+            document.getElementById('message').className = 'message';
+        }
+
+        function resetPuzzle() {
+            clearInterval(timer);
+            moves = 0;
+            isGameActive = false;
+            startTime = null;
+            
+            initializePuzzle();
+            updateStats();
+            
+            document.getElementById('timer').textContent = '0:00';
+            document.getElementById('message').className = 'message';
+        }
+
+        function startTimer() {
+            clearInterval(timer);
+            startTime = Date.now();
+            
+            timer = setInterval(() => {
+                const elapsed = Math.floor((Date.now() - startTime) / 1000);
+                const minutes = Math.floor(elapsed / 60);
+                const seconds = elapsed % 60;
+                document.getElementById('timer').textContent = 
+                    `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            }, 1000);
+        }
+
+        function updateStats() {
+            document.getElementById('moves').textContent = moves;
+        }
+
+        function winGame() {
+            isGameActive = false;
+            clearInterval(timer);
+            
+            playWinSound();
+            
+            // Show win animation
+            document.getElementById('winAnimation').classList.add('show');
+            setTimeout(() => {
+                document.getElementById('winAnimation').classList.remove('show');
+            }, 2000);
+            
+            // Update best score
+            if (!bestMoves[gridSize] || moves < bestMoves[gridSize]) {
+                bestMoves[gridSize] = moves;
+                saveBestScore();
+                updateBestScore();
+                showMessage(`🎉 ניצחת! שיא חדש: ${moves} מהלכים!`, 'success');
+            } else {
+                showMessage(`🎉 ניצחת ב-${moves} מהלכים!`, 'success');
+            }
+        }
+
+        function showMessage(text, type) {
+            const message = document.getElementById('message');
+            message.textContent = text;
+            message.className = `message ${type} show`;
+        }
+
+        function showPreview() {
+            const modal = document.getElementById('previewModal');
+            const backdrop = document.getElementById('modalBackdrop');
+            const previewGrid = document.getElementById('previewGrid');
+            
+            previewGrid.innerHTML = '';
+            previewGrid.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
+            
+            // Show solved state
+            for (let i = 1; i <= gridSize * gridSize; i++) {
+                const tile = document.createElement('div');
+                tile.className = 'preview-tile';
+                if (i < gridSize * gridSize) {
+                    tile.textContent = i;
+                }
+                previewGrid.appendChild(tile);
+            }
+            
+            modal.classList.add('show');
+            backdrop.classList.add('show');
+        }
+
+        function hidePreview() {
+            document.getElementById('previewModal').classList.remove('show');
+            document.getElementById('modalBackdrop').classList.remove('show');
+        }
+
+        // Keyboard controls
+        document.addEventListener('keydown', (e) => {
+            if (!isGameActive) return;
+            
+            const row = Math.floor(emptyIndex / gridSize);
+            const col = emptyIndex % gridSize;
+            let targetIndex = -1;
+            
+            switch(e.key) {
+                case 'ArrowUp':
+                    if (row < gridSize - 1) targetIndex = emptyIndex + gridSize;
+                    break;
+                case 'ArrowDown':
+                    if (row > 0) targetIndex = emptyIndex - gridSize;
+                    break;
+                case 'ArrowLeft':
+                    if (col < gridSize - 1) targetIndex = emptyIndex + 1;
+                    break;
+                case 'ArrowRight':
+                    if (col > 0) targetIndex = emptyIndex - 1;
+                    break;
+            }
+            
+            if (targetIndex !== -1) {
+                moveTile(targetIndex);
+                e.preventDefault();
+            }
+        });
+    </script>
+</body>
+</html>

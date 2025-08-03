@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ארץ המשחקים - 10 משחקי חשיבה וכיף</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+            animation: fadeInDown 1s ease;
+        }
+
+        h1 {
+            font-size: 4em;
+            color: white;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #f093fb, #f5576c, #4facfe, #00f2fe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            background-size: 300% 300%;
+            animation: gradientShift 5s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .subtitle {
+            font-size: 1.5em;
+            color: rgba(255, 255, 255, 0.9);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+
+        .game-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            animation: fadeInUp 0.8s ease;
+            animation-fill-mode: both;
+        }
+
+        .game-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.4) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .game-card:hover::before {
+            opacity: 1;
+        }
+
+        .game-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .game-card:nth-child(1) { animation-delay: 0.1s; }
+        .game-card:nth-child(2) { animation-delay: 0.2s; }
+        .game-card:nth-child(3) { animation-delay: 0.3s; }
+        .game-card:nth-child(4) { animation-delay: 0.4s; }
+        .game-card:nth-child(5) { animation-delay: 0.5s; }
+        .game-card:nth-child(6) { animation-delay: 0.6s; }
+        .game-card:nth-child(7) { animation-delay: 0.7s; }
+        .game-card:nth-child(8) { animation-delay: 0.8s; }
+        .game-card:nth-child(9) { animation-delay: 0.9s; }
+        .game-card:nth-child(10) { animation-delay: 1s; }
+
+        .game-icon {
+            font-size: 4em;
+            margin-bottom: 15px;
+            display: block;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        .game-card:hover .game-icon {
+            animation: spin 1s ease-in-out;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(180deg) scale(1.2); }
+            100% { transform: rotate(360deg) scale(1); }
+        }
+
+        .game-title {
+            font-size: 1.8em;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .game-description {
+            color: #7f8c8d;
+            font-size: 1.1em;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+
+        .play-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .play-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+            z-index: -1;
+        }
+
+        .play-button:hover::before {
+            left: 100%;
+        }
+
+        .play-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        footer {
+            text-align: center;
+            color: white;
+            padding: 30px 0;
+            font-size: 1.1em;
+        }
+
+        .stats {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .stat-item {
+            text-align: center;
+            color: white;
+        }
+
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5em;
+            }
+            
+            .subtitle {
+                font-size: 1.2em;
+            }
+            
+            .games-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .game-icon {
+                font-size: 3em;
+            }
+        }
+
+        /* Loading animation */
+        .loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+
+        .loader.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .loader-content {
+            text-align: center;
+            color: white;
+        }
+
+        .loader-icon {
+            font-size: 5em;
+            animation: pulse 1s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.7; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loader" id="loader">
+        <div class="loader-content">
+            <div class="loader-icon">🎮</div>
+            <h2>טוען את ארץ המשחקים...</h2>
+        </div>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1>🎮 ארץ המשחקים 🎮</h1>
+            <p class="subtitle">10 משחקי חשיבה וכיף לכל המשפחה</p>
+        </header>
+
+        <div class="stats">
+            <div class="stat-item">
+                <span class="stat-number">10</span>
+                <span class="stat-label">משחקים</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">∞</span>
+                <span class="stat-label">שעות כיף</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">100%</span>
+                <span class="stat-label">בחינם</span>
+            </div>
+        </div>
+
+        <div class="games-grid">
+            <!-- Game 1: Memory Match -->
+            <div class="game-card" onclick="openGame('memory-match.html')">
+                <span class="game-icon">🧠</span>
+                <h3 class="game-title">משחק הזיכרון</h3>
+                <p class="game-description">מצאו את הזוגות התואמים ואמנו את הזיכרון שלכם</p>
+                <button class="play-button">שחק עכשיו</button>
+            </div>
+
+            <!-- Game 2: Snakes and Ladders -->
+            <div class="game-card" onclick="openGame('snakes-ladders.html')">
+                <span class="game-icon">🐍</span>
+                <h3 class="game-title">סולמות ונחשים</h3>
+                <p class="game-description">המשחק הקלאסי עם גרפיקה מדהימה</p>
+                <button class="play-button">שחק עכשיו</button>
+            </div>
+
+            <!-- Game 3: Tic Tac Toe -->
+            <div class="game-card" onclick="openGame('tic-tac-toe.html')">
+                <span class="game-icon">⭕</span>
+                <h3 class="game-title">איקס עיגול</h3>
+                <p class="game-description">המשחק הקלאסי נגד המחשב או חבר</p>
+                <button class="play-button">שחק עכשיו</button>
+            </div>
+
+            <!-- Game 4: Simon Says -->
+            <div class="game-card" onclick="openGame('simon-says.html')">
+                <span class="game-icon">🎵</span>
+                <h3 class="game-title">סיימון אומר</h3>
+                <p class="game-description">זכרו את הרצף וחזרו עליו</p>
+                <button class="play-button">שחק עכשיו</button>
+            </div>
+
+            <!-- Game 5: Word Scramble -->
+            <div class="game-card" onclick="openGame('word-scramble.html')">
+                <span class="game-icon">🔤</span>
+                <h3 class="game-title">בלבול מילים</h3>
+                <p class="game-description">סדרו את האותיות וגלו את המילה</p>
+                <button class="play-button">שחק עכשיו</button>
+            </div>
+
+            <!-- Game 6: Math Quiz -->
+            <div class="game-card" onclick="openGame('math-quiz.html')">
+                <span class="game-icon">🔢</span>
+                <h3 class="game-title">חידון חשבון</h3>
+                <p class="game-description">פתרו תרגילים ושפרו את המהירות</p>
+                <button class="play-button">שחק עכשיו</button>
+            </div>
+
+            <!-- Game 7: Color Match -->
+            <div class="game-card" onclick="openGame('color-match.html')">
+                <span class="game-icon">🎨</span>
+                <h3 class="game-title">התאמת צבעים</h3>
+                <p class="game-description">התאימו צבעים במהירות הבזק</p>
+                <button class="play-button">שחק עכשיו</button>
+            </div>
+
+            <!-- Game 8: Pattern Memory -->
+            <div class="game-card" onclick="openGame('pattern-memory.html')">
+                <span class="game-icon">🔷</span>
+                <h3 class="game-title">זיכרון תבניות</h3>
+                <p class="game-description">זכרו ושחזרו תבניות מורכבות</p>
+                <button class="play-button">שחק עכשיו</button>
+            </div>
+
+            <!-- Game 9: Puzzle Slider -->
+            <div class="game-card" onclick="openGame('puzzle-slider.html')">
+                <span class="game-icon">🧩</span>
+                <h3 class="game-title">פאזל הזזה</h3>
+                <p class="game-description">סדרו את המספרים בסדר הנכון</p>
+                <button class="play-button">שחק עכשיו</button>
+            </div>
+
+            <!-- Game 10: Quick Draw -->
+            <div class="game-card" onclick="openGame('quick-draw.html')">
+                <span class="game-icon">✏️</span>
+                <h3 class="game-title">ציור מהיר</h3>
+                <p class="game-description">ציירו ונחשו ציורים בזמן מוגבל</p>
+                <button class="play-button">שחק עכשיו</button>
+            </div>
+        </div>
+
+        <footer>
+            <p>נוצר עם ❤️ למשפחה שלי</p>
+            <p>כל המשחקים חינמיים ומתאימים לכל הגילאים</p>
+        </footer>
+    </div>
+
+    <script>
+        // Hide loader after page loads
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                document.getElementById('loader').classList.add('hidden');
+            }, 1000);
+        });
+
+        // Function to open games
+        function openGame(gameFile) {
+            // Add loading effect
+            document.getElementById('loader').classList.remove('hidden');
+            
+            // Navigate to game after short delay
+            setTimeout(() => {
+                window.location.href = gameFile;
+            }, 500);
+        }
+
+        // Add some interactive effects
+        document.querySelectorAll('.game-card').forEach((card, index) => {
+            card.addEventListener('mouseenter', function() {
+                this.style.animationDelay = '0s';
+            });
+        });
+
+        // Add keyboard navigation
+        let currentCard = 0;
+        const cards = document.querySelectorAll('.game-card');
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight' && currentCard < cards.length - 1) {
+                currentCard++;
+                cards[currentCard].focus();
+            } else if (e.key === 'ArrowLeft' && currentCard > 0) {
+                currentCard--;
+                cards[currentCard].focus();
+            } else if (e.key === 'Enter' && document.activeElement.classList.contains('game-card')) {
+                document.activeElement.click();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>סיימון אומר - משחק זיכרון</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        /* Back button */
+        .back-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .back-button button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .back-button button:hover {
+            transform: scale(1.05);
+        }
+
+        .game-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 30px;
+            padding: 40px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-size: 3em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            background: linear-gradient(135deg, #e74c3c 0%, #f39c12 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .score-board {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 30px;
+            gap: 20px;
+        }
+
+        .score-item {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            flex: 1;
+        }
+
+        .score-item h3 {
+            font-size: 1em;
+            margin-bottom: 5px;
+            opacity: 0.9;
+        }
+
+        .score-item p {
+            font-size: 2em;
+            font-weight: bold;
+        }
+
+        .simon-board {
+            position: relative;
+            width: 400px;
+            height: 400px;
+            margin: 0 auto 30px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 20px;
+            padding: 20px;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .simon-button {
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .simon-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .simon-button.active::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        /* Button colors */
+        .btn-red {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            grid-area: 1 / 1;
+            border-top-left-radius: 200px;
+        }
+
+        .btn-blue {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            grid-area: 1 / 2;
+            border-top-right-radius: 200px;
+        }
+
+        .btn-yellow {
+            background: linear-gradient(135deg, #f1c40f 0%, #f39c12 100%);
+            grid-area: 2 / 1;
+            border-bottom-left-radius: 200px;
+        }
+
+        .btn-green {
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+            grid-area: 2 / 2;
+            border-bottom-right-radius: 200px;
+        }
+
+        .simon-button:hover:not(.active):not(.disabled) {
+            transform: scale(1.05);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+        }
+
+        .simon-button.active {
+            transform: scale(0.95);
+            box-shadow: inset 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-red.active {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            box-shadow: 0 0 50px rgba(231, 76, 60, 0.8);
+        }
+
+        .btn-blue.active {
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            box-shadow: 0 0 50px rgba(52, 152, 219, 0.8);
+        }
+
+        .btn-yellow.active {
+            background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+            box-shadow: 0 0 50px rgba(241, 196, 15, 0.8);
+        }
+
+        .btn-green.active {
+            background: linear-gradient(135deg, #55efc4 0%, #00b894 100%);
+            box-shadow: 0 0 50px rgba(46, 204, 113, 0.8);
+        }
+
+        .simon-button.disabled {
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .center-display {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            z-index: 10;
+        }
+
+        .level-display {
+            font-size: 2.5em;
+            font-weight: bold;
+        }
+
+        .status-display {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+
+        .controls {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .control-button {
+            background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
+            color: white;
+            border: none;
+            padding: 15px 35px;
+            border-radius: 50px;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .control-button:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .control-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .control-button.start {
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+        }
+
+        .message {
+            text-align: center;
+            font-size: 1.3em;
+            font-weight: bold;
+            padding: 15px;
+            border-radius: 15px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .message.show {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .message.success {
+            background: linear-gradient(135deg, #55efc4 0%, #00b894 100%);
+            color: white;
+        }
+
+        .message.error {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            color: white;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .difficulty-selector {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .diff-button {
+            background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .diff-button:hover {
+            transform: scale(1.05);
+        }
+
+        .diff-button.active {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        }
+
+        @media (max-width: 500px) {
+            .simon-board {
+                width: 300px;
+                height: 300px;
+            }
+            
+            .center-display {
+                width: 90px;
+                height: 90px;
+            }
+            
+            .level-display {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="back-button">
+        <button onclick="window.location.href='index.html'">🏠 חזרה לדף הראשי</button>
+    </div>
+
+    <div class="game-container">
+        <h1>🎵 סיימון אומר 🎵</h1>
+
+        <div class="score-board">
+            <div class="score-item">
+                <h3>שלב נוכחי</h3>
+                <p id="currentLevel">0</p>
+            </div>
+            <div class="score-item">
+                <h3>שיא אישי</h3>
+                <p id="highScore">0</p>
+            </div>
+        </div>
+
+        <div class="difficulty-selector">
+            <button class="diff-button active" onclick="setDifficulty('easy')">קל</button>
+            <button class="diff-button" onclick="setDifficulty('medium')">בינוני</button>
+            <button class="diff-button" onclick="setDifficulty('hard')">קשה</button>
+        </div>
+
+        <div class="simon-board">
+            <button class="simon-button btn-red" data-color="red" data-sound="523"></button>
+            <button class="simon-button btn-blue" data-color="blue" data-sound="659"></button>
+            <button class="simon-button btn-yellow" data-color="yellow" data-sound="784"></button>
+            <button class="simon-button btn-green" data-color="green" data-sound="1047"></button>
+            
+            <div class="center-display">
+                <div class="level-display" id="levelDisplay">0</div>
+                <div class="status-display" id="statusDisplay">לחץ התחל</div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="control-button start" id="startButton" onclick="startGame()">התחל משחק</button>
+            <button class="control-button" onclick="resetGame()">אפס</button>
+        </div>
+
+        <div class="message" id="message"></div>
+    </div>
+
+    <script>
+        // Game state
+        let sequence = [];
+        let playerSequence = [];
+        let level = 0;
+        let highScore = localStorage.getItem('simonHighScore') || 0;
+        let isPlaying = false;
+        let isShowingSequence = false;
+        let difficulty = 'easy';
+        
+        // Difficulty settings
+        const difficultySettings = {
+            easy: { speed: 800, waitTime: 400 },
+            medium: { speed: 600, waitTime: 300 },
+            hard: { speed: 400, waitTime: 200 }
+        };
+
+        // Audio context
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+        // Initialize
+        document.getElementById('highScore').textContent = highScore;
+        const buttons = document.querySelectorAll('.simon-button');
+        buttons.forEach(button => {
+            button.addEventListener('click', handleButtonClick);
+        });
+
+        function playSound(frequency, duration = 0.3) {
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.value = frequency;
+            oscillator.type = 'sine';
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + duration);
+        }
+
+        function playErrorSound() {
+            playSound(200, 0.5);
+        }
+
+        function playSuccessSound() {
+            const notes = [523, 659, 784, 1047];
+            notes.forEach((note, i) => {
+                setTimeout(() => playSound(note, 0.1), i * 100);
+            });
+        }
+
+        function setDifficulty(diff) {
+            difficulty = diff;
+            document.querySelectorAll('.diff-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            resetGame();
+        }
+
+        function startGame() {
+            if (isPlaying) return;
+            
+            resetGame();
+            isPlaying = true;
+            document.getElementById('startButton').disabled = true;
+            document.getElementById('statusDisplay').textContent = 'צפה';
+            nextLevel();
+        }
+
+        function resetGame() {
+            sequence = [];
+            playerSequence = [];
+            level = 0;
+            isPlaying = false;
+            isShowingSequence = false;
+            
+            document.getElementById('currentLevel').textContent = '0';
+            document.getElementById('levelDisplay').textContent = '0';
+            document.getElementById('statusDisplay').textContent = 'לחץ התחל';
+            document.getElementById('startButton').disabled = false;
+            document.getElementById('message').className = 'message';
+            
+            buttons.forEach(button => {
+                button.classList.remove('disabled');
+            });
+        }
+
+        function nextLevel() {
+            level++;
+            playerSequence = [];
+            document.getElementById('currentLevel').textContent = level;
+            document.getElementById('levelDisplay').textContent = level;
+            document.getElementById('statusDisplay').textContent = 'צפה';
+            
+            // Add new random color to sequence
+            const colors = ['red', 'blue', 'yellow', 'green'];
+            const randomColor = colors[Math.floor(Math.random() * colors.length)];
+            sequence.push(randomColor);
+            
+            // Show sequence
+            showSequence();
+        }
+
+        async function showSequence() {
+            isShowingSequence = true;
+            buttons.forEach(button => button.classList.add('disabled'));
+            
+            const settings = difficultySettings[difficulty];
+            
+            for (let i = 0; i < sequence.length; i++) {
+                await new Promise(resolve => setTimeout(resolve, settings.waitTime));
+                await activateButton(sequence[i], settings.speed);
+            }
+            
+            isShowingSequence = false;
+            buttons.forEach(button => button.classList.remove('disabled'));
+            document.getElementById('statusDisplay').textContent = 'תורך';
+        }
+
+        async function activateButton(color, duration = 500) {
+            const button = document.querySelector(`[data-color="${color}"]`);
+            const frequency = parseInt(button.dataset.sound);
+            
+            button.classList.add('active');
+            playSound(frequency, duration / 1000);
+            
+            await new Promise(resolve => setTimeout(resolve, duration));
+            button.classList.remove('active');
+        }
+
+        function handleButtonClick(e) {
+            if (!isPlaying || isShowingSequence) return;
+            
+            const button = e.target;
+            const color = button.dataset.color;
+            const frequency = parseInt(button.dataset.sound);
+            
+            button.classList.add('active');
+            playSound(frequency);
+            setTimeout(() => button.classList.remove('active'), 300);
+            
+            playerSequence.push(color);
+            checkSequence();
+        }
+
+        function checkSequence() {
+            const currentIndex = playerSequence.length - 1;
+            
+            if (playerSequence[currentIndex] !== sequence[currentIndex]) {
+                // Wrong sequence
+                gameOver();
+                return;
+            }
+            
+            if (playerSequence.length === sequence.length) {
+                // Completed current level
+                if (level >= 20) {
+                    winGame();
+                } else {
+                    showMessage('מצוין! לשלב הבא', 'success');
+                    setTimeout(() => {
+                        document.getElementById('message').className = 'message';
+                        nextLevel();
+                    }, 1500);
+                }
+            }
+        }
+
+        function gameOver() {
+            isPlaying = false;
+            playErrorSound();
+            
+            buttons.forEach(button => button.classList.add('disabled'));
+            document.getElementById('statusDisplay').textContent = 'משחק נגמר';
+            
+            if (level - 1 > highScore) {
+                highScore = level - 1;
+                localStorage.setItem('simonHighScore', highScore);
+                document.getElementById('highScore').textContent = highScore;
+                showMessage(`משחק נגמר! שיא חדש: ${highScore} שלבים!`, 'error');
+            } else {
+                showMessage(`משחק נגמר! הגעת לשלב ${level - 1}`, 'error');
+            }
+            
+            document.getElementById('startButton').disabled = false;
+        }
+
+        function winGame() {
+            isPlaying = false;
+            playSuccessSound();
+            
+            highScore = 20;
+            localStorage.setItem('simonHighScore', highScore);
+            document.getElementById('highScore').textContent = highScore;
+            
+            showMessage('🎉 ניצחת! השלמת 20 שלבים! 🎉', 'success');
+            document.getElementById('statusDisplay').textContent = 'ניצחון!';
+            document.getElementById('startButton').disabled = false;
+        }
+
+        function showMessage(text, type) {
+            const message = document.getElementById('message');
+            message.textContent = text;
+            message.className = `message ${type} show`;
+        }
+    </script>
+</body>
+</html>
