@@ -436,24 +436,62 @@
         let gameActive = false;
         let timer = null;
         let timePerQuestion = 5000; // 5 seconds initially
+        let lastClickTime = 0;
+        const DEBOUNCE_TIME = 300;
+        let timeoutId = null;
 
-        // Sound effects
-        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        // Sound effects with enhanced error handling and mobile support
+        let audioContext = null;
+        let isAudioInitialized = false;
+
+        function initializeAudio() {
+            try {
+                if (!audioContext) {
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                
+                // Resume context for mobile browsers
+                if (audioContext.state === 'suspended') {
+                    audioContext.resume().then(() => {
+                        isAudioInitialized = true;
+                    }).catch(console.warn);
+                } else {
+                    isAudioInitialized = true;
+                }
+            } catch (error) {
+                console.warn('Audio not supported:', error);
+                isAudioInitialized = false;
+            }
+        }
 
         function playSound(frequency, duration = 0.2, type = 'sine') {
-            const oscillator = audioContext.createOscillator();
-            const gainNode = audioContext.createGain();
+            if (!isAudioInitialized || !audioContext) return;
             
-            oscillator.connect(gainNode);
-            gainNode.connect(audioContext.destination);
-            
-            oscillator.type = type;
-            oscillator.frequency.value = frequency;
-            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
-            
-            oscillator.start(audioContext.currentTime);
-            oscillator.stop(audioContext.currentTime + duration);
+            try {
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.type = type;
+                oscillator.frequency.value = frequency;
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + duration);
+                
+                // Clean up after the sound finishes
+                setTimeout(() => {
+                    try {
+                        oscillator.disconnect();
+                        gainNode.disconnect();
+                    } catch(e) {} // Ignore if already disconnected
+                }, (duration + 0.1) * 1000);
+            } catch (error) {
+                console.warn('Error playing sound:', error);
+            }
         }
 
         function playCorrectSound() {
@@ -485,6 +523,11 @@
         }
 
         function startGame() {
+            // Initialize audio on first user interaction
+            if (!isAudioInitialized) {
+                initializeAudio();
+            }
+            
             gameActive = true;
             score = 0;
             level = 1;
@@ -492,6 +535,7 @@
             timePerQuestion = 5000;
             
             updateStats();
+            updateAccessibility();
             document.getElementById('startBtn').disabled = true;
             document.getElementById('colorOptions').style.opacity = '1';
             
@@ -499,17 +543,15 @@
         }
 
         function resetGame() {
-            gameActive = false;
-            clearInterval(timer);
+            clearTimeout(timeoutId);
+            clearInterval(timerInterval);
             
-            document.getElementById('startBtn').disabled = false;
-            document.getElementById('colorWord').textContent = 'התחל משחק';
-            document.getElementById('instruction').textContent = 'לחץ על כפתור ההתחלה';
-            document.getElementById('colorWord').style.color = '#2c3e50';
-            document.getElementById('timerFill').style.width = '100%';
-            document.getElementById('colorOptions').style.opacity = '0.5';
+            gameActive = true;
+            score = 0;
+            currentTime = 10;
             
-            updateStats();
+            updateUI();
+            nextRound();
         }
 
         function nextQuestion() {
@@ -517,48 +559,38 @@
             
             clearInterval(timer);
             
-            // Generate question based on mode
-            const colorKeys = Object.keys(colors);
-            const wordColor = colorKeys[Math.floor(Math.random() * colorKeys.length)];
-            const displayColor = colorKeys[Math.floor(Math.random() * colorKeys.length)];
+            // Generate new question
+            targetColor = colors[Math.floor(Math.random() * colors.length)];
+            correctAnswer = Math.floor(Math.random() * colors.length);
             
-            currentQuestion = {
-                word: colors[wordColor].name,
-                color: colors[displayColor].hex,
-                wordKey: wordColor,
-                colorKey: displayColor
-            };
+            // Update display
+            document.getElementById('targetColor').style.backgroundColor = targetColor.color;
+            document.getElementById('targetColor').textContent = targetColor.name;
             
-            // Set correct answer based on mode
-            if (gameMode === 'meaning') {
-                correctAnswer = wordColor;
-                document.getElementById('instruction').textContent = 'לחץ על משמעות המילה';
-            } else if (gameMode === 'color') {
-                correctAnswer = displayColor;
-                document.getElementById('instruction').textContent = 'לחץ על צבע הכיתוב';
-            } else {
-                // Mixed mode - randomly choose
-                if (Math.random() < 0.5) {
-                    correctAnswer = wordColor;
-                    document.getElementById('instruction').textContent = 'לחץ על משמעות המילה';
-                } else {
-                    correctAnswer = displayColor;
-                    document.getElementById('instruction').textContent = 'לחץ על צבע הכיתוב';
-                }
-            }
+            // Update buttons
+            const buttons = document.querySelectorAll('.color-btn');
+            buttons.forEach((btn, index) => {
+                btn.textContent = colors[index].name;
+                btn.style.backgroundColor = colors[index].color;
+                btn.disabled = false;
+                btn.classList.remove('correct', 'wrong', 'selected');
+                btn.setAttribute('tabindex', '0');
+            });
             
-            // Display question
-            document.getElementById('colorWord').textContent = currentQuestion.word;
-            document.getElementById('colorWord').style.color = currentQuestion.color;
+            updateAccessibility();
             
             // Start timer
-            startTimer();
+            currentTime = Math.max(3, 10 - Math.floor(level / 2));
+            updateTimer();
             
-            // Enable buttons
-            document.querySelectorAll('.color-btn').forEach(btn => {
-                btn.disabled = false;
-                btn.classList.remove('correct', 'incorrect');
-            });
+            timer = setInterval(() => {
+                currentTime--;
+                updateTimer();
+                
+                if (currentTime <= 0) {
+                    timeOut();
+                }
+            }, 1000);
         }
 
         function startTimer() {
@@ -566,23 +598,43 @@
             const duration = timePerQuestion - (level - 1) * 200; // Decrease time as level increases
             
             timer = setInterval(() => {
-                const elapsed = Date.now() - startTime;
-                const remaining = Math.max(0, duration - elapsed);
-                const percentage = (remaining / duration) * 100;
-                
-                document.getElementById('timerFill').style.width = percentage + '%';
-                
-                if (remaining <= 0) {
-                    clearInterval(timer);
-                    timeOut();
-                }
+                requestAnimationFrame(() => {
+                    const elapsed = Date.now() - startTime;
+                    const remaining = Math.max(0, duration - elapsed);
+                    const percentage = (remaining / duration) * 100;
+                    
+                    document.getElementById('timerFill').style.width = percentage + '%';
+                    
+                    if (remaining <= 0) {
+                        clearInterval(timer);
+                        timer = null;
+                        timeOut();
+                    }
+                });
             }, 50);
         }
 
         function selectColor(color) {
-            if (!gameActive) return;
+            const currentTime = Date.now();
             
-            clearInterval(timer);
+            // Debounce rapid clicks
+            if (currentTime - lastClickTime < DEBOUNCE_TIME) {
+                return;
+            }
+            lastClickTime = currentTime;
+            
+            if (!gameActive) {
+                // Initialize audio on first interaction if needed
+                if (!isAudioInitialized) {
+                    initializeAudio();
+                }
+                return;
+            }
+            
+            if (timer) {
+                clearInterval(timer);
+                timer = null;
+            }
             
             const buttons = document.querySelectorAll('.color-btn');
             buttons.forEach(btn => btn.disabled = true);
@@ -606,7 +658,7 @@
                 
                 updateStats();
                 
-                setTimeout(nextQuestion, 1000);
+                timeoutId = setTimeout(nextQuestion, 1000);
             } else {
                 // Wrong answer
                 selectedButton.classList.add('incorrect');
@@ -624,7 +676,7 @@
                 showMessage('לא נכון! נסה שוב', 'error');
                 updateStats();
                 
-                setTimeout(nextQuestion, 2000);
+                timeoutId = setTimeout(nextQuestion, 2000);
             }
         }
 
@@ -643,7 +695,7 @@
                 }
             });
             
-            setTimeout(resetGame, 3000);
+            timeoutId = setTimeout(resetGame, 3000);
         }
 
         function updateStats() {
@@ -680,6 +732,73 @@
             setTimeout(() => {
                 powerUp.remove();
             }, 2000);
+        }
+
+        // Add keyboard navigation and accessibility
+        document.addEventListener('keydown', function(e) {
+            if (!gameActive) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    startGame();
+                }
+                return;
+            }
+            
+            // Number keys 1-4 for color selection
+            const keyNumber = parseInt(e.key);
+            if (keyNumber >= 1 && keyNumber <= 4) {
+                e.preventDefault();
+                const colorIndex = keyNumber - 1;
+                if (colorIndex < colors.length) {
+                    selectColor(colorIndex);
+                }
+            }
+            
+            // Arrow key navigation
+            if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+                e.preventDefault();
+                const buttons = Array.from(document.querySelectorAll('.color-btn:not(:disabled)'));
+                const currentFocus = document.activeElement;
+                const currentIndex = buttons.indexOf(currentFocus);
+                
+                let newIndex;
+                switch (e.key) {
+                    case 'ArrowUp':
+                    case 'ArrowLeft':
+                        newIndex = currentIndex > 0 ? currentIndex - 1 : buttons.length - 1;
+                        break;
+                    case 'ArrowDown':
+                    case 'ArrowRight':
+                        newIndex = currentIndex < buttons.length - 1 ? currentIndex + 1 : 0;
+                        break;
+                }
+                
+                if (buttons[newIndex]) {
+                    buttons[newIndex].focus();
+                }
+            }
+            
+            // Enter or Space to click focused button
+            if ((e.key === 'Enter' || e.key === ' ') && document.activeElement.classList.contains('color-btn')) {
+                e.preventDefault();
+                document.activeElement.click();
+            }
+        });
+
+        // Add ARIA labels and focus management
+        function updateAccessibility() {
+            const colorBtns = document.querySelectorAll('.color-btn');
+            colorBtns.forEach((btn, index) => {
+                btn.setAttribute('aria-label', `בחר צבע ${colors[index].name} - מקש ${index + 1}`);
+                btn.setAttribute('tabindex', gameActive ? '0' : '-1');
+            });
+            
+            const startBtn = document.getElementById('start-btn');
+            startBtn.setAttribute('aria-label', gameActive ? 'המשחק פעיל' : 'התחל משחק חדש - Enter או רווח');
+            
+            // Update timer with ARIA live region
+            document.getElementById('timer').setAttribute('aria-live', 'assertive');
+            document.getElementById('score').setAttribute('aria-live', 'polite');
         }
 
         // Initialize

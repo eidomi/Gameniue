@@ -61,6 +61,11 @@ Gameniue/
 - **Responsive design**: CSS Grid and Flexbox for mobile compatibility
 - **RTL support**: Right-to-left layout for Hebrew text
 - **Touch handling**: Debounced touch events to prevent double-firing
+- **Navigation**: Back button to index on all game pages
+- **LocalStorage**: High scores and game state persistence
+- **Visibility API**: Automatic pause/resume when switching tabs
+- **Keyboard support**: Arrow keys navigation and spacebar/Enter for actions
+- **Timer cleanup**: Clear intervals on page unload events
 
 ## Mobile Optimization
 
@@ -122,6 +127,15 @@ The project includes `vercel.json` for optimal static hosting:
 
 ### Issue: Hebrew text alignment problems
 **Solution**: Ensure `dir="rtl"` on HTML element and appropriate CSS
+
+### Issue: Browser back button not loading page
+**Solution**: Handle pageshow event to hide loader when returning from cache
+
+### Issue: No game pause when switching tabs
+**Solution**: Implement Visibility API for automatic pause/resume
+
+### Issue: Missing keyboard navigation
+**Solution**: Add keyboard event handlers with proper focus management
 
 ## Key Considerations
 

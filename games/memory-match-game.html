@@ -2,7 +2,7 @@
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>משחק הזיכרון - משחק חשיבה</title>
     <style>
         * {
@@ -19,6 +19,42 @@
             justify-content: center;
             align-items: center;
             padding: 20px;
+            margin: 0;
+        }
+
+        /* Back button navigation */
+        .back-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .back-button button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-size: clamp(0.9rem, 2vw, 1.1rem);
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            min-height: 44px;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .back-button button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 7px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        @media (hover: none) {
+            .back-button button:hover {
+                transform: none;
+            }
         }
 
         .game-container {
@@ -34,7 +70,7 @@
             text-align: center;
             color: #4a5568;
             margin-bottom: 20px;
-            font-size: 2.5em;
+            font-size: clamp(1.8rem, 5vw, 2.5rem);
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
         }
 
@@ -51,10 +87,13 @@
             color: white;
             padding: 15px 25px;
             border-radius: 10px;
-            font-size: 1.1em;
+            font-size: clamp(0.9rem, 2vw, 1.1rem);
             font-weight: bold;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
             transition: transform 0.3s ease;
+            flex: 1 1 100px;
+            min-width: 80px;
+            max-width: 150px;
         }
 
         .stat-box:hover {
@@ -76,11 +115,14 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2.5em;
+            font-size: clamp(1.8rem, 4vw, 2.5rem);
             position: relative;
             transform-style: preserve-3d;
             transition: transform 0.6s ease;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            min-height: 60px;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
         }
 
         .card:hover:not(.flipped):not(.matched) {
@@ -139,12 +181,15 @@
             color: white;
             border: none;
             padding: 15px 30px;
-            font-size: 1.1em;
+            font-size: clamp(0.9rem, 2vw, 1.1rem);
             font-weight: bold;
             border-radius: 50px;
             cursor: pointer;
             transition: all 0.3s ease;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            min-height: 44px;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
         }
 
         button:hover {
@@ -176,17 +221,41 @@
                 gap: 10px;
             }
             
-            .card {
-                font-size: 2em;
+            .stats {
+                flex-direction: column;
+                align-items: center;
             }
             
-            h1 {
-                font-size: 2em;
+            .stat-box {
+                width: 100%;
+                max-width: 200px;
+            }
+        }
+
+        @media (hover: none) {
+            button:hover,
+            .card:hover:not(.flipped):not(.matched) {
+                transform: none;
+            }
+        }
+
+        /* Reduce motion for accessibility */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation: none !important;
+                transition: none !important;
             }
         }
     </style>
 </head>
 <body>
+    <!-- Back button navigation -->
+    <div class="back-button">
+        <button onclick="window.location.href = '../index.html'">
+            🏠 חזרה לדף הראשי
+        </button>
+    </div>
+
     <div class="game-container">
         <h1>🧠 משחק הזיכרון 🧠</h1>
         
@@ -223,6 +292,10 @@
         let timerInterval;
         let hintsLeft = 3;
         let isProcessing = false;
+        let isPaused = false;
+        let pausedTime = 0;
+        let highScore = localStorage.getItem('memoryMatchHighScore') || Infinity;
+        let lastTouchTime = 0;
 
         // Emojis for card faces
         const cardEmojis = ['🎨', '🎭', '🎪', '🎯', '🎲', '🎸'];
@@ -286,7 +359,12 @@
         }
 
         function flipCard(card) {
-            if (isProcessing || card.classList.contains('flipped') || card.classList.contains('matched')) {
+            // Debounce for touch events
+            const now = Date.now();
+            if (now - lastTouchTime < 300) return;
+            lastTouchTime = now;
+
+            if (isProcessing || isPaused || card.classList.contains('flipped') || card.classList.contains('matched')) {
                 return;
             }
 
@@ -336,7 +414,7 @@
 
         function startGame() {
             gameStarted = true;
-            startTime = Date.now();
+            startTime = Date.now() - pausedTime;
             timerInterval = setInterval(updateTimer, 1000);
         }
 
@@ -377,6 +455,12 @@
             
             playWinSound();
             
+            // Check for high score
+            if (moves < highScore) {
+                highScore = moves;
+                localStorage.setItem('memoryMatchHighScore', highScore);
+            }
+            
             let rating = '⭐⭐⭐';
             if (moves <= 15) rating = '⭐⭐⭐⭐⭐';
             else if (moves <= 20) rating = '⭐⭐⭐⭐';
@@ -384,7 +468,8 @@
             winMessage.innerHTML = `
                 🎉 כל הכבוד! 🎉<br>
                 ניצחת ב-${moves} מהלכים ובזמן ${time}!<br>
-                דירוג: ${rating}
+                דירוג: ${rating}<br>
+                ${moves < highScore ? '🏆 שיא חדש!' : `שיא: ${highScore} מהלכים`}
             `;
             winMessage.style.display = 'block';
         }
@@ -398,6 +483,8 @@
             gameStarted = false;
             hintsLeft = 3;
             isProcessing = false;
+            isPaused = false;
+            pausedTime = 0;
             
             clearInterval(timerInterval);
             
@@ -420,6 +507,89 @@
                 gameBoard.appendChild(card);
             });
         }
+
+        // Visibility API for pause/resume
+        document.addEventListener('visibilitychange', () => {
+            if (gameStarted && !document.hidden && isPaused) {
+                // Resume game
+                isPaused = false;
+                startTime = Date.now() - pausedTime;
+                timerInterval = setInterval(updateTimer, 1000);
+            } else if (gameStarted && document.hidden && !isPaused) {
+                // Pause game
+                isPaused = true;
+                pausedTime = Date.now() - startTime;
+                clearInterval(timerInterval);
+            }
+        });
+
+        // Keyboard support
+        let selectedIndex = -1;
+        
+        document.addEventListener('keydown', (e) => {
+            if (!gameStarted && e.key === 'Enter') {
+                startNewGame();
+                return;
+            }
+            
+            if (isProcessing || isPaused) return;
+            
+            const visibleCards = cards.filter(card => 
+                !card.classList.contains('matched')
+            );
+            
+            switch(e.key) {
+                case 'ArrowLeft':
+                    if (selectedIndex > 0) selectedIndex--;
+                    else selectedIndex = visibleCards.length - 1;
+                    highlightCard(visibleCards[selectedIndex]);
+                    break;
+                case 'ArrowRight':
+                    if (selectedIndex < visibleCards.length - 1) selectedIndex++;
+                    else selectedIndex = 0;
+                    highlightCard(visibleCards[selectedIndex]);
+                    break;
+                case 'ArrowUp':
+                    if (selectedIndex >= 4) selectedIndex -= 4;
+                    else selectedIndex = visibleCards.length - 1;
+                    highlightCard(visibleCards[selectedIndex]);
+                    break;
+                case 'ArrowDown':
+                    if (selectedIndex < visibleCards.length - 4) selectedIndex += 4;
+                    else selectedIndex = 0;
+                    highlightCard(visibleCards[selectedIndex]);
+                    break;
+                case 'Enter':
+                case ' ':
+                    if (selectedIndex >= 0 && selectedIndex < visibleCards.length) {
+                        flipCard(visibleCards[selectedIndex]);
+                    }
+                    break;
+                case 'h':
+                    showHint();
+                    break;
+                case 'r':
+                    startNewGame();
+                    break;
+            }
+        });
+        
+        function highlightCard(card) {
+            cards.forEach(c => c.style.outline = 'none');
+            if (card) {
+                card.style.outline = '3px solid #ffd700';
+                card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+
+        // Clean up on page unload
+        window.addEventListener('beforeunload', () => {
+            clearInterval(timerInterval);
+        });
+
+        window.addEventListener('pagehide', () => {
+            clearInterval(timerInterval);
+        });
 
         // Initialize game on load
         startNewGame();

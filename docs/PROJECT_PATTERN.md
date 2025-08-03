@@ -12,15 +12,19 @@ This project follows a **single-file architecture** pattern where each game is a
 
 ## File Structure Pattern
 
+### Organized Structure (Current)
 ```
-project-root/
+Gameniue/
 ├── index.html                 # Main landing page
-├── [game-name]-game.html     # Individual game files
-├── [game-name]-game-he.html  # Hebrew versions (when applicable)
-├── package.json               # Simple npm scripts
+├── README.md                  # Project documentation
+├── package.json               # NPM scripts
 ├── vercel.json               # Deployment configuration
-├── CLAUDE.md                 # AI assistant documentation
-└── PROJECT_PATTERN.md        # This file
+├── .gitignore                # Git ignore rules
+├── games/                    # All game files
+│   ├── [game-name]-game.html
+└── docs/                     # Documentation
+    ├── CLAUDE.md            # AI assistant guide
+    └── PROJECT_PATTERN.md   # This file
 ```
 
 ## HTML Game Template Pattern
@@ -71,6 +75,11 @@ project-root/
     </style>
 </head>
 <body>
+    <!-- Back button (for games) -->
+    <div class="back-button">
+        <button onclick="window.location.href = '../index.html'">🏠 חזרה לדף הראשי</button>
+    </div>
+    
     <div class="game-container">
         <!-- Game content -->
     </div>
@@ -329,12 +338,27 @@ class GameStorage {
 
 ### 2. Back Button
 ```html
+<!-- For games in /games directory -->
 <div class="back-button">
-    <button onclick="window.location.href='index.html'">🏠 חזרה לדף הראשי</button>
+    <button onclick="window.location.href = '../index.html'">🏠 חזרה לדף הראשי</button>
 </div>
 ```
 
-### 3. Message Display
+### 3. Navigation Pattern
+```javascript
+// From index.html to games
+function openGame(gameFile) {
+    document.getElementById('loader').classList.remove('hidden');
+    setTimeout(() => {
+        window.location.href = 'games/' + gameFile;
+    }, 500);
+}
+
+// From games back to index
+window.location.href = '../index.html';
+```
+
+### 4. Message Display
 ```javascript
 function showMessage(text, type = 'info', duration = 3000) {
     const message = document.getElementById('message');
@@ -407,6 +431,26 @@ function showMessage(text, type = 'info', duration = 3000) {
 
 ## Common Issues and Solutions
 
+### Issue: Browser back button not working (page doesn't load)
+```javascript
+// Solution: Handle page load from browser cache
+// Add to index.html to fix loader blocking content
+window.addEventListener('pageshow', function(event) {
+    if (event.persisted) {
+        document.getElementById('loader').classList.add('hidden');
+    }
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    if (window.performance && window.performance.getEntriesByType('navigation').length > 0) {
+        const navEntry = window.performance.getEntriesByType('navigation')[0];
+        if (navEntry.type === 'back_forward') {
+            document.getElementById('loader').classList.add('hidden');
+        }
+    }
+});
+```
+
 ### Issue: Board not fitting on mobile
 ```css
 /* Solution: Use viewport-relative units with max constraints */
@@ -421,19 +465,28 @@ function showMessage(text, type = 'info', duration = 3000) {
 ```javascript
 // Solution: Debounce and prevent default
 let lastTouch = 0;
-element.ontouchstart = (e) => {
-    const now = Date.now();
-    if (now - lastTouch < 300) return;
-    lastTouch = now;
-    e.preventDefault();
+function handleTouch(event) {
+    if (event && event.type === 'touchstart') {
+        const now = Date.now();
+        if (now - lastTouch < 300) return;
+        lastTouch = now;
+        event.preventDefault();
+    }
     handleAction();
-};
+}
 ```
 
 ### Issue: Text too small on mobile
 ```css
 /* Solution: Use clamp for responsive sizing */
 font-size: clamp(0.8rem, 2vw, 1.2rem);
+```
+
+### Issue: Port already in use when running dev server
+```bash
+# Solution: Kill existing process and restart
+lsof -ti:8000 | xargs kill -9
+npm run dev
 ```
 
 ## Resources and Tools

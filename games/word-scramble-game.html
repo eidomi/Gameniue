@@ -2,7 +2,7 @@
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>בלבול מילים - משחק מילים</title>
     <style>
         * {
@@ -138,7 +138,10 @@
             letter-spacing: 10px;
             margin-bottom: 15px;
             text-transform: uppercase;
-            animation: bounce 2s ease-in-out infinite;
+        }
+        
+        .scrambled-word.animate {
+            animation: bounce 0.5s ease-in-out;
         }
 
         @keyframes bounce {
@@ -286,6 +289,11 @@
                 transform: translateY(0);
             }
         }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
 
         .timer-bar {
             width: 100%;
@@ -336,6 +344,92 @@
             cursor: not-allowed;
             transform: scale(0.9);
         }
+        
+        /* Mobile Responsive Styles */
+        @media (max-width: 768px) {
+            .game-container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 1.8em;
+            }
+            
+            .scrambled-word {
+                font-size: 2em;
+                letter-spacing: 5px;
+            }
+            
+            .stats {
+                flex-direction: row;
+                gap: 10px;
+            }
+            
+            .stat-box {
+                padding: 10px 15px;
+            }
+            
+            .stat-box h3 {
+                font-size: 0.8em;
+            }
+            
+            .stat-box p {
+                font-size: 1.4em;
+            }
+            
+            .category-btn {
+                padding: 8px 15px;
+                font-size: 0.9em;
+            }
+            
+            .letter-btn {
+                padding: 12px 15px;
+                font-size: 1.2em;
+                min-width: 45px;
+            }
+            
+            .word-input {
+                font-size: 1.1em;
+                padding: 12px 20px;
+            }
+            
+            .submit-btn {
+                padding: 12px 25px;
+                font-size: 1em;
+            }
+            
+            .control-btn {
+                padding: 10px 20px;
+                font-size: 1em;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.5em;
+                margin-bottom: 20px;
+            }
+            
+            .scrambled-word {
+                font-size: 1.5em;
+                letter-spacing: 3px;
+            }
+            
+            .letter-btn {
+                padding: 10px 12px;
+                font-size: 1em;
+                min-width: 40px;
+                gap: 5px;
+            }
+            
+            .input-section {
+                flex-direction: column;
+            }
+            
+            .submit-btn {
+                width: 100%;
+            }
+        }
     </style>
 </head>
 <body>
@@ -362,11 +456,11 @@
         </div>
 
         <div class="category-selector">
-            <button class="category-btn active" onclick="setCategory('animals')">חיות</button>
-            <button class="category-btn" onclick="setCategory('food')">אוכל</button>
-            <button class="category-btn" onclick="setCategory('countries')">מדינות</button>
-            <button class="category-btn" onclick="setCategory('sports')">ספורט</button>
-            <button class="category-btn" onclick="setCategory('all')">הכל</button>
+            <button class="category-btn active" onclick="setCategory('animals', event)">חיות</button>
+            <button class="category-btn" onclick="setCategory('food', event)">אוכל</button>
+            <button class="category-btn" onclick="setCategory('countries', event)">מדינות</button>
+            <button class="category-btn" onclick="setCategory('sports', event)">ספורט</button>
+            <button class="category-btn" onclick="setCategory('all', event)">הכל</button>
         </div>
 
         <div class="timer-bar">
@@ -458,6 +552,7 @@
         let hints = 3;
         let timer = null;
         let timeLeft = 30;
+        let lastInteraction = 0;
 
         // Sound effects
         const audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -493,12 +588,14 @@
             playSound(800, 0.1);
         }
 
-        function setCategory(category) {
+        function setCategory(category, event) {
             currentCategory = category;
             document.querySelectorAll('.category-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
-            event.target.classList.add('active');
+            if (event && event.target) {
+                event.target.classList.add('active');
+            }
             newWord();
         }
 
@@ -533,6 +630,12 @@
             scrambledLetters = scrambleWord(currentWord.word);
             playerWord = [];
             
+            // Add animation to scrambled word
+            const scrambledWordEl = document.getElementById('scrambledWord');
+            scrambledWordEl.textContent = scrambledLetters.join('');
+            scrambledWordEl.classList.add('animate');
+            setTimeout(() => scrambledWordEl.classList.remove('animate'), 500);
+            
             displayLetterButtons();
             document.getElementById('hint').textContent = '';
             
@@ -554,6 +657,11 @@
         }
 
         function addLetter(index) {
+            // Debounce rapid clicks
+            const now = Date.now();
+            if (now - lastInteraction < 100) return;
+            lastInteraction = now;
+            
             const button = document.querySelector(`[data-index="${index}"]`);
             if (button.classList.contains('used')) return;
             
@@ -648,8 +756,23 @@
         }
 
         function updateTimerDisplay() {
-            const percentage = (timeLeft / (30 - (level - 1) * 2)) * 100;
-            document.getElementById('timerFill').style.width = percentage + '%';
+            const maxTime = Math.max(30 - (level - 1) * 2, 10);
+            const percentage = (timeLeft / maxTime) * 100;
+            const timerFill = document.getElementById('timerFill');
+            timerFill.style.width = percentage + '%';
+            
+            // Add visual warning when time is running out
+            if (percentage < 20) {
+                timerFill.style.background = 'linear-gradient(90deg, #e74c3c, #c0392b)';
+                if (percentage < 10) {
+                    timerFill.style.animation = 'pulse 1s infinite';
+                }
+            } else if (percentage < 50) {
+                timerFill.style.background = 'linear-gradient(90deg, #f39c12, #e67e22)';
+            } else {
+                timerFill.style.background = 'linear-gradient(90deg, #2ecc71, #f39c12, #e74c3c)';
+                timerFill.style.animation = 'none';
+            }
         }
 
         function updateStats() {
@@ -666,6 +789,34 @@
 
         // Initialize game
         newWord();
+        
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', () => {
+            clearInterval(timer);
+        });
+        
+        // Handle visibility change to pause timer
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                clearInterval(timer);
+            } else if (currentWord && timeLeft > 0) {
+                startTimer();
+            }
+        });
+        
+        // Add keyboard support
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                const input = document.getElementById('wordInput');
+                if (input.value.length > 0) {
+                    checkAnswer();
+                }
+            } else if (e.key === 'Escape') {
+                clearInput();
+            } else if (e.key === 'h' || e.key === 'H' || e.key === 'ר') {
+                showHint();
+            }
+        });
     </script>
 </body>
 </html>
