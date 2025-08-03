@@ -412,7 +412,27 @@
     </div>
 
     <script>
-        // Hide loader after page loads
+        // Immediately hide loader if page is from cache (back button fix)
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if page was loaded from back/forward cache
+            if (window.performance && window.performance.getEntriesByType('navigation').length > 0) {
+                const navEntry = window.performance.getEntriesByType('navigation')[0];
+                if (navEntry.type === 'back_forward') {
+                    document.getElementById('loader').classList.add('hidden');
+                }
+            }
+        });
+        
+        // Fix for browser back button - ensure loader is hidden
+        window.addEventListener('pageshow', function(event) {
+            // pageshow fires when page is shown, including from back/forward cache
+            if (event.persisted) {
+                // Page was loaded from cache (back button)
+                document.getElementById('loader').classList.add('hidden');
+            }
+        });
+        
+        // Hide loader after page loads normally
         window.addEventListener('load', function() {
             setTimeout(() => {
                 document.getElementById('loader').classList.add('hidden');
