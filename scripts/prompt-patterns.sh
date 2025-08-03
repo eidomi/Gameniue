@@ -20,22 +20,26 @@ echo -e "${BLUE}📊 Pattern Library Prompt Patterns v1.0${NC}"
    echo -e "${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 # ## Task Overview
 # #
-Think about issues in @Gameniue/games/memory-match-game.html
-- Review the file for potential issues
-- Audit the file for fixable issues
-- Fix the issues found
-- Ensure the file is optimized for performance
+think carefully and implement patterns in ./patterns
+   - Ask yourself:
+   - Will you play this game again?
+   - Is the game fun?
+   - Is the game engaging?
+   - Is the game challenging?
+   - Is the game rewarding?
+   - Is the game accessible?
+
 
 # Task Execution Workflow
-### Phase 0: Preparation
-1. **Initialize Environment**
+
+0. **Initialize Environment**
    - Ensure all dependencies are installed
    - Validate environment setup
    - Check existing code coverage
    - Verify dependencies installed
    - Review existing patterns in ./patterns
 
-### Phase 1: Pre-Task Analysis
+
 1. **Think carefully Step-by-Step**
    - Analyze the current task requirements
    - Minimize the scope to essential features
@@ -50,18 +54,17 @@ Think about issues in @Gameniue/games/memory-match-game.html
    - Identify dependencies and potential risks
    - Document assumptions and constraints
 
-2. **Review Historical Context**
+1. **Review Historical Context**
    - Examine previous session logs.
    - Review git history for related changes
    - Identify patterns from past issues
 
-3. **Pre-Implementation Audit**
+2. **Pre-Implementation Audit**
    - Validate environment setup
    - Check existing code coverage
    - Verify dependencies installed
 
-### Phase 2: Implementation
-4. **Run Tests**
+3. **Run Tests**
    - Execute tests in ./tests
    - Validate test coverage
    - Ensure all tests pass
@@ -77,13 +80,12 @@ Think about issues in @Gameniue/games/memory-match-game.html
      ```  
    - Identify failing tests
 
-5. **Continuous Validation**
+4. **Continuous Validation**
    - Run tests after each change
    - Monitor test status
    - Track performance metrics
 
-### Phase 3: Quality Assurance
-6. **Run Quality Checks**
+5. **Run Quality Checks**
    ```
    WHILE issues_detected():
        - Identify root cause
@@ -92,28 +94,43 @@ Think about issues in @Gameniue/games/memory-match-game.html
        - Re-run validation
        - Verify fix effectiveness
    ```
-
-8. **Post-Cleanup Validation**
+6. **Pattern Optimization**
+   - Review patterns in ./patterns
+   - Identify patterns for optimization
+   - Apply optimization techniques
+   - Ensure patterns are reusable and maintainable
+   - Document optimized patterns
+   
+7. **Post-Cleanup Validation**
    ```
    IF cleanup_introduced_issues():
        GOTO Phase 3: Quality Assurance
    ```
-
-### Phase 4: Documentation and Reporting
-9. **Documentation Update**
+8. **Documentation Update**
    - Document all changes made
    - Update ./README.md
-   - Create patterns documentation in ./patterns
-   - Ensure all patterns are documented and tested
+   - Update ./Gameniue/docs/CLAUDE.md
+   - Ensure all patterns are documented
+9. **Final Review**
+   - Review all changes made
+   - Ensure all patterns are optimized
+   - Ensure all patterns are documented
+   - Ensure all patterns are tested
    - Ensure all patterns are version controlled
+   - Ensure all patterns are easily discoverable
 
-### Phase 5: Continuation
-11. **Next Test Preparation**
+10. **Next Test Preparation**
     - Document lessons learned
     - Update task methodology if needed
     - Document session summary note in ./session-notes
     - Proceed to next task in queue
 
+Key Takeaways
+  1. **Constraints create better solutions**
+  2. **Methodology provides structure for innovation**
+  3. **Documentation multiplies value**
+  4. **Simple solutions often outperform complex ones**
+  5. **Team learning is invaluable ROI**
 # ## Methodology
 # - Follow the Methodology step by step with todo list
 # - Read .methodology/task-methodology/README-v9.0.md (1087
@@ -313,3 +330,11 @@ Investigate all pattern in the PATTERN-LIBRARY-INDEX.md and create a minimized v
 # and ensure all patterns are easily discoverable
 # and ensure all patterns are easily accessible
 # and ensure all patterns are easily maintainable
+
+
+think a lot and review pattern   in ./patterns
+# and ensure all patterns are documented and tested
+# and ensure all patterns are version controlled
+# suggest improvements to the patterns
+# calculate the ROI of the patterns
+# suggest new patterns based on HIGH ROI from the current patterns
