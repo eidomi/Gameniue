@@ -29,19 +29,30 @@ vercel --prod
 - **Language**: Primary interface in Hebrew (RTL layout), with some games having English versions
 - **Project Pattern**: See `PROJECT_PATTERN.md` for detailed patterns and templates
 
-### Game Files
-- `index.html` - Main landing page with game selection grid
-- Individual game files:
-  - `memory-match-game.html` / `memory-match-game-he.html` - Memory card matching game
-  - `snakes-and-ladders-game.html` / `snakes-and-ladders-game-he.html` - Classic board game (mobile-optimized)
-  - `tic-tac-toe-game.html` - Tic-tac-toe with AI opponent
-  - `simon-says-game.html` - Memory sequence game
-  - `word-scramble-game.html` - Word puzzle game
-  - `math-quiz-game.html` - Math practice game
-  - `color-match-game.html` - Color matching speed game
-  - `pattern-memory-game.html` - Pattern memorization game
-  - `puzzle-slider-game.html` - Number sliding puzzle
-  - `quick-draw-game.html` - Drawing and guessing game
+### File Structure
+```
+Gameniue/
+├── index.html                      # Main landing page
+├── games/                          # Game files directory
+│   ├── memory-match-game.html     # Memory card matching
+│   ├── memory-match-game-he.html  # Hebrew version
+│   ├── snakes-and-ladders-game.html # Board game (mobile-optimized)
+│   ├── snakes-and-ladders-game-he.html # Hebrew version
+│   ├── tic-tac-toe-game.html      # Tic-tac-toe with AI
+│   ├── simon-says-game.html       # Memory sequence game
+│   ├── word-scramble-game.html    # Word puzzle game
+│   ├── math-quiz-game.html        # Math practice
+│   ├── color-match-game.html      # Color matching
+│   ├── pattern-memory-game.html   # Pattern memorization
+│   ├── puzzle-slider-game.html    # Number sliding puzzle
+│   └── quick-draw-game.html       # Drawing game
+├── docs/                           # Documentation
+│   ├── CLAUDE.md                  # This file
+│   └── PROJECT_PATTERN.md         # Development patterns
+├── package.json                    # NPM configuration
+├── vercel.json                     # Deployment configuration
+└── README.md                       # Project overview
+```
 
 ### Common Patterns
 - **Styling**: Gradient backgrounds, modern card-based UI, animations
