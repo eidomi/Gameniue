@@ -541,7 +541,7 @@
             ]
         };
 
-        // Game state
+        // Game state with performance optimization
         let currentCategory = 'animals';
         let currentWord = null;
         let scrambledLetters = [];
@@ -553,24 +553,52 @@
         let timer = null;
         let timeLeft = 30;
         let lastInteraction = 0;
+        const DEBOUNCE_TIME = 300; // Enhanced debouncing for better performance
 
-        // Sound effects
-        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        // Audio System v5.0 - Mobile-compatible with error handling and memory cleanup
+        let audioContext = null;
+        let isAudioInitialized = false;
+
+        function initializeAudio() {
+            try {
+                if (!audioContext) {
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                
+                // Resume context for mobile browsers
+                if (audioContext.state === 'suspended') {
+                    audioContext.resume().then(() => {
+                        isAudioInitialized = true;
+                    }).catch(console.warn);
+                } else {
+                    isAudioInitialized = true;
+                }
+            } catch (e) {
+                console.warn('Audio not supported:', e);
+                isAudioInitialized = false;
+            }
+        }
 
         function playSound(frequency, duration = 0.2, type = 'sine') {
-            const oscillator = audioContext.createOscillator();
-            const gainNode = audioContext.createGain();
+            if (!isAudioInitialized || !audioContext) return;
             
-            oscillator.connect(gainNode);
-            gainNode.connect(audioContext.destination);
-            
-            oscillator.type = type;
-            oscillator.frequency.value = frequency;
-            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
-            
-            oscillator.start(audioContext.currentTime);
-            oscillator.stop(audioContext.currentTime + duration);
+            try {
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.type = type;
+                oscillator.frequency.value = frequency;
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + duration);
+            } catch (e) {
+                console.warn('Audio playback failed:', e);
+            }
         }
 
         function playCorrectSound() {
@@ -639,6 +667,9 @@
             displayLetterButtons();
             document.getElementById('hint').textContent = '';
             
+            // Update accessibility after new word
+            updateAccessibility();
+            
             startTimer();
         }
 
@@ -685,6 +716,11 @@
         }
 
         function checkAnswer() {
+            // Initialize audio on first user interaction
+            if (!isAudioInitialized) {
+                initializeAudio();
+            }
+            
             const playerAnswer = playerWord.map(item => item.letter).join('');
             const input = document.getElementById('wordInput');
             
@@ -790,22 +826,61 @@
         // Initialize game
         newWord();
         
-        // Cleanup on page unload
+        // Enhanced cleanup for memory management v5.0
         window.addEventListener('beforeunload', () => {
             clearInterval(timer);
+            timer = null;
+            if (audioContext && audioContext.state !== 'closed') {
+                audioContext.close().catch(console.warn);
+            }
+        });
+
+        window.addEventListener('pagehide', () => {
+            clearInterval(timer);
+            timer = null;
+            if (audioContext && audioContext.state !== 'closed') {
+                audioContext.close().catch(console.warn);
+            }
         });
         
-        // Handle visibility change to pause timer
+        // Enhanced visibility API for pause/resume v5.0
         document.addEventListener('visibilitychange', () => {
             if (document.hidden) {
                 clearInterval(timer);
+                timer = null;
             } else if (currentWord && timeLeft > 0) {
                 startTimer();
             }
         });
         
-        // Add keyboard support
+        // Enhanced accessibility and keyboard support v5.0
+        function updateAccessibility() {
+            const input = document.getElementById('wordInput');
+            const scrambledSection = document.querySelector('.scrambled-letters');
+            
+            // Update ARIA labels
+            input.setAttribute('aria-label', `הקלד את המילה הנכונה. רמז: ${currentWord ? currentWord.hint : ''}`);
+            scrambledSection.setAttribute('aria-label', 'אותיות מבולבלות - גרור לסדר הנכון');
+            
+            // Update live regions
+            document.getElementById('score').setAttribute('aria-live', 'polite');
+            document.getElementById('level').setAttribute('aria-live', 'polite');
+        }
+
         document.addEventListener('keydown', (e) => {
+            const currentTime = Date.now();
+            
+            // Enhanced debouncing for all keyboard inputs
+            if (currentTime - lastInteraction < DEBOUNCE_TIME) {
+                return;
+            }
+            lastInteraction = currentTime;
+
+            // Initialize audio on first user interaction
+            if (!isAudioInitialized) {
+                initializeAudio();
+            }
+
             if (e.key === 'Enter') {
                 const input = document.getElementById('wordInput');
                 if (input.value.length > 0) {
@@ -815,6 +890,8 @@
                 clearInput();
             } else if (e.key === 'h' || e.key === 'H' || e.key === 'ר') {
                 showHint();
+            } else if (e.key === 'n' || e.key === 'N') {
+                newWord();
             }
         });
     </script>

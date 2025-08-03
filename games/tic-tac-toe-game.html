@@ -359,6 +359,8 @@
         let gameMode = 'friend'; // 'friend' or 'computer'
         let difficulty = 'easy'; // 'easy', 'medium', 'hard'
         let scores = { X: 0, O: 0, draw: 0 };
+        let lastTouchTime = 0;
+        const DEBOUNCE_TIME = 300; // Enhanced debouncing for better performance
 
         // Winning combinations
         const winConditions = [
@@ -367,23 +369,50 @@
             [0, 4, 8], [2, 4, 6] // Diagonals
         ];
 
-        // Sound effects
-        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        // Audio System v5.0 - Mobile-compatible with error handling and memory cleanup
+        let audioContext = null;
+        let isAudioInitialized = false;
+
+        function initializeAudio() {
+            try {
+                if (!audioContext) {
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                
+                // Resume context for mobile browsers
+                if (audioContext.state === 'suspended') {
+                    audioContext.resume().then(() => {
+                        isAudioInitialized = true;
+                    }).catch(console.warn);
+                } else {
+                    isAudioInitialized = true;
+                }
+            } catch (e) {
+                console.warn('Audio not supported:', e);
+                isAudioInitialized = false;
+            }
+        }
 
         function playSound(frequency, duration, type = 'sine') {
-            const oscillator = audioContext.createOscillator();
-            const gainNode = audioContext.createGain();
+            if (!isAudioInitialized || !audioContext) return;
             
-            oscillator.connect(gainNode);
-            gainNode.connect(audioContext.destination);
-            
-            oscillator.type = type;
-            oscillator.frequency.value = frequency;
-            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
-            
-            oscillator.start(audioContext.currentTime);
-            oscillator.stop(audioContext.currentTime + duration);
+            try {
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.type = type;
+                oscillator.frequency.value = frequency;
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + duration);
+            } catch (e) {
+                console.warn('Audio playback failed:', e);
+            }
         }
 
         function playMoveSound() {
@@ -424,6 +453,11 @@
         }
 
         function makeMove(index, player) {
+            // Initialize audio on first user interaction
+            if (!isAudioInitialized) {
+                initializeAudio();
+            }
+            
             board[index] = player;
             const cell = document.querySelector(`[data-index="${index}"]`);
             cell.textContent = player;
@@ -564,6 +598,9 @@
             });
 
             document.getElementById('message').className = 'message';
+            
+            // Update accessibility after reset
+            updateAccessibility();
         }
 
         function setMode(mode) {
@@ -589,7 +626,74 @@
             event.target.classList.add('active');
         }
 
-        // Initialize the game
+        // Enhanced accessibility and ARIA support v5.0
+        function updateAccessibility() {
+            const cells = document.querySelectorAll('.cell');
+            cells.forEach((cell, index) => {
+                const isEmpty = !cell.textContent;
+                const value = cell.textContent;
+                
+                cell.setAttribute('role', 'button');
+                cell.setAttribute('tabindex', isEmpty && gameActive ? '0' : '-1');
+                cell.setAttribute('aria-label', 
+                    isEmpty ? `תא ריק ${index + 1} - לחץ לסימון` : `תא ${index + 1} - ${value}`
+                );
+                cell.setAttribute('aria-pressed', isEmpty ? 'false' : 'true');
+            });
+            
+            // Update live regions
+            document.getElementById('currentPlayer').setAttribute('aria-live', 'polite');
+            document.getElementById('gameStatus').setAttribute('aria-live', 'assertive');
+        }
+
+        // Enhanced cleanup for memory management v5.0
+        window.addEventListener('beforeunload', () => {
+            if (audioContext && audioContext.state !== 'closed') {
+                audioContext.close().catch(console.warn);
+            }
+        });
+
+        window.addEventListener('pagehide', () => {
+            if (audioContext && audioContext.state !== 'closed') {
+                audioContext.close().catch(console.warn);
+            }
+        });
+
+        // Enhanced keyboard support with debouncing v5.0
+        document.addEventListener('keydown', (e) => {
+            const currentTime = Date.now();
+            
+            // Enhanced debouncing for all keyboard inputs
+            if (currentTime - lastTouchTime < DEBOUNCE_TIME) {
+                return;
+            }
+            lastTouchTime = currentTime;
+
+            // Initialize audio on first user interaction
+            if (!isAudioInitialized) {
+                initializeAudio();
+            }
+
+            // Number keys (1-9) for cell selection
+            if (e.key >= '1' && e.key <= '9') {
+                const index = parseInt(e.key) - 1;
+                const cell = document.querySelector(`[data-index="${index}"]`);
+                if (cell && gameActive && !cell.textContent) {
+                    handleCellClick({ target: cell });
+                }
+            } else if (e.key === 'r' || e.key === 'R') {
+                resetGame();
+            } else if (e.key === 'Escape') {
+                resetGame();
+            }
+        });
+
+        // Initialize the game with accessibility
+        function initGame() {
+            resetGame();
+            updateAccessibility();
+        }
+
         initGame();
     </script>
 </body>

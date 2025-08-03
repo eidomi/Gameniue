@@ -33,3 +33,7 @@ npm-debug.log*
 
 # OS files
 Thumbs.db
+
+# Backup files
+*.bak
+*.old

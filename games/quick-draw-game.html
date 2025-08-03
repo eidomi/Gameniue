@@ -437,24 +437,53 @@
         let timer = null;
         let timeLeft = 60;
         let gameActive = false;
+        let lastTouchTime = 0;
+        const DEBOUNCE_TIME = 300; // Enhanced debouncing for better performance
 
-        // Sound effects
-        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        // Audio System v5.0 - Mobile-compatible with error handling and memory cleanup
+        let audioContext = null;
+        let isAudioInitialized = false;
+
+        function initializeAudio() {
+            try {
+                if (!audioContext) {
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                
+                // Resume context for mobile browsers
+                if (audioContext.state === 'suspended') {
+                    audioContext.resume().then(() => {
+                        isAudioInitialized = true;
+                    }).catch(console.warn);
+                } else {
+                    isAudioInitialized = true;
+                }
+            } catch (e) {
+                console.warn('Audio not supported:', e);
+                isAudioInitialized = false;
+            }
+        }
 
         function playSound(frequency, duration = 0.2, type = 'sine') {
-            const oscillator = audioContext.createOscillator();
-            const gainNode = audioContext.createGain();
+            if (!isAudioInitialized || !audioContext) return;
             
-            oscillator.connect(gainNode);
-            gainNode.connect(audioContext.destination);
-            
-            oscillator.type = type;
-            oscillator.frequency.value = frequency;
-            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
-            
-            oscillator.start(audioContext.currentTime);
-            oscillator.stop(audioContext.currentTime + duration);
+            try {
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.type = type;
+                oscillator.frequency.value = frequency;
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + duration);
+            } catch (e) {
+                console.warn('Audio playback failed:', e);
+            }
         }
 
         function playCorrectSound() {
@@ -581,6 +610,11 @@
         }
 
         function startGame() {
+            // Initialize audio on first user interaction
+            if (!isAudioInitialized) {
+                initializeAudio();
+            }
+            
             gameActive = true;
             score = 0;
             round = 0;
@@ -761,11 +795,84 @@
             message.className = `message ${type} show`;
         }
 
+        // Enhanced accessibility and ARIA support v5.0
+        function updateAccessibility() {
+            const canvas = document.getElementById('canvas');
+            const currentWordEl = document.getElementById('currentWord');
+            
+            // Update ARIA labels
+            canvas.setAttribute('aria-label', `שטח ציור. צייר: ${currentWord}`);
+            currentWordEl.setAttribute('aria-live', 'polite');
+            
+            // Update live regions
+            document.getElementById('score').setAttribute('aria-live', 'polite');
+            document.getElementById('round').setAttribute('aria-live', 'polite');
+            document.getElementById('timer').setAttribute('aria-live', 'polite');
+        }
+
+        // Enhanced cleanup for memory management v5.0
+        window.addEventListener('beforeunload', () => {
+            clearInterval(timer);
+            timer = null;
+            if (audioContext && audioContext.state !== 'closed') {
+                audioContext.close().catch(console.warn);
+            }
+        });
+
+        window.addEventListener('pagehide', () => {
+            clearInterval(timer);
+            timer = null;
+            if (audioContext && audioContext.state !== 'closed') {
+                audioContext.close().catch(console.warn);
+            }
+        });
+
+        // Enhanced visibility API for pause/resume v5.0
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden && gameActive) {
+                clearInterval(timer);
+                timer = null;
+            } else if (!document.hidden && gameActive && currentWord) {
+                startTimer();
+            }
+        });
+
+        // Enhanced keyboard support with debouncing
+        document.addEventListener('keydown', (e) => {
+            const currentTime = Date.now();
+            
+            // Enhanced debouncing for all keyboard inputs
+            if (currentTime - lastTouchTime < DEBOUNCE_TIME) {
+                return;
+            }
+            lastTouchTime = currentTime;
+
+            // Initialize audio on first user interaction
+            if (!isAudioInitialized) {
+                initializeAudio();
+            }
+
+            if (e.key === 'Enter' && !gameActive) {
+                startGame();
+            } else if (e.key === 'Escape') {
+                resetGame();
+            } else if (e.key === 's' || e.key === 'S') {
+                if (gameActive && currentWord) {
+                    nextRound(); // Skip current word
+                }
+            }
+        });
+
         // Keyboard support for guess mode
         document.getElementById('guessInput').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
                 submitGuess();
             }
+        });
+
+        // Initialize accessibility on load
+        document.addEventListener('DOMContentLoaded', () => {
+            updateAccessibility();
         });
     </script>
 </body>

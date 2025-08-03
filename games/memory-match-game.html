@@ -2,8 +2,8 @@
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>משחק הזיכרון - משחק חשיבה</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>משחק זיכרון - התאמת קלפים</title>
     <style>
         * {
             margin: 0;
@@ -19,10 +19,9 @@
             justify-content: center;
             align-items: center;
             padding: 20px;
-            margin: 0;
         }
 
-        /* Back button navigation */
+        /* Back button */
         .back-button {
             position: fixed;
             top: 20px;
@@ -36,19 +35,15 @@
             border: none;
             padding: 12px 25px;
             border-radius: 50px;
-            font-size: clamp(0.9rem, 2vw, 1.1rem);
+            font-size: 1.1em;
             font-weight: bold;
             cursor: pointer;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
             transition: all 0.3s ease;
-            min-height: 44px;
-            touch-action: manipulation;
-            -webkit-tap-highlight-color: transparent;
         }
 
         .back-button button:hover {
             transform: scale(1.05);
-            box-shadow: 0 7px 20px rgba(0, 0, 0, 0.4);
         }
 
         @media (hover: none) {
@@ -59,18 +54,18 @@
 
         .game-container {
             background: rgba(255, 255, 255, 0.95);
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-            max-width: 600px;
+            border-radius: 30px;
+            padding: 40px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            max-width: 700px;
             width: 100%;
         }
 
         h1 {
             text-align: center;
-            color: #4a5568;
-            margin-bottom: 20px;
-            font-size: clamp(1.8rem, 5vw, 2.5rem);
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-size: 2.5em;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
         }
 
@@ -78,127 +73,121 @@
             display: flex;
             justify-content: space-around;
             margin-bottom: 30px;
-            flex-wrap: wrap;
-            gap: 15px;
+            gap: 20px;
         }
 
         .stat-box {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
             color: white;
             padding: 15px 25px;
-            border-radius: 10px;
-            font-size: clamp(0.9rem, 2vw, 1.1rem);
-            font-weight: bold;
+            border-radius: 15px;
+            text-align: center;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-            transition: transform 0.3s ease;
-            flex: 1 1 100px;
-            min-width: 80px;
-            max-width: 150px;
+            flex: 1;
         }
 
-        .stat-box:hover {
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .controls {
+            text-align: center;
+            margin-bottom: 30px;
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .controls button {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .controls button:hover {
             transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
         }
 
         .game-board {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 15px;
-            margin-bottom: 30px;
+            margin: 0 auto;
+            max-width: 400px;
         }
 
         .card {
             aspect-ratio: 1;
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            border-radius: 12px;
+            perspective: 1000px;
             cursor: pointer;
+            position: relative;
+        }
+
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.8s;
+            transform-style: preserve-3d;
+        }
+
+        .card.flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 15px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: clamp(1.8rem, 4vw, 2.5rem);
-            position: relative;
-            transform-style: preserve-3d;
-            transition: transform 0.6s ease;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-            min-height: 60px;
-            touch-action: manipulation;
-            -webkit-tap-highlight-color: transparent;
+            font-size: 2.5em;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
         }
 
-        .card:hover:not(.flipped):not(.matched) {
-            transform: scale(1.05);
+        .card-front {
+            background: linear-gradient(135deg, #34495e 0%, #2c3e50 100%);
+            color: white;
         }
 
-        .card.flipped {
+        .card-back {
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+            color: white;
             transform: rotateY(180deg);
         }
 
         .card.matched {
-            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-            animation: matchPulse 0.6s ease;
+            opacity: 0.6;
             cursor: default;
         }
 
-        .card-front,
-        .card-back {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            backface-visibility: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 12px;
-        }
-
-        .card-front {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            color: white;
-            font-size: 1.5em;
-            font-weight: bold;
-        }
-
-        .card-back {
+        .card.matched .card-inner {
             transform: rotateY(180deg);
-            background: white;
         }
 
-        @keyframes matchPulse {
-            0% { transform: scale(1) rotateY(180deg); }
-            50% { transform: scale(1.1) rotateY(180deg); }
-            100% { transform: scale(1) rotateY(180deg); }
-        }
-
-        .controls {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            flex-wrap: wrap;
-        }
-
-        button {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            font-size: clamp(0.9rem, 2vw, 1.1rem);
-            font-weight: bold;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-            min-height: 44px;
-            touch-action: manipulation;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 7px 20px rgba(0, 0, 0, 0.3);
-        }
-
-        button:active {
-            transform: translateY(0);
+        .card:hover:not(.flipped):not(.matched) {
+            transform: scale(1.05);
         }
 
         .win-message {
@@ -238,51 +227,97 @@
                 transform: none;
             }
         }
-
-        /* Reduce motion for accessibility */
-        @media (prefers-reduced-motion: reduce) {
-            * {
-                animation: none !important;
-                transition: none !important;
-            }
-        }
     </style>
 </head>
 <body>
-    <!-- Back button navigation -->
     <div class="back-button">
-        <button onclick="window.location.href = '../index.html'">
-            🏠 חזרה לדף הראשי
-        </button>
+        <button onclick="window.location.href='../index.html'">🏠 חזרה</button>
     </div>
 
     <div class="game-container">
-        <h1>🧠 משחק הזיכרון 🧠</h1>
+        <h1>🧠 משחק זיכרון - התאמת קלפים</h1>
         
         <div class="stats">
             <div class="stat-box">
-                <span>מהלכים: <span id="moves">0</span></span>
+                <div class="stat-number" id="timer" aria-live="polite">0:00</div>
+                <div class="stat-label">זמן</div>
             </div>
             <div class="stat-box">
-                <span>זמן: <span id="timer">0:00</span></span>
+                <div class="stat-number" id="moves" aria-live="polite">0</div>
+                <div class="stat-label">מהלכים</div>
             </div>
             <div class="stat-box">
-                <span>זוגות: <span id="pairs">0</span>/6</span>
+                <div class="stat-number" id="pairs" aria-live="polite">0</div>
+                <div class="stat-label">זוגות</div>
             </div>
         </div>
-
-        <div class="game-board" id="gameBoard"></div>
 
         <div class="controls">
-            <button onclick="startNewGame()">משחק חדש</button>
-            <button onclick="showHint()">רמז (נותרו 3)</button>
+            <button onclick="startNewGame()" aria-label="התחל משחק חדש">משחק חדש</button>
+            <button onclick="showHint()" aria-label="קבל רמז" id="hintButton">רמז (נותרו 3)</button>
         </div>
 
-        <div id="winMessage" class="win-message" style="display: none;"></div>
+        <div class="game-board" id="gameBoard" role="grid" aria-label="לוח המשחק"></div>
+        
+        <div id="winMessage" class="win-message" style="display: none;" role="alert" aria-live="assertive"></div>
     </div>
 
     <script>
-        // Game state
+        // Game State Management v5.0 - Enhanced state management with persistence
+        const GAME_STATE_KEY = 'memoryMatchGameState';
+        
+        function saveGameState() {
+            if (!gameStarted) return;
+            
+            const gameState = {
+                matchedPairs,
+                moves,
+                hintsLeft,
+                elapsedTime: Math.floor((Date.now() - startTime) / 1000),
+                matchedEmojis: cards
+                    .filter(card => card.classList.contains('matched'))
+                    .map(card => card.dataset.emoji),
+                timestamp: Date.now()
+            };
+            
+            try {
+                localStorage.setItem(GAME_STATE_KEY, JSON.stringify(gameState));
+            } catch (e) {
+                console.warn('Cannot save game state:', e);
+            }
+        }
+
+        function loadGameState() {
+            try {
+                const saved = localStorage.getItem(GAME_STATE_KEY);
+                if (!saved) return false;
+                
+                const gameState = JSON.parse(saved);
+                const timeSinceLastSave = Date.now() - gameState.timestamp;
+                
+                // Don't restore if more than 1 hour has passed
+                if (timeSinceLastSave > 3600000) {
+                    localStorage.removeItem(GAME_STATE_KEY);
+                    return false;
+                }
+                
+                return gameState;
+            } catch (e) {
+                console.warn('Cannot load game state:', e);
+                localStorage.removeItem(GAME_STATE_KEY);
+                return false;
+            }
+        }
+
+        function clearGameState() {
+            try {
+                localStorage.removeItem(GAME_STATE_KEY);
+            } catch (e) {
+                console.warn('Cannot clear game state:', e);
+            }
+        }
+
+        // Game variables with enhanced state management
         let cards = [];
         let flippedCards = [];
         let matchedPairs = 0;
@@ -296,42 +331,92 @@
         let pausedTime = 0;
         let highScore = localStorage.getItem('memoryMatchHighScore') || Infinity;
         let lastTouchTime = 0;
+        const DEBOUNCE_TIME = 300; // Prevent rapid clicks
 
         // Emojis for card faces
         const cardEmojis = ['🎨', '🎭', '🎪', '🎯', '🎲', '🎸'];
         
-        // Sound effects using Web Audio API
-        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        
-        function playSound(frequency, duration) {
-            const oscillator = audioContext.createOscillator();
-            const gainNode = audioContext.createGain();
+        // Audio System v5.0 - Mobile-compatible with error handling and memory cleanup
+        let audioContext = null;
+        let isAudioInitialized = false;
+
+        function initializeAudio() {
+            try {
+                if (!audioContext) {
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                
+                // Resume context for mobile browsers
+                if (audioContext.state === 'suspended') {
+                    audioContext.resume().then(() => {
+                        isAudioInitialized = true;
+                    }).catch(console.warn);
+                } else {
+                    isAudioInitialized = true;
+                }
+            } catch (e) {
+                console.warn('Audio not supported:', e);
+                isAudioInitialized = false;
+            }
+        }
+
+        function createBeep(frequency, duration, volume = 0.1) {
+            if (!isAudioInitialized || !audioContext) return;
             
-            oscillator.connect(gainNode);
-            gainNode.connect(audioContext.destination);
-            
-            oscillator.frequency.value = frequency;
-            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
-            
-            oscillator.start(audioContext.currentTime);
-            oscillator.stop(audioContext.currentTime + duration);
+            try {
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+                gainNode.gain.setValueAtTime(volume, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + duration);
+            } catch (e) {
+                console.warn('Audio playback failed:', e);
+            }
         }
 
         function playFlipSound() {
-            playSound(523, 0.1); // C5 note
+            createBeep(800, 0.1);
         }
 
         function playMatchSound() {
-            playSound(659, 0.2); // E5 note
-            setTimeout(() => playSound(784, 0.2), 100); // G5 note
+            createBeep(1200, 0.2);
+            setTimeout(() => createBeep(1500, 0.2), 100);
         }
 
         function playWinSound() {
-            const notes = [523, 659, 784, 1047]; // C5, E5, G5, C6
-            notes.forEach((note, index) => {
-                setTimeout(() => playSound(note, 0.3), index * 150);
+            const notes = [523.25, 659.25, 783.99, 1046.50];
+            notes.forEach((note, i) => {
+                setTimeout(() => createBeep(note, 0.3), i * 150);
             });
+        }
+
+        // Performance optimization with requestAnimationFrame
+        function updateTimer() {
+            if (isPaused || !gameStarted) return;
+            
+            requestAnimationFrame(() => {
+                const elapsed = Math.floor((Date.now() - startTime) / 1000);
+                const minutes = Math.floor(elapsed / 60);
+                const seconds = elapsed % 60;
+                document.getElementById('timer').textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                
+                // Auto-save game state periodically
+                if (elapsed % 10 === 0) {
+                    saveGameState();
+                }
+            });
+        }
+
+        function updateStats() {
+            document.getElementById('moves').textContent = moves;
+            document.getElementById('pairs').textContent = matchedPairs;
         }
 
         function shuffle(array) {
@@ -347,11 +432,11 @@
             const card = document.createElement('div');
             card.className = 'card';
             card.dataset.emoji = emoji;
-            card.dataset.index = index;
-            
             card.innerHTML = `
-                <div class="card-front">?</div>
-                <div class="card-back">${emoji}</div>
+                <div class="card-inner">
+                    <div class="card-front">?</div>
+                    <div class="card-back">${emoji}</div>
+                </div>
             `;
             
             card.addEventListener('click', () => flipCard(card));
@@ -359,10 +444,18 @@
         }
 
         function flipCard(card) {
-            // Debounce for touch events
-            const now = Date.now();
-            if (now - lastTouchTime < 300) return;
-            lastTouchTime = now;
+            const currentTime = Date.now();
+            
+            // Enhanced debouncing for all input types
+            if (currentTime - lastTouchTime < DEBOUNCE_TIME) {
+                return;
+            }
+            lastTouchTime = currentTime;
+
+            // Initialize audio on first user interaction
+            if (!isAudioInitialized) {
+                initializeAudio();
+            }
 
             if (isProcessing || isPaused || card.classList.contains('flipped') || card.classList.contains('matched')) {
                 return;
@@ -380,6 +473,7 @@
                 isProcessing = true;
                 moves++;
                 updateStats();
+                updateAccessibility();
                 checkMatch();
             }
         }
@@ -394,6 +488,7 @@
                     playMatchSound();
                     matchedPairs++;
                     updateStats();
+                    updateAccessibility();
                     
                     if (matchedPairs === cardEmojis.length) {
                         endGame();
@@ -408,6 +503,7 @@
                     card2.classList.remove('flipped');
                     flippedCards = [];
                     isProcessing = false;
+                    updateAccessibility();
                 }, 1200);
             }
         }
@@ -418,26 +514,18 @@
             timerInterval = setInterval(updateTimer, 1000);
         }
 
-        function updateTimer() {
-            const elapsed = Math.floor((Date.now() - startTime) / 1000);
-            const minutes = Math.floor(elapsed / 60);
-            const seconds = elapsed % 60;
-            document.getElementById('timer').textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-        }
-
-        function updateStats() {
-            document.getElementById('moves').textContent = moves;
-            document.getElementById('pairs').textContent = matchedPairs;
-        }
-
         function showHint() {
             if (hintsLeft <= 0 || isProcessing) return;
             
             hintsLeft--;
             document.querySelector('.controls button:nth-child(2)').textContent = `רמז (נותרו ${hintsLeft})`;
             
-            const unmatched = cards.filter(card => !card.classList.contains('matched') && !card.classList.contains('flipped'));
-            if (unmatched.length >= 2) {
+            const unmatched = cards.filter(card => 
+                !card.classList.contains('matched') && 
+                !card.classList.contains('flipped')
+            );
+            
+            if (unmatched.length > 0) {
                 const hintCard = unmatched[Math.floor(Math.random() * unmatched.length)];
                 hintCard.classList.add('flipped');
                 setTimeout(() => {
@@ -450,6 +538,8 @@
 
         function endGame() {
             clearInterval(timerInterval);
+            clearGameState(); // Clear saved state on completion
+            
             const time = document.getElementById('timer').textContent;
             const winMessage = document.getElementById('winMessage');
             
@@ -469,7 +559,7 @@
                 🎉 כל הכבוד! 🎉<br>
                 ניצחת ב-${moves} מהלכים ובזמן ${time}!<br>
                 דירוג: ${rating}<br>
-                ${moves < highScore ? '🏆 שיא חדש!' : `שיא: ${highScore} מהלכים`}
+                שיא אישי: ${highScore === Infinity ? 'אין' : highScore} מהלכים
             `;
             winMessage.style.display = 'block';
         }
@@ -487,13 +577,14 @@
             pausedTime = 0;
             
             clearInterval(timerInterval);
+            clearGameState(); // Clear saved state
             
             // Reset UI
             document.getElementById('moves').textContent = '0';
             document.getElementById('timer').textContent = '0:00';
             document.getElementById('pairs').textContent = '0';
             document.getElementById('winMessage').style.display = 'none';
-            document.querySelector('.controls button:nth-child(2)').textContent = 'רמז (נותרו 3)';
+            document.getElementById('hintButton').textContent = 'רמז (נותרו 3)';
             
             // Create new deck
             const gameBoard = document.getElementById('gameBoard');
@@ -506,24 +597,31 @@
                 cards.push(card);
                 gameBoard.appendChild(card);
             });
+            
+            // Initialize accessibility after creating cards
+            updateAccessibility();
         }
 
-        // Visibility API for pause/resume
-        document.addEventListener('visibilitychange', () => {
-            if (gameStarted && !document.hidden && isPaused) {
-                // Resume game
-                isPaused = false;
-                startTime = Date.now() - pausedTime;
-                timerInterval = setInterval(updateTimer, 1000);
-            } else if (gameStarted && document.hidden && !isPaused) {
-                // Pause game
-                isPaused = true;
-                pausedTime = Date.now() - startTime;
-                clearInterval(timerInterval);
-            }
-        });
+        // Enhanced accessibility and ARIA support v5.0
+        function updateAccessibility() {
+            const cardElements = document.querySelectorAll('.card');
+            cardElements.forEach((card, index) => {
+                const isFlipped = card.classList.contains('flipped');
+                const isMatched = card.classList.contains('matched');
+                const emoji = card.dataset.emoji;
+                
+                card.setAttribute('role', 'button');
+                card.setAttribute('tabindex', gameStarted && !isMatched ? '0' : '-1');
+                card.setAttribute('aria-label', 
+                    isFlipped || isMatched 
+                        ? `קלף ${emoji} - ${isMatched ? 'מותאם' : 'פתוח'}`
+                        : `קלף ${index + 1} - לחץ לחשיפה`
+                );
+                card.setAttribute('aria-pressed', isFlipped ? 'true' : 'false');
+            });
+        }
 
-        // Keyboard support
+        // Keyboard navigation support
         let selectedIndex = -1;
         
         document.addEventListener('keydown', (e) => {
@@ -566,9 +664,11 @@
                     }
                     break;
                 case 'h':
+                case 'H':
                     showHint();
                     break;
                 case 'r':
+                case 'R':
                     startNewGame();
                     break;
             }
@@ -582,17 +682,81 @@
             }
         }
 
-        // Clean up on page unload
+        // Visibility API for pause/resume v5.0
+        document.addEventListener('visibilitychange', () => {
+            if (gameStarted && !document.hidden && isPaused) {
+                // Resume game
+                isPaused = false;
+                startTime = Date.now() - pausedTime;
+                timerInterval = setInterval(updateTimer, 1000);
+            } else if (gameStarted && document.hidden && !isPaused) {
+                // Pause game
+                isPaused = true;
+                pausedTime = Date.now() - startTime;
+                clearInterval(timerInterval);
+                saveGameState(); // Save state when pausing
+            }
+        });
+
+        // Enhanced cleanup for memory management v5.0
         window.addEventListener('beforeunload', () => {
             clearInterval(timerInterval);
+            timerInterval = null;
+            if (audioContext && audioContext.state !== 'closed') {
+                audioContext.close().catch(console.warn);
+            }
+            if (gameStarted) {
+                saveGameState(); // Save state before leaving
+            }
         });
 
         window.addEventListener('pagehide', () => {
             clearInterval(timerInterval);
+            timerInterval = null;
+            if (audioContext && audioContext.state !== 'closed') {
+                audioContext.close().catch(console.warn);
+            }
+            if (gameStarted) {
+                saveGameState(); // Save state before hiding
+            }
         });
 
-        // Initialize game on load
-        startNewGame();
+        // Initialize game on load with state restoration
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedState = loadGameState();
+            if (savedState) {
+                // Restore game state if available
+                matchedPairs = savedState.matchedPairs;
+                moves = savedState.moves;
+                hintsLeft = savedState.hintsLeft;
+                
+                // Initialize game board
+                startNewGame();
+                
+                // Restore UI
+                updateStats();
+                document.getElementById('hintButton').textContent = `רמז (נותרו ${hintsLeft})`;
+                
+                // Restore matched cards
+                setTimeout(() => {
+                    cards.forEach(card => {
+                        if (savedState.matchedEmojis.includes(card.dataset.emoji)) {
+                            card.classList.add('matched', 'flipped');
+                        }
+                    });
+                    updateAccessibility();
+                }, 100);
+                
+                // Resume timer if game was active
+                if (savedState.elapsedTime > 0) {
+                    gameStarted = true;
+                    startTime = Date.now() - (savedState.elapsedTime * 1000);
+                    timerInterval = setInterval(updateTimer, 1000);
+                }
+            } else {
+                startNewGame();
+            }
+        });
     </script>
 </body>
 </html>
