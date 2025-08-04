@@ -404,7 +404,7 @@ class AudioManager{constructor(){if(AudioManager.instance)return AudioManager.in
         let sequence = [];
         let playerSequence = [];
         let level = 0;
-        let highScore = parseInt(localStorage.getItem('simonHighScore')) || 0;
+        let highScore = parseInt(localStorage.getItem('simonHighScore')) ?? 0;
         let isPlaying = false;
         let isShowingSequence = false;
         let difficulty = 'easy';

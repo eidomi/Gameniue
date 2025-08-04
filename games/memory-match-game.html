@@ -227,7 +227,42 @@
                 transform: none;
             }
         }
-    </style>
+    
+/* Focus States - Added by automated script */
+button:focus,
+.clickable:focus,
+.card:focus,
+.game-cell:focus {
+    outline: 3px solid #4facfe;
+    outline-offset: 2px;
+    z-index: 10;
+}
+
+button:focus-visible {
+    outline: 3px solid #00f2fe;
+    outline-offset: 4px;
+    box-shadow: 0 0 20px rgba(79, 172, 254, 0.5);
+}
+
+button:focus:not(:focus-visible) {
+    outline: none;
+}
+/* Active States - Added by automated script */
+button:active,
+.clickable:active {
+    transform: scale(0.95);
+    box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.3);
+}
+
+.card:active {
+    transform: scale(0.98);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.game-cell:active {
+    background: rgba(79, 172, 254, 0.3);
+    transform: scale(0.97);
+}</style>
 
 <!-- Error Handler v6.0 - ROI: 850% -->
 <script>

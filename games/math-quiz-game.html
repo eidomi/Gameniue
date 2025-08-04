@@ -395,7 +395,102 @@
                 opacity: 0;
             }
         }
-    </style>
+    
+/* Responsive Design Fixes - Added by automated script */
+@media (max-width: 768px) {
+    .game-container {
+        padding: 15px;
+        max-width: 100%;
+    }
+    
+    .game-board {
+        width: 90vw;
+        max-width: 500px;
+    }
+    
+    .button, button {
+        min-height: 48px;
+        font-size: 1.1rem;
+    }
+    
+    .stats {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .game-title {
+        font-size: 1.8rem !important;
+    }
+    
+    .game-board {
+        width: 95vw;
+        padding: 10px;
+    }
+    
+    .button, button {
+        width: 100%;
+        min-height: 50px;
+    }
+}
+/* Clamp() Responsive Sizing - Added by automated script */
+.game-title {
+    font-size: clamp(1.5rem, 5vw, 3rem) !important;
+}
+
+.button, button {
+    font-size: clamp(0.9rem, 2vw, 1.2rem);
+    padding: clamp(10px, 2vw, 20px) clamp(15px, 3vw, 30px);
+}
+
+.score, .stat-value {
+    font-size: clamp(1.2rem, 3vw, 2rem);
+}
+
+.game-container {
+    padding: clamp(10px, 3vw, 30px);
+}
+
+.game-board {
+    width: clamp(280px, 90vw, 600px);
+    max-width: 100%;
+}
+/* Focus States - Added by automated script */
+button:focus,
+.clickable:focus,
+.card:focus,
+.game-cell:focus {
+    outline: 3px solid #4facfe;
+    outline-offset: 2px;
+    z-index: 10;
+}
+
+button:focus-visible {
+    outline: 3px solid #00f2fe;
+    outline-offset: 4px;
+    box-shadow: 0 0 20px rgba(79, 172, 254, 0.5);
+}
+
+button:focus:not(:focus-visible) {
+    outline: none;
+}
+/* Active States - Added by automated script */
+button:active,
+.clickable:active {
+    transform: scale(0.95);
+    box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.3);
+}
+
+.card:active {
+    transform: scale(0.98);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.game-cell:active {
+    background: rgba(79, 172, 254, 0.3);
+    transform: scale(0.97);
+}</style>
 
 <!-- Error Handler v6.0 - ROI: 850% -->
 <script>
