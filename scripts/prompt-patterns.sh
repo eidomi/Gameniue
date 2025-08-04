@@ -390,116 +390,133 @@ think a lot and review pattern   in ./patterns
 # by providing a structured methodology that ensures high quality, maintainability, and continuous improvement.
 
 
-
-# ## Task Overview# - Review all patterns in ./patterns
-#     1. Define ONE clear success metric
-#     2. Set time/complexity budget
-#     3. Identify highest ROI approach
-#     4. List anti-patterns to avoid
-#     5. Check for existing solutions
-
-
-# - **Games**: Create full tests coverage for the games
-# - Type tests for the games
-# - visual tests for the games
-# - performance tests for the games
-# - sound tests for the games
-# - Ensure hebrew-learn-english game has sound for the words in english -> player needs to hear how to pronunce the word
-
-
-## Task Overview
-# Review issues/type-safety/TYPE-001-null-safety.md
-# Implement null safety in the project
-# Task Methodology Workflow
-#   Think carefully And Follow All Phases Step-by-Step
-#   Phase -1: Pre-Planning
-
+# 🚀 Task Overview
+# - Review /Users/yehudamizrahi/Gameniue/tests/incremental-results-1754313848128.json
+# - Fix any issues found in the test results
+# - Ensure all tests pass
+# 📊 Task Methodology Workflow
+#   Think through And Follow All Phases Step-by-Step
+# 📊 Task Methodology Phases
+#   **Phase 0: Pre-Planning**
 #   BEFORE starting:
-#     1. Define ONE clear success metric
-#     2. Set time/complexity budget
+#     1. Define Three clear success metrics
+#     2. time budget: 1.5 hours
 #     3. Identify highest ROI approach
 #     4. List anti-patterns to avoid
 #     5. Check for existing solutions
-
-#   Phase 0: Initialize
-
+#   **Phase 1: Initialize**
 #   Add:
 #     - Verify Claude.md is loaded
 #     - Check git status for conflicts
 #     - Validate tool availability
 #     - Set up rollback point
 #     - Define test validation command
-
-#   Phase 2: Run Tests
-
+#   **Phase 2: Run Tests**
 #   Add:
 #     - Store baseline metrics
 #     - Identify critical vs nice-to-have tests
 #     - Run quick smoke test first
 #     - Document which tests matter most
 #     - Skip lengthy tests during development
-
-#   Phase 3: Continuous Validation
-
+#   **Phase 3: Continuous Validation** 
 #   Add:
 #     - Incremental test runs (not full suite)
 #     - Performance regression checks
 #     - User experience validation
 #     - Accessibility spot checks
-#     - Mobile responsiveness verify
-
-#   Phase 7: Documentation
-
+#     - Mobile responsiveness verification
+#   **Phase 4: Documentation**
 #   Add:
 #     - Update CLAUDE.md with learned patterns
 #     - Document ROI calculations
 #     - Record command sequences
 #     - Note time savings
 #     - Create reusable snippets
+#   **Phase 5: Run Quality Checks**
+#    ```
+#    WHILE issues_detected():
+#        - Identify root cause
+#        - Analyze impact
+#        - Implement fix
+#        - Re-run validation
+#        - Verify fix effectiveness
+#    ```
+#   **Phase 6: Pattern Optimization**
+#    - Review patterns in ./patterns
+#    - Identify patterns for optimization
+#    - Apply optimization techniques
+#    - Ensure patterns are reusable and maintainable
+#    - Document optimized patterns
+#
+#   **Phase 7: Post-Cleanup Validation**
+#    ```
+#    IF cleanup_introduced_issues():
+#        GOTO Phase 3: Quality Assurance
+#    ```
+#   **Phase 8: Documentation Update**
+#    - Document all changes made
+#    - Update ./README.md
+#    - Update ./CLAUDE.md
+#    - Ensure all patterns are documented
 
-#   Phase 8: Task Principles
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#   **Phase 5: Task Principles**
 #   Key Principles for Every Task - MUST READ!
-
 #   1. ROI-First Thinking
-
 #   Always calculate:
 #     - Time saved vs time invested
 #     - Error reduction percentage
 #     - Reusability factor
 #     - User impact score
-
 #   2. Fail Fast Protocol
-
 #   If approach isn't working in 2 attempts:
 #     - Stop and reassess
 #     - Try different pattern
 #     - Ask for clarification
 #     - Document why it failed
-
 #   3. Pattern Library Growth
-
 #   Every solution should:
 #     - Be extractable as pattern
 #     - Include ROI calculation
 #     - Have test coverage
 #     - Be documented in CLAUDE.md
-
 #   4. Batch Operations
-
 #   Claude performs better with:
 #     - Multiple files read at once
 #     - Parallel bash commands
 #     - Grouped similar changes
 #     - Batched test runs
-
 #   5. Knowledge Compounding
-
 #   Each task should:
 #     - Build on previous learnings
 #     - Update methodology
 #     - Improve patterns
 #     - Increase automation
-
 #   The Ultimate Addition: Meta-Learning Loop
 
 #   After EVERY session:

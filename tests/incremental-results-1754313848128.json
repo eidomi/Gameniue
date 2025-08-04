@@ -1,0 +1,336 @@
+{
+  "total": 160,
+  "passed": 131,
+  "failed": 29,
+  "skipped": 0,
+  "files": {
+    "color-match-game.html": {
+      "tests": {
+        "type": {
+          "passed": 3,
+          "failed": 1,
+          "failures": [
+            "undefined checks"
+          ]
+        },
+        "visual": {
+          "passed": 4,
+          "failed": 0,
+          "failures": []
+        },
+        "performance": {
+          "passed": 3,
+          "failed": 1,
+          "failures": [
+            "script execution"
+          ]
+        },
+        "sound": {
+          "passed": 3,
+          "failed": 1,
+          "failures": [
+            "visual fallback"
+          ]
+        }
+      },
+      "total": 16,
+      "passed": 13,
+      "failed": 3
+    },
+    "hebrew-english-learning-game.html": {
+      "tests": {
+        "type": {
+          "passed": 4,
+          "failed": 0,
+          "failures": []
+        },
+        "visual": {
+          "passed": 4,
+          "failed": 0,
+          "failures": []
+        },
+        "performance": {
+          "passed": 3,
+          "failed": 1,
+          "failures": [
+            "script execution"
+          ]
+        },
+        "sound": {
+          "passed": 3,
+          "failed": 1,
+          "failures": [
+            "visual fallback"
+          ]
+        }
+      },
+      "total": 16,
+      "passed": 14,
+      "failed": 2
+    },
+    "math-quiz-game.html": {
+      "tests": {
+        "type": {
+          "passed": 3,
+          "failed": 1,
+          "failures": [
+            "undefined checks"
+          ]
+        },
+        "visual": {
+          "passed": 4,
+          "failed": 0,
+          "failures": []
+        },
+        "performance": {
+          "passed": 3,
+          "failed": 1,
+          "failures": [
+            "script execution"
+          ]
+        },
+        "sound": {
+          "passed": 3,
+          "failed": 1,
+          "failures": [
+            "visual fallback"
+          ]
+        }
+      },
+      "total": 16,
+      "passed": 13,
+      "failed": 3
+    },
+    "memory-match-game.html": {
+      "tests": {
+        "type": {
+          "passed": 3,
+          "failed": 1,
+          "failures": [
+            "undefined checks"
+          ]
+        },
+        "visual": {
+          "passed": 4,
+          "failed": 0,
+          "failures": []
+        },
+        "performance": {
+          "passed": 3,
+          "failed": 1,
+          "failures": [
+            "script execution"
+          ]
+        },
+        "sound": {
+          "passed": 3,
+          "failed": 1,
+          "failures": [
+            "visual fallback"
+          ]
+        }
+      },
+      "total": 16,
+      "passed": 13,
+      "failed": 3
+    },
+    "puzzle-slider-game.html": {
+      "tests": {
+        "type": {
+          "passed": 3,
+          "failed": 1,
+          "failures": [
+            "undefined checks"
+          ]
+        },
+        "visual": {
+          "passed": 4,
+          "failed": 0,
+          "failures": []
+        },
+        "performance": {
+          "passed": 3,
+          "failed": 1,
+          "failures": [
+            "script execution"
+          ]
+        },
+        "sound": {
+          "passed": 3,
+          "failed": 1,
+          "failures": [
+            "visual fallback"
+          ]
+        }
+      },
+      "total": 16,
+      "passed": 13,
+      "failed": 3
+    },
+    "quick-draw-game.html": {
+      "tests": {
+        "type": {
+          "passed": 3,
+          "failed": 1,
+          "failures": [
+            "undefined checks"
+          ]
+        },
+        "visual": {
+          "passed": 4,
+          "failed": 0,
+          "failures": []
+        },
+        "performance": {
+          "passed": 3,
+          "failed": 1,
+          "failures": [
+            "script execution"
+          ]
+        },
+        "sound": {
+          "passed": 3,
+          "failed": 1,
+          "failures": [
+            "visual fallback"
+          ]
+        }
+      },
+      "total": 16,
+      "passed": 13,
+      "failed": 3
+    },
+    "simon-says-game.html": {
+      "tests": {
+        "type": {
+          "passed": 3,
+          "failed": 1,
+          "failures": [
+            "undefined checks"
+          ]
+        },
+        "visual": {
+          "passed": 4,
+          "failed": 0,
+          "failures": []
+        },
+        "performance": {
+          "passed": 3,
+          "failed": 1,
+          "failures": [
+            "script execution"
+          ]
+        },
+        "sound": {
+          "passed": 3,
+          "failed": 1,
+          "failures": [
+            "visual fallback"
+          ]
+        }
+      },
+      "total": 16,
+      "passed": 13,
+      "failed": 3
+    },
+    "snakes-and-ladders-game.html": {
+      "tests": {
+        "type": {
+          "passed": 3,
+          "failed": 1,
+          "failures": [
+            "undefined checks"
+          ]
+        },
+        "visual": {
+          "passed": 4,
+          "failed": 0,
+          "failures": []
+        },
+        "performance": {
+          "passed": 3,
+          "failed": 1,
+          "failures": [
+            "script execution"
+          ]
+        },
+        "sound": {
+          "passed": 3,
+          "failed": 1,
+          "failures": [
+            "visual fallback"
+          ]
+        }
+      },
+      "total": 16,
+      "passed": 13,
+      "failed": 3
+    },
+    "tic-tac-toe-game.html": {
+      "tests": {
+        "type": {
+          "passed": 3,
+          "failed": 1,
+          "failures": [
+            "undefined checks"
+          ]
+        },
+        "visual": {
+          "passed": 4,
+          "failed": 0,
+          "failures": []
+        },
+        "performance": {
+          "passed": 3,
+          "failed": 1,
+          "failures": [
+            "script execution"
+          ]
+        },
+        "sound": {
+          "passed": 3,
+          "failed": 1,
+          "failures": [
+            "visual fallback"
+          ]
+        }
+      },
+      "total": 16,
+      "passed": 13,
+      "failed": 3
+    },
+    "word-scramble-game.html": {
+      "tests": {
+        "type": {
+          "passed": 3,
+          "failed": 1,
+          "failures": [
+            "undefined checks"
+          ]
+        },
+        "visual": {
+          "passed": 4,
+          "failed": 0,
+          "failures": []
+        },
+        "performance": {
+          "passed": 3,
+          "failed": 1,
+          "failures": [
+            "script execution"
+          ]
+        },
+        "sound": {
+          "passed": 3,
+          "failed": 1,
+          "failures": [
+            "visual fallback"
+          ]
+        }
+      },
+      "total": 16,
+      "passed": 13,
+      "failed": 3
+    }
+  }
+}
