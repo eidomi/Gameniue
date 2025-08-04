@@ -1,0 +1,702 @@
+{
+  "timestamp": "2025-08-04T10:33:14.751Z",
+  "summary": {
+    "total": 100,
+    "passed": 91,
+    "failed": 0,
+    "warnings": 9,
+    "coverage": 91
+  },
+  "categories": {},
+  "games": {
+    "color-match-game.html": {
+      "name": "color-match-game.html",
+      "categories": {
+        "type": {
+          "variableTypes": {
+            "status": "pass",
+            "score": 100,
+            "message": "let=true, const=true, minimal var=true (0 found)"
+          },
+          "functionSignatures": {
+            "status": "pass",
+            "score": 100,
+            "message": "20 regular, 27 arrow, 5 async"
+          },
+          "nullHandling": {
+            "status": "pass",
+            "score": 75,
+            "message": "Null safety: 3/4 patterns used"
+          }
+        },
+        "visual": {
+          "responsiveDesign": {
+            "status": "warning",
+            "score": 50,
+            "message": "Responsive features: 2/4 (viewport=true, media=false, flex=true, clamp=false)"
+          },
+          "rtlSupport": {
+            "status": "pass",
+            "score": 100,
+            "message": "RTL=true, Hebrew lang=true"
+          },
+          "visualFeedback": {
+            "status": "warning",
+            "score": 50,
+            "message": "Visual feedback: 2/4 patterns"
+          }
+        },
+        "performance": {
+          "loadTime": {
+            "status": "pass",
+            "score": 81,
+            "message": "Estimated load time: 40ms (40.0KB)",
+            "metric": 39.986328125
+          },
+          "resourceOptimization": {
+            "status": "pass",
+            "score": 100,
+            "message": "External: 0 (scripts=0, styles=0, images=0), Inline: true"
+          }
+        },
+        "sound": {
+          "audioSystem": {
+            "status": "pass",
+            "score": 100,
+            "message": "Audio v6.0=true, Error Handler=true",
+            "hasAudioV6": true,
+            "hasErrorHandler": true
+          },
+          "pronunciation": {
+            "status": "pass",
+            "score": 100,
+            "message": "N/A for this game"
+          }
+        }
+      },
+      "score": 86,
+      "status": "pass"
+    },
+    "math-quiz-game.html": {
+      "name": "math-quiz-game.html",
+      "categories": {
+        "type": {
+          "variableTypes": {
+            "status": "pass",
+            "score": 100,
+            "message": "let=true, const=true, minimal var=true (0 found)"
+          },
+          "functionSignatures": {
+            "status": "pass",
+            "score": 100,
+            "message": "25 regular, 30 arrow, 5 async"
+          },
+          "nullHandling": {
+            "status": "pass",
+            "score": 75,
+            "message": "Null safety: 3/4 patterns used"
+          }
+        },
+        "visual": {
+          "responsiveDesign": {
+            "status": "warning",
+            "score": 50,
+            "message": "Responsive features: 2/4 (viewport=true, media=false, flex=true, clamp=false)"
+          },
+          "rtlSupport": {
+            "status": "pass",
+            "score": 100,
+            "message": "RTL=true, Hebrew lang=true"
+          },
+          "visualFeedback": {
+            "status": "warning",
+            "score": 50,
+            "message": "Visual feedback: 2/4 patterns"
+          }
+        },
+        "performance": {
+          "loadTime": {
+            "status": "pass",
+            "score": 76,
+            "message": "Estimated load time: 49ms (49.3KB)",
+            "metric": 49.2919921875
+          },
+          "resourceOptimization": {
+            "status": "pass",
+            "score": 100,
+            "message": "External: 0 (scripts=0, styles=0, images=0), Inline: true"
+          }
+        },
+        "sound": {
+          "audioSystem": {
+            "status": "pass",
+            "score": 100,
+            "message": "Audio v6.0=true, Error Handler=true",
+            "hasAudioV6": true,
+            "hasErrorHandler": true
+          },
+          "pronunciation": {
+            "status": "pass",
+            "score": 100,
+            "message": "N/A for this game"
+          }
+        }
+      },
+      "score": 85,
+      "status": "pass"
+    },
+    "memory-match-game.html": {
+      "name": "memory-match-game.html",
+      "categories": {
+        "type": {
+          "variableTypes": {
+            "status": "pass",
+            "score": 100,
+            "message": "let=true, const=true, minimal var=true (0 found)"
+          },
+          "functionSignatures": {
+            "status": "pass",
+            "score": 100,
+            "message": "24 regular, 28 arrow, 5 async"
+          },
+          "nullHandling": {
+            "status": "pass",
+            "score": 75,
+            "message": "Null safety: 3/4 patterns used"
+          }
+        },
+        "visual": {
+          "responsiveDesign": {
+            "status": "pass",
+            "score": 75,
+            "message": "Responsive features: 3/4 (viewport=true, media=true, flex=true, clamp=false)"
+          },
+          "rtlSupport": {
+            "status": "pass",
+            "score": 100,
+            "message": "RTL=true, Hebrew lang=true"
+          },
+          "visualFeedback": {
+            "status": "warning",
+            "score": 50,
+            "message": "Visual feedback: 2/4 patterns"
+          }
+        },
+        "performance": {
+          "loadTime": {
+            "status": "pass",
+            "score": 81,
+            "message": "Estimated load time: 39ms (39.2KB)",
+            "metric": 39.1669921875
+          },
+          "resourceOptimization": {
+            "status": "pass",
+            "score": 100,
+            "message": "External: 0 (scripts=0, styles=0, images=0), Inline: true"
+          }
+        },
+        "sound": {
+          "audioSystem": {
+            "status": "pass",
+            "score": 100,
+            "message": "Audio v6.0=true, Error Handler=true",
+            "hasAudioV6": true,
+            "hasErrorHandler": true
+          },
+          "pronunciation": {
+            "status": "pass",
+            "score": 100,
+            "message": "N/A for this game"
+          }
+        }
+      },
+      "score": 88,
+      "status": "pass"
+    },
+    "puzzle-slider-game.html": {
+      "name": "puzzle-slider-game.html",
+      "categories": {
+        "type": {
+          "variableTypes": {
+            "status": "pass",
+            "score": 100,
+            "message": "let=true, const=true, minimal var=true (0 found)"
+          },
+          "functionSignatures": {
+            "status": "pass",
+            "score": 100,
+            "message": "24 regular, 25 arrow, 5 async"
+          },
+          "nullHandling": {
+            "status": "pass",
+            "score": 75,
+            "message": "Null safety: 3/4 patterns used"
+          }
+        },
+        "visual": {
+          "responsiveDesign": {
+            "status": "warning",
+            "score": 50,
+            "message": "Responsive features: 2/4 (viewport=true, media=false, flex=true, clamp=false)"
+          },
+          "rtlSupport": {
+            "status": "pass",
+            "score": 100,
+            "message": "RTL=true, Hebrew lang=true"
+          },
+          "visualFeedback": {
+            "status": "pass",
+            "score": 75,
+            "message": "Visual feedback: 3/4 patterns"
+          }
+        },
+        "performance": {
+          "loadTime": {
+            "status": "pass",
+            "score": 80,
+            "message": "Estimated load time: 40ms (40.4KB)",
+            "metric": 40.416015625
+          },
+          "resourceOptimization": {
+            "status": "pass",
+            "score": 100,
+            "message": "External: 0 (scripts=0, styles=0, images=0), Inline: true"
+          }
+        },
+        "sound": {
+          "audioSystem": {
+            "status": "pass",
+            "score": 100,
+            "message": "Audio v6.0=true, Error Handler=true",
+            "hasAudioV6": true,
+            "hasErrorHandler": true
+          },
+          "pronunciation": {
+            "status": "pass",
+            "score": 100,
+            "message": "N/A for this game"
+          }
+        }
+      },
+      "score": 88,
+      "status": "pass"
+    },
+    "quick-draw-game.html": {
+      "name": "quick-draw-game.html",
+      "categories": {
+        "type": {
+          "variableTypes": {
+            "status": "pass",
+            "score": 100,
+            "message": "let=true, const=true, minimal var=true (0 found)"
+          },
+          "functionSignatures": {
+            "status": "pass",
+            "score": 100,
+            "message": "31 regular, 30 arrow, 5 async"
+          },
+          "nullHandling": {
+            "status": "pass",
+            "score": 75,
+            "message": "Null safety: 3/4 patterns used"
+          }
+        },
+        "visual": {
+          "responsiveDesign": {
+            "status": "warning",
+            "score": 50,
+            "message": "Responsive features: 2/4 (viewport=true, media=false, flex=true, clamp=false)"
+          },
+          "rtlSupport": {
+            "status": "pass",
+            "score": 100,
+            "message": "RTL=true, Hebrew lang=true"
+          },
+          "visualFeedback": {
+            "status": "pass",
+            "score": 75,
+            "message": "Visual feedback: 3/4 patterns"
+          }
+        },
+        "performance": {
+          "loadTime": {
+            "status": "pass",
+            "score": 79,
+            "message": "Estimated load time: 43ms (43.3KB)",
+            "metric": 43.3251953125
+          },
+          "resourceOptimization": {
+            "status": "pass",
+            "score": 100,
+            "message": "External: 0 (scripts=0, styles=0, images=0), Inline: true"
+          }
+        },
+        "sound": {
+          "audioSystem": {
+            "status": "pass",
+            "score": 100,
+            "message": "Audio v6.0=true, Error Handler=true",
+            "hasAudioV6": true,
+            "hasErrorHandler": true
+          },
+          "pronunciation": {
+            "status": "pass",
+            "score": 100,
+            "message": "N/A for this game"
+          }
+        }
+      },
+      "score": 88,
+      "status": "pass"
+    },
+    "simon-says-game.html": {
+      "name": "simon-says-game.html",
+      "categories": {
+        "type": {
+          "variableTypes": {
+            "status": "pass",
+            "score": 100,
+            "message": "let=true, const=true, minimal var=true (0 found)"
+          },
+          "functionSignatures": {
+            "status": "pass",
+            "score": 100,
+            "message": "20 regular, 24 arrow, 7 async"
+          },
+          "nullHandling": {
+            "status": "pass",
+            "score": 75,
+            "message": "Null safety: 3/4 patterns used"
+          }
+        },
+        "visual": {
+          "responsiveDesign": {
+            "status": "pass",
+            "score": 75,
+            "message": "Responsive features: 3/4 (viewport=true, media=true, flex=true, clamp=false)"
+          },
+          "rtlSupport": {
+            "status": "pass",
+            "score": 100,
+            "message": "RTL=true, Hebrew lang=true"
+          },
+          "visualFeedback": {
+            "status": "pass",
+            "score": 75,
+            "message": "Visual feedback: 3/4 patterns"
+          }
+        },
+        "performance": {
+          "loadTime": {
+            "status": "pass",
+            "score": 82,
+            "message": "Estimated load time: 37ms (37.0KB)",
+            "metric": 36.955078125
+          },
+          "resourceOptimization": {
+            "status": "pass",
+            "score": 100,
+            "message": "External: 0 (scripts=0, styles=0, images=0), Inline: true"
+          }
+        },
+        "sound": {
+          "audioSystem": {
+            "status": "pass",
+            "score": 100,
+            "message": "Audio v6.0=true, Error Handler=true",
+            "hasAudioV6": true,
+            "hasErrorHandler": true
+          },
+          "pronunciation": {
+            "status": "pass",
+            "score": 100,
+            "message": "N/A for this game"
+          }
+        }
+      },
+      "score": 91,
+      "status": "pass"
+    },
+    "snakes-and-ladders-game.html": {
+      "name": "snakes-and-ladders-game.html",
+      "categories": {
+        "type": {
+          "variableTypes": {
+            "status": "pass",
+            "score": 100,
+            "message": "let=true, const=true, minimal var=true (0 found)"
+          },
+          "functionSignatures": {
+            "status": "pass",
+            "score": 100,
+            "message": "22 regular, 26 arrow, 6 async"
+          },
+          "nullHandling": {
+            "status": "pass",
+            "score": 75,
+            "message": "Null safety: 3/4 patterns used"
+          }
+        },
+        "visual": {
+          "responsiveDesign": {
+            "status": "pass",
+            "score": 100,
+            "message": "Responsive features: 4/4 (viewport=true, media=true, flex=true, clamp=true)"
+          },
+          "rtlSupport": {
+            "status": "pass",
+            "score": 100,
+            "message": "RTL=true, Hebrew lang=true"
+          },
+          "visualFeedback": {
+            "status": "pass",
+            "score": 75,
+            "message": "Visual feedback: 3/4 patterns"
+          }
+        },
+        "performance": {
+          "loadTime": {
+            "status": "pass",
+            "score": 78,
+            "message": "Estimated load time: 45ms (45.0KB)",
+            "metric": 45.029296875
+          },
+          "resourceOptimization": {
+            "status": "pass",
+            "score": 100,
+            "message": "External: 0 (scripts=0, styles=0, images=0), Inline: true"
+          }
+        },
+        "sound": {
+          "audioSystem": {
+            "status": "pass",
+            "score": 100,
+            "message": "Audio v6.0=true, Error Handler=true",
+            "hasAudioV6": true,
+            "hasErrorHandler": true
+          },
+          "pronunciation": {
+            "status": "pass",
+            "score": 100,
+            "message": "N/A for this game"
+          }
+        }
+      },
+      "score": 93,
+      "status": "pass"
+    },
+    "tic-tac-toe-game.html": {
+      "name": "tic-tac-toe-game.html",
+      "categories": {
+        "type": {
+          "variableTypes": {
+            "status": "pass",
+            "score": 100,
+            "message": "let=true, const=true, minimal var=true (0 found)"
+          },
+          "functionSignatures": {
+            "status": "pass",
+            "score": 100,
+            "message": "25 regular, 26 arrow, 5 async"
+          },
+          "nullHandling": {
+            "status": "pass",
+            "score": 100,
+            "message": "Null safety: 4/4 patterns used"
+          }
+        },
+        "visual": {
+          "responsiveDesign": {
+            "status": "warning",
+            "score": 50,
+            "message": "Responsive features: 2/4 (viewport=true, media=false, flex=true, clamp=false)"
+          },
+          "rtlSupport": {
+            "status": "pass",
+            "score": 100,
+            "message": "RTL=true, Hebrew lang=true"
+          },
+          "visualFeedback": {
+            "status": "warning",
+            "score": 50,
+            "message": "Visual feedback: 2/4 patterns"
+          }
+        },
+        "performance": {
+          "loadTime": {
+            "status": "pass",
+            "score": 83,
+            "message": "Estimated load time: 36ms (35.7KB)",
+            "metric": 35.6904296875
+          },
+          "resourceOptimization": {
+            "status": "pass",
+            "score": 100,
+            "message": "External: 0 (scripts=0, styles=0, images=0), Inline: true"
+          }
+        },
+        "sound": {
+          "audioSystem": {
+            "status": "pass",
+            "score": 100,
+            "message": "Audio v6.0=true, Error Handler=true",
+            "hasAudioV6": true,
+            "hasErrorHandler": true
+          },
+          "pronunciation": {
+            "status": "pass",
+            "score": 100,
+            "message": "N/A for this game"
+          }
+        }
+      },
+      "score": 88,
+      "status": "pass"
+    },
+    "word-scramble-game.html": {
+      "name": "word-scramble-game.html",
+      "categories": {
+        "type": {
+          "variableTypes": {
+            "status": "pass",
+            "score": 100,
+            "message": "let=true, const=true, minimal var=true (0 found)"
+          },
+          "functionSignatures": {
+            "status": "pass",
+            "score": 100,
+            "message": "25 regular, 25 arrow, 5 async"
+          },
+          "nullHandling": {
+            "status": "pass",
+            "score": 75,
+            "message": "Null safety: 3/4 patterns used"
+          }
+        },
+        "visual": {
+          "responsiveDesign": {
+            "status": "pass",
+            "score": 75,
+            "message": "Responsive features: 3/4 (viewport=true, media=true, flex=true, clamp=false)"
+          },
+          "rtlSupport": {
+            "status": "pass",
+            "score": 100,
+            "message": "RTL=true, Hebrew lang=true"
+          },
+          "visualFeedback": {
+            "status": "pass",
+            "score": 75,
+            "message": "Visual feedback: 3/4 patterns"
+          }
+        },
+        "performance": {
+          "loadTime": {
+            "status": "pass",
+            "score": 79,
+            "message": "Estimated load time: 44ms (43.7KB)",
+            "metric": 43.7138671875
+          },
+          "resourceOptimization": {
+            "status": "pass",
+            "score": 100,
+            "message": "External: 0 (scripts=0, styles=0, images=0), Inline: true"
+          }
+        },
+        "sound": {
+          "audioSystem": {
+            "status": "pass",
+            "score": 100,
+            "message": "Audio v6.0=true, Error Handler=true",
+            "hasAudioV6": true,
+            "hasErrorHandler": true
+          },
+          "pronunciation": {
+            "status": "pass",
+            "score": 100,
+            "message": "N/A for this game"
+          }
+        }
+      },
+      "score": 90,
+      "status": "pass"
+    },
+    "hebrew-english-learning-game.html": {
+      "name": "hebrew-english-learning-game.html",
+      "categories": {
+        "type": {
+          "variableTypes": {
+            "status": "pass",
+            "score": 100,
+            "message": "let=true, const=true, minimal var=true (0 found)"
+          },
+          "functionSignatures": {
+            "status": "pass",
+            "score": 100,
+            "message": "8 regular, 40 arrow, 5 async"
+          },
+          "nullHandling": {
+            "status": "pass",
+            "score": 75,
+            "message": "Null safety: 3/4 patterns used"
+          }
+        },
+        "visual": {
+          "responsiveDesign": {
+            "status": "pass",
+            "score": 75,
+            "message": "Responsive features: 3/4 (viewport=true, media=true, flex=true, clamp=false)"
+          },
+          "rtlSupport": {
+            "status": "pass",
+            "score": 100,
+            "message": "RTL=true, Hebrew lang=true"
+          },
+          "visualFeedback": {
+            "status": "pass",
+            "score": 75,
+            "message": "Visual feedback: 3/4 patterns"
+          }
+        },
+        "performance": {
+          "loadTime": {
+            "status": "pass",
+            "score": 67,
+            "message": "Estimated load time: 66ms (66.5KB)",
+            "metric": 66.455078125
+          },
+          "resourceOptimization": {
+            "status": "pass",
+            "score": 100,
+            "message": "External: 0 (scripts=0, styles=0, images=0), Inline: true"
+          }
+        },
+        "sound": {
+          "audioSystem": {
+            "status": "pass",
+            "score": 100,
+            "message": "Audio v6.0=true, Error Handler=true",
+            "hasAudioV6": true,
+            "hasErrorHandler": true
+          },
+          "pronunciation": {
+            "status": "pass",
+            "score": 100,
+            "message": "Speech API=true, Speak button=true, Pronunciation text=true",
+            "hasPronunciation": true
+          }
+        }
+      },
+      "score": 89,
+      "status": "pass"
+    }
+  },
+  "details": [],
+  "metrics": {
+    "avgLoadTime": 44,
+    "totalFileSize": 0,
+    "errorHandlerDeployed": 10,
+    "audioSystemDeployed": 10,
+    "pronunciationSupport": true
+  }
+}

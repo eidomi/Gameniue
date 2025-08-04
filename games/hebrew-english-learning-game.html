@@ -176,6 +176,43 @@
             color: #7f8c8d;
             font-style: italic;
             margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .speak-button {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.2em;
+        }
+
+        .speak-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .speak-button:active {
+            transform: scale(0.95);
+        }
+
+        .speak-button.speaking {
+            animation: pulse 1s infinite;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
         }
 
         /* Visual Image */
@@ -520,7 +557,12 @@
             <div class="question-area">
                 <div class="question-category" id="category">בעלי חיים</div>
                 <div class="question-text" id="question" aria-live="assertive">מה המילה באנגלית?</div>
-                <div class="pronunciation" id="pronunciation">/dɒɡ/</div>
+                <div class="pronunciation" id="pronunciation">
+                    <span id="pronunciationText">/dɒɡ/</span>
+                    <button class="speak-button" id="speakButton" onclick="speakWord()" aria-label="הקרא את המילה">
+                        🔊
+                    </button>
+                </div>
                 <div class="visual-hint" id="visualHint" role="img" aria-label="רמז חזותי">🐕</div>
             </div>
 
@@ -751,6 +793,7 @@ class AudioManager{constructor(){if(AudioManager.instance)return AudioManager.in
                 const categoryElement = document.getElementById('category');
                 const questionElement = document.getElementById('question');
                 const pronunciationElement = document.getElementById('pronunciation');
+                const pronunciationTextElement = document.getElementById('pronunciationText');
                 const visualHintElement = document.getElementById('visualHint');
 
                 if (!this.currentWord) return;
@@ -787,9 +830,12 @@ class AudioManager{constructor(){if(AudioManager.instance)return AudioManager.in
                     }
                 }
 
+                if (pronunciationTextElement) {
+                    pronunciationTextElement.textContent = this.currentWord.pronunciation;
+                }
+                
                 if (pronunciationElement) {
-                    pronunciationElement.textContent = this.currentWord.pronunciation;
-                    pronunciationElement.style.display = this.gameMode === 'pronunciation' ? 'block' : 'none';
+                    pronunciationElement.style.display = (this.gameMode === 'pronunciation' || this.gameMode === 'matching') ? 'flex' : 'none';
                 }
 
                 if (visualHintElement) {
@@ -891,6 +937,16 @@ class AudioManager{constructor(){if(AudioManager.instance)return AudioManager.in
                 
                 // Save daily progress
                 this.dailyProgress.correctAnswers++;
+
+                // Speak the correct word for reinforcement
+                if (this.gameMode === 'pronunciation' || this.gameMode === 'matching') {
+                    setTimeout(() => {
+                        if (!speechManager) {
+                            speechManager = new SpeechManager();
+                        }
+                        speechManager.speakWord(this.currentWord.english);
+                    }, 500);
+                }
                 this.dailyProgress.totalQuestions++;
                 this.saveDailyProgress();
             }
@@ -1101,7 +1157,119 @@ class AudioManager{constructor(){if(AudioManager.instance)return AudioManager.in
             }
         }
 
+        // Speech Synthesis Support
+        class SpeechManager {
+            constructor() {
+                this.synth = window.speechSynthesis;
+                this.speaking = false;
+                this.voice = null;
+                this.initializeVoice();
+            }
+
+            initializeVoice() {
+                if (!this.synth) return;
+                
+                // Wait for voices to load
+                const loadVoices = () => {
+                    const voices = this.synth.getVoices();
+                    // Prefer US English voices
+                    this.voice = voices.find(v => v.lang === 'en-US' && v.name.includes('Female')) ||
+                                voices.find(v => v.lang === 'en-US') ||
+                                voices.find(v => v.lang.startsWith('en-')) ||
+                                voices[0];
+                };
+
+                loadVoices();
+                if (this.synth.onvoiceschanged !== undefined) {
+                    this.synth.onvoiceschanged = loadVoices;
+                }
+            }
+
+            speak(text, lang = 'en-US') {
+                if (!this.synth || this.speaking) return;
+
+                // Cancel any ongoing speech
+                this.synth.cancel();
+
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = lang;
+                utterance.rate = 0.9; // Slightly slower for learning
+                utterance.pitch = 1;
+                utterance.volume = 0.8;
+
+                if (this.voice) {
+                    utterance.voice = this.voice;
+                }
+
+                // Visual feedback
+                const speakButton = document.getElementById('speakButton');
+                if (speakButton) {
+                    speakButton.classList.add('speaking');
+                }
+
+                utterance.onstart = () => {
+                    this.speaking = true;
+                };
+
+                utterance.onend = () => {
+                    this.speaking = false;
+                    if (speakButton) {
+                        speakButton.classList.remove('speaking');
+                    }
+                };
+
+                utterance.onerror = (event) => {
+                    console.error('Speech synthesis error:', event);
+                    this.speaking = false;
+                    if (speakButton) {
+                        speakButton.classList.remove('speaking');
+                    }
+                    // Fallback to audio manager sound
+                    if (window.audioManager) {
+                        window.audioManager.playClickSound();
+                    }
+                };
+
+                this.synth.speak(utterance);
+            }
+
+            speakWord(word) {
+                if (!word) return;
+                
+                // Remove special characters and speak clearly
+                const cleanWord = word.replace(/[^a-zA-Z\s]/g, '');
+                this.speak(cleanWord);
+            }
+
+            stop() {
+                if (this.synth) {
+                    this.synth.cancel();
+                    this.speaking = false;
+                }
+            }
+        }
+
+        // Initialize speech manager
+        let speechManager;
+        
         // Global functions for UI interactions
+        function speakWord() {
+            safeExecute(() => {
+                if (!speechManager) {
+                    speechManager = new SpeechManager();
+                }
+                
+                if (window.game && window.game.currentWord) {
+                    speechManager.speakWord(window.game.currentWord.english);
+                    
+                    // Also play audio feedback
+                    if (window.audioManager) {
+                        window.audioManager.playClickSound();
+                    }
+                }
+            }, { context: 'speakWord' });
+        }
+
         function setDifficulty(difficulty) {
             safeExecute(() => {
                 if (window.game) {

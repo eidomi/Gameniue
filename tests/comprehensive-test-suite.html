@@ -1,0 +1,1180 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comprehensive Test Suite - Gameniue</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            direction: rtl;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .test-controls {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .test-controls button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-size: 1em;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .test-controls button:hover {
+            transform: scale(1.05);
+        }
+
+        .test-controls select {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+        }
+
+        .test-categories {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .test-category {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .test-category h2 {
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .test-item {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f5f5f5;
+        }
+
+        .test-item.pass {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+        }
+
+        .test-item.fail {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+        }
+
+        .test-item.warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+        }
+
+        .test-item.running {
+            background: #d1ecf1;
+            border-left: 4px solid #17a2b8;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .test-status {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9em;
+        }
+
+        .status-icon {
+            font-size: 1.2em;
+        }
+
+        .metrics-dashboard {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 2em;
+            font-weight: bold;
+        }
+
+        .metric-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: #e0e0e0;
+            border-radius: 15px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4caf50, #8bc34a);
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .test-log {
+            background: rgba(0, 0, 0, 0.8);
+            color: #0f0;
+            padding: 15px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 20px;
+        }
+
+        .iframe-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+        }
+
+        .iframe-container iframe {
+            width: 90%;
+            height: 90%;
+            border: none;
+            border-radius: 10px;
+        }
+
+        .close-iframe {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.1em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Comprehensive Test Suite - Gameniue</h1>
+
+        <div class="test-controls">
+            <button onclick="runAllTests()">🚀 הרץ את כל הבדיקות</button>
+            <button onclick="runCategoryTests('type')">📝 בדיקות טייפ</button>
+            <button onclick="runCategoryTests('visual')">👁️ בדיקות ויזואליות</button>
+            <button onclick="runCategoryTests('performance')">⚡ בדיקות ביצועים</button>
+            <button onclick="runCategoryTests('sound')">🔊 בדיקות צליל</button>
+            <button onclick="exportResults()">📊 ייצא תוצאות</button>
+            <select id="gameSelector" onchange="selectGame(this.value)">
+                <option value="all">כל המשחקים</option>
+                <option value="memory-match-game">זיכרון</option>
+                <option value="snakes-and-ladders-game">סולמות ונחשים</option>
+                <option value="tic-tac-toe-game">איקס עיגול</option>
+                <option value="simon-says-game">סיימון אומר</option>
+                <option value="word-scramble-game">בלבול מילים</option>
+                <option value="math-quiz-game">חשבון</option>
+                <option value="color-match-game">התאמת צבעים</option>
+                <option value="puzzle-slider-game">פאזל מספרים</option>
+                <option value="quick-draw-game">ציור מהיר</option>
+                <option value="hebrew-english-learning-game">לימוד אנגלית</option>
+            </select>
+        </div>
+
+        <div class="metrics-dashboard">
+            <h2>📈 מדדי ביצועים</h2>
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-value" id="totalTests">0</div>
+                    <div class="metric-label">סה"כ בדיקות</div>
+                </div>
+                <div class="metric-card" style="background: linear-gradient(135deg, #4caf50, #8bc34a);">
+                    <div class="metric-value" id="passedTests">0</div>
+                    <div class="metric-label">עברו בהצלחה</div>
+                </div>
+                <div class="metric-card" style="background: linear-gradient(135deg, #f44336, #e91e63);">
+                    <div class="metric-value" id="failedTests">0</div>
+                    <div class="metric-label">נכשלו</div>
+                </div>
+                <div class="metric-card" style="background: linear-gradient(135deg, #ff9800, #ffb74d);">
+                    <div class="metric-value" id="warningTests">0</div>
+                    <div class="metric-label">אזהרות</div>
+                </div>
+                <div class="metric-card" style="background: linear-gradient(135deg, #2196f3, #64b5f6);">
+                    <div class="metric-value" id="coveragePercent">0%</div>
+                    <div class="metric-label">כיסוי</div>
+                </div>
+                <div class="metric-card" style="background: linear-gradient(135deg, #9c27b0, #ba68c8);">
+                    <div class="metric-value" id="avgLoadTime">0ms</div>
+                    <div class="metric-label">זמן טעינה ממוצע</div>
+                </div>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressBar">0%</div>
+            </div>
+        </div>
+
+        <div class="test-categories">
+            <div class="test-category">
+                <h2>📝 בדיקות Type Safety</h2>
+                <div id="typeTests"></div>
+            </div>
+            <div class="test-category">
+                <h2>👁️ בדיקות ויזואליות</h2>
+                <div id="visualTests"></div>
+            </div>
+            <div class="test-category">
+                <h2>⚡ בדיקות ביצועים</h2>
+                <div id="performanceTests"></div>
+            </div>
+            <div class="test-category">
+                <h2>🔊 בדיקות צליל</h2>
+                <div id="soundTests"></div>
+            </div>
+        </div>
+
+        <div class="test-log" id="testLog">
+            <div>🚀 Test Suite Initialized...</div>
+        </div>
+    </div>
+
+    <div class="iframe-container" id="iframeContainer">
+        <button class="close-iframe" onclick="closeGameFrame()">✖ סגור</button>
+        <iframe id="gameFrame"></iframe>
+    </div>
+
+    <script>
+        // Test Suite Configuration
+        const testConfig = {
+            games: [
+                'memory-match-game.html',
+                'snakes-and-ladders-game.html',
+                'tic-tac-toe-game.html',
+                'simon-says-game.html',
+                'word-scramble-game.html',
+                'math-quiz-game.html',
+                'color-match-game.html',
+                'puzzle-slider-game.html',
+                'quick-draw-game.html',
+                'hebrew-english-learning-game.html'
+            ],
+            categories: {
+                type: {
+                    tests: [
+                        { name: 'Variable Type Checking', fn: checkVariableTypes },
+                        { name: 'Function Signatures', fn: checkFunctionSignatures },
+                        { name: 'Object Properties', fn: checkObjectProperties },
+                        { name: 'Array Types', fn: checkArrayTypes },
+                        { name: 'DOM Element Types', fn: checkDOMTypes },
+                        { name: 'Event Handler Types', fn: checkEventTypes },
+                        { name: 'Return Type Consistency', fn: checkReturnTypes },
+                        { name: 'Null/Undefined Handling', fn: checkNullHandling }
+                    ]
+                },
+                visual: {
+                    tests: [
+                        { name: 'Layout Consistency', fn: checkLayoutConsistency },
+                        { name: 'Responsive Design', fn: checkResponsiveDesign },
+                        { name: 'RTL Support', fn: checkRTLSupport },
+                        { name: 'Color Contrast', fn: checkColorContrast },
+                        { name: 'Font Readability', fn: checkFontReadability },
+                        { name: 'Animation Smoothness', fn: checkAnimationSmoothness },
+                        { name: 'Visual Feedback', fn: checkVisualFeedback },
+                        { name: 'Mobile Touch Targets', fn: checkTouchTargets }
+                    ]
+                },
+                performance: {
+                    tests: [
+                        { name: 'Page Load Time', fn: checkLoadTime },
+                        { name: 'Memory Usage', fn: checkMemoryUsage },
+                        { name: 'Frame Rate', fn: checkFrameRate },
+                        { name: 'DOM Manipulation Speed', fn: checkDOMSpeed },
+                        { name: 'Network Requests', fn: checkNetworkRequests },
+                        { name: 'JavaScript Execution', fn: checkJSExecution },
+                        { name: 'Resource Optimization', fn: checkResourceOptimization },
+                        { name: 'Cache Utilization', fn: checkCacheUsage }
+                    ]
+                },
+                sound: {
+                    tests: [
+                        { name: 'Audio Manager Initialized', fn: checkAudioManager },
+                        { name: 'Sound Playback', fn: checkSoundPlayback },
+                        { name: 'Visual Fallback', fn: checkVisualFallback },
+                        { name: 'Volume Control', fn: checkVolumeControl },
+                        { name: 'Mute Functionality', fn: checkMuteFunctionality },
+                        { name: 'Sound Effects', fn: checkSoundEffects },
+                        { name: 'Audio Permission', fn: checkAudioPermission },
+                        { name: 'Pronunciation Support', fn: checkPronunciationSupport }
+                    ]
+                }
+            }
+        };
+
+        let testResults = {
+            total: 0,
+            passed: 0,
+            failed: 0,
+            warnings: 0,
+            details: []
+        };
+
+        // Type Testing Functions
+        async function checkVariableTypes(gameUrl) {
+            try {
+                const response = await fetch(`../games/${gameUrl}`);
+                const html = await response.text();
+                
+                // Check for proper variable declarations
+                const hasLet = /let\s+\w+/g.test(html);
+                const hasConst = /const\s+\w+/g.test(html);
+                const avoidVar = !/var\s+\w+/g.test(html) || html.match(/var\s+/g)?.length < 3;
+                
+                return {
+                    status: hasLet && hasConst && avoidVar ? 'pass' : 'warning',
+                    message: `Uses modern declarations: let=${hasLet}, const=${hasConst}, minimal var=${avoidVar}`
+                };
+            } catch (error) {
+                return { status: 'fail', message: error.message };
+            }
+        }
+
+        async function checkFunctionSignatures(gameUrl) {
+            try {
+                const response = await fetch(`../games/${gameUrl}`);
+                const html = await response.text();
+                
+                // Check for consistent function patterns
+                const arrowFunctions = (html.match(/=>\s*{/g) || []).length;
+                const regularFunctions = (html.match(/function\s+\w+/g) || []).length;
+                
+                return {
+                    status: arrowFunctions > 0 || regularFunctions > 0 ? 'pass' : 'fail',
+                    message: `Functions found: ${regularFunctions} regular, ${arrowFunctions} arrow`
+                };
+            } catch (error) {
+                return { status: 'fail', message: error.message };
+            }
+        }
+
+        async function checkObjectProperties(gameUrl) {
+            try {
+                const response = await fetch(`../games/${gameUrl}`);
+                const html = await response.text();
+                
+                // Check for object property access patterns
+                const dotNotation = (html.match(/\.\w+/g) || []).length;
+                const bracketNotation = (html.match(/\[['"`]\w+['"`]\]/g) || []).length;
+                
+                return {
+                    status: 'pass',
+                    message: `Property access: ${dotNotation} dot, ${bracketNotation} bracket`
+                };
+            } catch (error) {
+                return { status: 'fail', message: error.message };
+            }
+        }
+
+        async function checkArrayTypes(gameUrl) {
+            try {
+                const response = await fetch(`../games/${gameUrl}`);
+                const html = await response.text();
+                
+                // Check for array methods
+                const hasMap = html.includes('.map(');
+                const hasFilter = html.includes('.filter(');
+                const hasReduce = html.includes('.reduce(');
+                const hasForEach = html.includes('.forEach(');
+                
+                const modernMethods = [hasMap, hasFilter, hasReduce, hasForEach].filter(Boolean).length;
+                
+                return {
+                    status: modernMethods >= 2 ? 'pass' : 'warning',
+                    message: `Uses ${modernMethods}/4 modern array methods`
+                };
+            } catch (error) {
+                return { status: 'fail', message: error.message };
+            }
+        }
+
+        async function checkDOMTypes(gameUrl) {
+            try {
+                const response = await fetch(`../games/${gameUrl}`);
+                const html = await response.text();
+                
+                // Check for DOM manipulation patterns
+                const hasQuerySelector = html.includes('querySelector');
+                const hasGetElementById = html.includes('getElementById');
+                const hasCreateElement = html.includes('createElement');
+                
+                return {
+                    status: hasQuerySelector || hasGetElementById ? 'pass' : 'fail',
+                    message: `DOM methods: querySelector=${hasQuerySelector}, getElementById=${hasGetElementById}`
+                };
+            } catch (error) {
+                return { status: 'fail', message: error.message };
+            }
+        }
+
+        async function checkEventTypes(gameUrl) {
+            try {
+                const response = await fetch(`../games/${gameUrl}`);
+                const html = await response.text();
+                
+                // Check for event listeners
+                const hasAddEventListener = html.includes('addEventListener');
+                const hasOnClick = html.includes('onclick=');
+                const hasTouchEvents = html.includes('touchstart') || html.includes('touchend');
+                
+                return {
+                    status: hasAddEventListener ? 'pass' : 'warning',
+                    message: `Events: addEventListener=${hasAddEventListener}, touch=${hasTouchEvents}`
+                };
+            } catch (error) {
+                return { status: 'fail', message: error.message };
+            }
+        }
+
+        async function checkReturnTypes(gameUrl) {
+            try {
+                const response = await fetch(`../games/${gameUrl}`);
+                const html = await response.text();
+                
+                // Check for consistent return statements
+                const returnStatements = (html.match(/return\s+[^;]+/g) || []).length;
+                const asyncFunctions = (html.match(/async\s+/g) || []).length;
+                
+                return {
+                    status: 'pass',
+                    message: `${returnStatements} return statements, ${asyncFunctions} async functions`
+                };
+            } catch (error) {
+                return { status: 'fail', message: error.message };
+            }
+        }
+
+        async function checkNullHandling(gameUrl) {
+            try {
+                const response = await fetch(`../games/${gameUrl}`);
+                const html = await response.text();
+                
+                // Check for null/undefined handling
+                const hasNullCheck = html.includes('!== null') || html.includes('!= null');
+                const hasUndefinedCheck = html.includes('!== undefined') || html.includes('typeof');
+                const hasOptionalChaining = html.includes('?.');
+                const hasNullishCoalescing = html.includes('??');
+                
+                const safetyScore = [hasNullCheck, hasUndefinedCheck, hasOptionalChaining, hasNullishCoalescing].filter(Boolean).length;
+                
+                return {
+                    status: safetyScore >= 2 ? 'pass' : 'warning',
+                    message: `Null safety: ${safetyScore}/4 patterns used`
+                };
+            } catch (error) {
+                return { status: 'fail', message: error.message };
+            }
+        }
+
+        // Visual Testing Functions
+        async function checkLayoutConsistency(gameUrl) {
+            return new Promise((resolve) => {
+                const iframe = document.createElement('iframe');
+                iframe.src = `../games/${gameUrl}`;
+                iframe.style.display = 'none';
+                document.body.appendChild(iframe);
+                
+                iframe.onload = () => {
+                    try {
+                        const doc = iframe.contentDocument;
+                        const container = doc.querySelector('.game-container, .container, body');
+                        const hasConsistentLayout = container && getComputedStyle(container).maxWidth;
+                        
+                        document.body.removeChild(iframe);
+                        resolve({
+                            status: hasConsistentLayout ? 'pass' : 'warning',
+                            message: `Layout container found: ${!!container}`
+                        });
+                    } catch (error) {
+                        document.body.removeChild(iframe);
+                        resolve({ status: 'fail', message: error.message });
+                    }
+                };
+            });
+        }
+
+        async function checkResponsiveDesign(gameUrl) {
+            try {
+                const response = await fetch(`../games/${gameUrl}`);
+                const html = await response.text();
+                
+                // Check for responsive patterns
+                const hasViewport = html.includes('viewport');
+                const hasMediaQueries = html.includes('@media');
+                const hasFlexbox = html.includes('flex') || html.includes('grid');
+                const hasClamp = html.includes('clamp(');
+                
+                const responsiveScore = [hasViewport, hasMediaQueries, hasFlexbox, hasClamp].filter(Boolean).length;
+                
+                return {
+                    status: responsiveScore >= 3 ? 'pass' : responsiveScore >= 2 ? 'warning' : 'fail',
+                    message: `Responsive features: ${responsiveScore}/4`
+                };
+            } catch (error) {
+                return { status: 'fail', message: error.message };
+            }
+        }
+
+        async function checkRTLSupport(gameUrl) {
+            try {
+                const response = await fetch(`../games/${gameUrl}`);
+                const html = await response.text();
+                
+                const hasRTL = html.includes('dir="rtl"') || html.includes('direction: rtl');
+                const hasHebrew = html.includes('lang="he"');
+                
+                return {
+                    status: hasRTL && hasHebrew ? 'pass' : hasRTL ? 'warning' : 'fail',
+                    message: `RTL=${hasRTL}, Hebrew lang=${hasHebrew}`
+                };
+            } catch (error) {
+                return { status: 'fail', message: error.message };
+            }
+        }
+
+        async function checkColorContrast(gameUrl) {
+            try {
+                const response = await fetch(`../games/${gameUrl}`);
+                const html = await response.text();
+                
+                // Basic check for color definitions
+                const hasColorVars = html.includes('--') && html.includes('color');
+                const hasAccessibleColors = html.includes('#fff') || html.includes('#000') || html.includes('white') || html.includes('black');
+                
+                return {
+                    status: hasAccessibleColors ? 'pass' : 'warning',
+                    message: `Color system: variables=${hasColorVars}, high-contrast=${hasAccessibleColors}`
+                };
+            } catch (error) {
+                return { status: 'fail', message: error.message };
+            }
+        }
+
+        async function checkFontReadability(gameUrl) {
+            try {
+                const response = await fetch(`../games/${gameUrl}`);
+                const html = await response.text();
+                
+                // Check font sizes
+                const hasFontSize = html.includes('font-size');
+                const hasClampFonts = html.includes('clamp') && html.includes('em');
+                const hasMinFontSize = /font-size:\s*[1-9]\d*px/i.test(html) || /font-size:\s*[1-9]\.?\d*em/i.test(html);
+                
+                return {
+                    status: hasFontSize && hasMinFontSize ? 'pass' : 'warning',
+                    message: `Font sizing: defined=${hasFontSize}, responsive=${hasClampFonts}`
+                };
+            } catch (error) {
+                return { status: 'fail', message: error.message };
+            }
+        }
+
+        async function checkAnimationSmoothness(gameUrl) {
+            try {
+                const response = await fetch(`../games/${gameUrl}`);
+                const html = await response.text();
+                
+                // Check for animation patterns
+                const hasTransition = html.includes('transition');
+                const hasAnimation = html.includes('animation') || html.includes('@keyframes');
+                const hasRAF = html.includes('requestAnimationFrame');
+                
+                return {
+                    status: hasTransition || hasAnimation ? 'pass' : 'warning',
+                    message: `Animations: CSS=${hasAnimation}, transitions=${hasTransition}, RAF=${hasRAF}`
+                };
+            } catch (error) {
+                return { status: 'fail', message: error.message };
+            }
+        }
+
+        async function checkVisualFeedback(gameUrl) {
+            try {
+                const response = await fetch(`../games/${gameUrl}`);
+                const html = await response.text();
+                
+                // Check for visual feedback patterns
+                const hasHover = html.includes(':hover');
+                const hasActive = html.includes(':active');
+                const hasFocus = html.includes(':focus');
+                const hasVisualClass = html.includes('visual-feedback') || html.includes('flash');
+                
+                const feedbackScore = [hasHover, hasActive, hasFocus, hasVisualClass].filter(Boolean).length;
+                
+                return {
+                    status: feedbackScore >= 3 ? 'pass' : feedbackScore >= 2 ? 'warning' : 'fail',
+                    message: `Visual feedback: ${feedbackScore}/4 patterns`
+                };
+            } catch (error) {
+                return { status: 'fail', message: error.message };
+            }
+        }
+
+        async function checkTouchTargets(gameUrl) {
+            try {
+                const response = await fetch(`../games/${gameUrl}`);
+                const html = await response.text();
+                
+                // Check for touch-friendly sizes
+                const hasMinHeight = html.includes('min-height: 44px') || html.includes('min-height: 48px');
+                const hasPadding = /padding:\s*\d{2,}px/i.test(html);
+                const hasTouchEvents = html.includes('touchstart') || html.includes('touchend');
+                
+                return {
+                    status: hasMinHeight || hasPadding ? 'pass' : 'warning',
+                    message: `Touch-friendly: minHeight=${hasMinHeight}, padding=${hasPadding}, events=${hasTouchEvents}`
+                };
+            } catch (error) {
+                return { status: 'fail', message: error.message };
+            }
+        }
+
+        // Performance Testing Functions
+        async function checkLoadTime(gameUrl) {
+            const startTime = performance.now();
+            try {
+                const response = await fetch(`../games/${gameUrl}`);
+                await response.text();
+                const loadTime = performance.now() - startTime;
+                
+                return {
+                    status: loadTime < 1000 ? 'pass' : loadTime < 3000 ? 'warning' : 'fail',
+                    message: `Load time: ${Math.round(loadTime)}ms`
+                };
+            } catch (error) {
+                return { status: 'fail', message: error.message };
+            }
+        }
+
+        async function checkMemoryUsage(gameUrl) {
+            if (!performance.memory) {
+                return { status: 'warning', message: 'Memory API not available' };
+            }
+            
+            const before = performance.memory.usedJSHeapSize;
+            try {
+                const response = await fetch(`../games/${gameUrl}`);
+                await response.text();
+                const after = performance.memory.usedJSHeapSize;
+                const memoryUsed = (after - before) / 1024 / 1024;
+                
+                return {
+                    status: memoryUsed < 10 ? 'pass' : memoryUsed < 50 ? 'warning' : 'fail',
+                    message: `Memory used: ${memoryUsed.toFixed(2)}MB`
+                };
+            } catch (error) {
+                return { status: 'fail', message: error.message };
+            }
+        }
+
+        async function checkFrameRate(gameUrl) {
+            try {
+                const response = await fetch(`../games/${gameUrl}`);
+                const html = await response.text();
+                
+                // Check for performance optimizations
+                const hasRAF = html.includes('requestAnimationFrame');
+                const hasWillChange = html.includes('will-change');
+                const hasTransform3d = html.includes('transform3d') || html.includes('translateZ');
+                
+                const performanceScore = [hasRAF, hasWillChange, hasTransform3d].filter(Boolean).length;
+                
+                return {
+                    status: performanceScore >= 2 ? 'pass' : performanceScore >= 1 ? 'warning' : 'fail',
+                    message: `FPS optimizations: ${performanceScore}/3`
+                };
+            } catch (error) {
+                return { status: 'fail', message: error.message };
+            }
+        }
+
+        async function checkDOMSpeed(gameUrl) {
+            try {
+                const response = await fetch(`../games/${gameUrl}`);
+                const html = await response.text();
+                
+                // Count DOM operations
+                const querySelectors = (html.match(/querySelector/g) || []).length;
+                const getElements = (html.match(/getElementById/g) || []).length;
+                const innerHTMLs = (html.match(/innerHTML/g) || []).length;
+                
+                const totalOps = querySelectors + getElements + innerHTMLs;
+                
+                return {
+                    status: totalOps < 50 ? 'pass' : totalOps < 100 ? 'warning' : 'fail',
+                    message: `DOM operations: ${totalOps} total`
+                };
+            } catch (error) {
+                return { status: 'fail', message: error.message };
+            }
+        }
+
+        async function checkNetworkRequests(gameUrl) {
+            try {
+                const response = await fetch(`../games/${gameUrl}`);
+                const html = await response.text();
+                
+                // Check for external resources
+                const externalScripts = (html.match(/<script\s+src=/g) || []).length;
+                const externalStyles = (html.match(/<link\s+.*href=/g) || []).length;
+                const externalImages = (html.match(/<img\s+src=/g) || []).length;
+                
+                const totalExternal = externalScripts + externalStyles + externalImages;
+                
+                return {
+                    status: totalExternal === 0 ? 'pass' : totalExternal < 3 ? 'warning' : 'fail',
+                    message: `External resources: ${totalExternal} (self-contained is better)`
+                };
+            } catch (error) {
+                return { status: 'fail', message: error.message };
+            }
+        }
+
+        async function checkJSExecution(gameUrl) {
+            try {
+                const response = await fetch(`../games/${gameUrl}`);
+                const html = await response.text();
+                
+                // Extract script content
+                const scriptMatches = html.match(/<script[^>]*>([\s\S]*?)<\/script>/gi) || [];
+                const totalScriptSize = scriptMatches.join('').length;
+                
+                return {
+                    status: totalScriptSize < 50000 ? 'pass' : totalScriptSize < 100000 ? 'warning' : 'fail',
+                    message: `Script size: ${(totalScriptSize / 1024).toFixed(1)}KB`
+                };
+            } catch (error) {
+                return { status: 'fail', message: error.message };
+            }
+        }
+
+        async function checkResourceOptimization(gameUrl) {
+            try {
+                const response = await fetch(`../games/${gameUrl}`);
+                const html = await response.text();
+                const fileSize = new Blob([html]).size;
+                
+                return {
+                    status: fileSize < 100000 ? 'pass' : fileSize < 200000 ? 'warning' : 'fail',
+                    message: `Total file size: ${(fileSize / 1024).toFixed(1)}KB`
+                };
+            } catch (error) {
+                return { status: 'fail', message: error.message };
+            }
+        }
+
+        async function checkCacheUsage(gameUrl) {
+            try {
+                const response = await fetch(`../games/${gameUrl}`);
+                const html = await response.text();
+                
+                // Check for localStorage usage
+                const hasLocalStorage = html.includes('localStorage');
+                const hasSessionStorage = html.includes('sessionStorage');
+                const hasCacheAPI = html.includes('caches.');
+                
+                const cacheScore = [hasLocalStorage, hasSessionStorage, hasCacheAPI].filter(Boolean).length;
+                
+                return {
+                    status: cacheScore >= 1 ? 'pass' : 'warning',
+                    message: `Cache usage: localStorage=${hasLocalStorage}, session=${hasSessionStorage}`
+                };
+            } catch (error) {
+                return { status: 'fail', message: error.message };
+            }
+        }
+
+        // Sound Testing Functions
+        async function checkAudioManager(gameUrl) {
+            try {
+                const response = await fetch(`../games/${gameUrl}`);
+                const html = await response.text();
+                
+                const hasAudioManager = html.includes('AudioManager') || html.includes('audioManager');
+                const hasAudioV6 = html.includes('Audio System v6.0') || html.includes('Audio Manager v6.0');
+                
+                return {
+                    status: hasAudioV6 ? 'pass' : hasAudioManager ? 'warning' : 'fail',
+                    message: `Audio System v6.0: ${hasAudioV6}`
+                };
+            } catch (error) {
+                return { status: 'fail', message: error.message };
+            }
+        }
+
+        async function checkSoundPlayback(gameUrl) {
+            try {
+                const response = await fetch(`../games/${gameUrl}`);
+                const html = await response.text();
+                
+                const hasPlaySound = html.includes('playSound') || html.includes('playCorrectSound');
+                const hasAudioContext = html.includes('AudioContext');
+                const hasOscillator = html.includes('oscillator');
+                
+                return {
+                    status: hasPlaySound && hasAudioContext ? 'pass' : hasPlaySound ? 'warning' : 'fail',
+                    message: `Sound methods: play=${hasPlaySound}, context=${hasAudioContext}`
+                };
+            } catch (error) {
+                return { status: 'fail', message: error.message };
+            }
+        }
+
+        async function checkVisualFallback(gameUrl) {
+            try {
+                const response = await fetch(`../games/${gameUrl}`);
+                const html = await response.text();
+                
+                const hasVisualFeedback = html.includes('visual-feedback') || html.includes('visualFeedback');
+                const hasFlashEffect = html.includes('audioFlash') || html.includes('flash');
+                
+                return {
+                    status: hasVisualFeedback || hasFlashEffect ? 'pass' : 'warning',
+                    message: `Visual fallback: ${hasVisualFeedback || hasFlashEffect}`
+                };
+            } catch (error) {
+                return { status: 'fail', message: error.message };
+            }
+        }
+
+        async function checkVolumeControl(gameUrl) {
+            try {
+                const response = await fetch(`../games/${gameUrl}`);
+                const html = await response.text();
+                
+                const hasVolume = html.includes('volume') || html.includes('gain');
+                const hasSetVolume = html.includes('setVolume') || html.includes('globalVolume');
+                
+                return {
+                    status: hasVolume ? 'pass' : 'warning',
+                    message: `Volume control: ${hasVolume}`
+                };
+            } catch (error) {
+                return { status: 'fail', message: error.message };
+            }
+        }
+
+        async function checkMuteFunctionality(gameUrl) {
+            try {
+                const response = await fetch(`../games/${gameUrl}`);
+                const html = await response.text();
+                
+                const hasMute = html.includes('mute') || html.includes('isMuted');
+                const hasSetMuted = html.includes('setMuted');
+                
+                return {
+                    status: hasMute ? 'pass' : 'warning',
+                    message: `Mute functionality: ${hasMute}`
+                };
+            } catch (error) {
+                return { status: 'fail', message: error.message };
+            }
+        }
+
+        async function checkSoundEffects(gameUrl) {
+            try {
+                const response = await fetch(`../games/${gameUrl}`);
+                const html = await response.text();
+                
+                const effects = {
+                    correct: html.includes('CorrectSound'),
+                    wrong: html.includes('WrongSound'),
+                    click: html.includes('ClickSound'),
+                    win: html.includes('WinSound'),
+                    gameOver: html.includes('GameOverSound')
+                };
+                
+                const effectCount = Object.values(effects).filter(Boolean).length;
+                
+                return {
+                    status: effectCount >= 3 ? 'pass' : effectCount >= 2 ? 'warning' : 'fail',
+                    message: `Sound effects: ${effectCount}/5 types`
+                };
+            } catch (error) {
+                return { status: 'fail', message: error.message };
+            }
+        }
+
+        async function checkAudioPermission(gameUrl) {
+            try {
+                const response = await fetch(`../games/${gameUrl}`);
+                const html = await response.text();
+                
+                const hasPermissionCheck = html.includes('NotAllowedError') || html.includes('permissionState');
+                const hasUserInteraction = html.includes('initAudioOnInteraction');
+                
+                return {
+                    status: hasUserInteraction ? 'pass' : 'warning',
+                    message: `Permission handling: ${hasPermissionCheck}`
+                };
+            } catch (error) {
+                return { status: 'fail', message: error.message };
+            }
+        }
+
+        async function checkPronunciationSupport(gameUrl) {
+            // Special check for hebrew-english-learning-game
+            if (!gameUrl.includes('hebrew-english')) {
+                return { status: 'pass', message: 'N/A for this game' };
+            }
+            
+            try {
+                const response = await fetch(`../games/${gameUrl}`);
+                const html = await response.text();
+                
+                const hasPronunciation = html.includes('pronunciation');
+                const hasSpeechAPI = html.includes('speechSynthesis') || html.includes('SpeechSynthesisUtterance');
+                const hasAudioFiles = html.includes('.mp3') || html.includes('.wav');
+                
+                return {
+                    status: hasSpeechAPI || hasAudioFiles ? 'pass' : hasPronunciation ? 'warning' : 'fail',
+                    message: `Pronunciation: text=${hasPronunciation}, speech=${hasSpeechAPI}, files=${hasAudioFiles}`
+                };
+            } catch (error) {
+                return { status: 'fail', message: error.message };
+            }
+        }
+
+        // Test Runner Functions
+        async function runAllTests() {
+            logMessage('🚀 Starting comprehensive test suite...');
+            testResults = { total: 0, passed: 0, failed: 0, warnings: 0, details: [] };
+            
+            for (const game of testConfig.games) {
+                logMessage(`\n📋 Testing: ${game}`);
+                
+                for (const [category, config] of Object.entries(testConfig.categories)) {
+                    await runCategoryTestsForGame(category, config, game);
+                }
+            }
+            
+            updateMetrics();
+            logMessage('\n✅ All tests completed!');
+        }
+
+        async function runCategoryTests(category) {
+            logMessage(`🧪 Running ${category} tests...`);
+            testResults = { total: 0, passed: 0, failed: 0, warnings: 0, details: [] };
+            
+            const config = testConfig.categories[category];
+            for (const game of testConfig.games) {
+                await runCategoryTestsForGame(category, config, game);
+            }
+            
+            updateMetrics();
+        }
+
+        async function runCategoryTestsForGame(category, config, game) {
+            const container = document.getElementById(`${category}Tests`);
+            
+            for (const test of config.tests) {
+                const testId = `${category}-${test.name.replace(/\s+/g, '-')}-${game}`;
+                let testItem = document.getElementById(testId);
+                
+                if (!testItem) {
+                    testItem = document.createElement('div');
+                    testItem.id = testId;
+                    testItem.className = 'test-item running';
+                    container.appendChild(testItem);
+                }
+                
+                testItem.innerHTML = `
+                    <span>${test.name} - ${game}</span>
+                    <span class="test-status">
+                        <span class="status-icon">⏳</span>
+                        <span>Running...</span>
+                    </span>
+                `;
+                
+                const result = await test.fn(game);
+                testResults.total++;
+                
+                if (result.status === 'pass') {
+                    testResults.passed++;
+                    testItem.className = 'test-item pass';
+                    testItem.querySelector('.status-icon').textContent = '✅';
+                } else if (result.status === 'warning') {
+                    testResults.warnings++;
+                    testItem.className = 'test-item warning';
+                    testItem.querySelector('.status-icon').textContent = '⚠️';
+                } else {
+                    testResults.failed++;
+                    testItem.className = 'test-item fail';
+                    testItem.querySelector('.status-icon').textContent = '❌';
+                }
+                
+                testItem.querySelector('.test-status span:last-child').textContent = result.message;
+                testResults.details.push({ game, category, test: test.name, ...result });
+                
+                updateMetrics();
+            }
+        }
+
+        function updateMetrics() {
+            document.getElementById('totalTests').textContent = testResults.total;
+            document.getElementById('passedTests').textContent = testResults.passed;
+            document.getElementById('failedTests').textContent = testResults.failed;
+            document.getElementById('warningTests').textContent = testResults.warnings;
+            
+            const coverage = testResults.total > 0 
+                ? Math.round((testResults.passed / testResults.total) * 100) 
+                : 0;
+            document.getElementById('coveragePercent').textContent = `${coverage}%`;
+            
+            const progressBar = document.getElementById('progressBar');
+            progressBar.style.width = `${coverage}%`;
+            progressBar.textContent = `${coverage}%`;
+            
+            // Calculate average load time from performance tests
+            const loadTimeTests = testResults.details.filter(d => d.test === 'Page Load Time');
+            if (loadTimeTests.length > 0) {
+                const avgTime = loadTimeTests.reduce((sum, t) => {
+                    const time = parseInt(t.message.match(/\d+/)?.[0] || 0);
+                    return sum + time;
+                }, 0) / loadTimeTests.length;
+                document.getElementById('avgLoadTime').textContent = `${Math.round(avgTime)}ms`;
+            }
+        }
+
+        function selectGame(gameValue) {
+            if (gameValue === 'all') {
+                runAllTests();
+            } else {
+                logMessage(`🎮 Testing ${gameValue}...`);
+                testResults = { total: 0, passed: 0, failed: 0, warnings: 0, details: [] };
+                
+                for (const [category, config] of Object.entries(testConfig.categories)) {
+                    runCategoryTestsForGame(category, config, `${gameValue}.html`);
+                }
+            }
+        }
+
+        function exportResults() {
+            const timestamp = new Date().toISOString();
+            const report = {
+                timestamp,
+                summary: {
+                    total: testResults.total,
+                    passed: testResults.passed,
+                    failed: testResults.failed,
+                    warnings: testResults.warnings,
+                    coverage: Math.round((testResults.passed / testResults.total) * 100)
+                },
+                details: testResults.details
+            };
+            
+            const blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `test-report-${Date.now()}.json`;
+            a.click();
+            
+            logMessage(`📊 Report exported: ${a.download}`);
+        }
+
+        function logMessage(message) {
+            const log = document.getElementById('testLog');
+            const entry = document.createElement('div');
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            log.appendChild(entry);
+            log.scrollTop = log.scrollHeight;
+        }
+
+        function closeGameFrame() {
+            document.getElementById('iframeContainer').style.display = 'none';
+            document.getElementById('gameFrame').src = '';
+        }
+
+        // Initialize on load
+        window.addEventListener('load', () => {
+            logMessage('✨ Test Suite Ready - Click "הרץ את כל הבדיקות" to start');
+        });
+    </script>
+</body>
+</html>
