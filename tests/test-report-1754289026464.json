@@ -1,0 +1,461 @@
+{
+  "timestamp": "2025-08-04T06:30:26.453Z",
+  "games": [
+    {
+      "name": "color-match-game.html",
+      "tests": [
+        {
+          "test": "Error Handler",
+          "status": "passed",
+          "message": "Error Handler v6.0 installed"
+        },
+        {
+          "test": "Audio System",
+          "status": "passed",
+          "message": "Audio System v6.0 installed"
+        },
+        {
+          "test": "Accessibility",
+          "status": "passed",
+          "message": "2 ARIA labels found"
+        },
+        {
+          "test": "State Persistence",
+          "status": "passed",
+          "message": "LocalStorage implemented"
+        },
+        {
+          "test": "Start Mechanism",
+          "status": "passed",
+          "message": "Start mechanism found"
+        },
+        {
+          "test": "Score System",
+          "status": "passed",
+          "message": "Score tracking found"
+        },
+        {
+          "test": "Mobile Support",
+          "status": "passed",
+          "message": "Viewport meta tag found"
+        },
+        {
+          "test": "RTL Support",
+          "status": "passed",
+          "message": "RTL direction set"
+        }
+      ]
+    },
+    {
+      "name": "math-quiz-game.html",
+      "tests": [
+        {
+          "test": "Error Handler",
+          "status": "passed",
+          "message": "Error Handler v6.0 installed"
+        },
+        {
+          "test": "Audio System",
+          "status": "passed",
+          "message": "Audio System v6.0 installed"
+        },
+        {
+          "test": "Accessibility",
+          "status": "passed",
+          "message": "1 ARIA labels found"
+        },
+        {
+          "test": "State Persistence",
+          "status": "passed",
+          "message": "LocalStorage implemented"
+        },
+        {
+          "test": "Start Mechanism",
+          "status": "passed",
+          "message": "Start mechanism found"
+        },
+        {
+          "test": "Score System",
+          "status": "passed",
+          "message": "Score tracking found"
+        },
+        {
+          "test": "Mobile Support",
+          "status": "passed",
+          "message": "Viewport meta tag found"
+        },
+        {
+          "test": "RTL Support",
+          "status": "passed",
+          "message": "RTL direction set"
+        }
+      ]
+    },
+    {
+      "name": "memory-match-game.html",
+      "tests": [
+        {
+          "test": "Error Handler",
+          "status": "passed",
+          "message": "Error Handler v6.0 installed"
+        },
+        {
+          "test": "Audio System",
+          "status": "passed",
+          "message": "Audio System v6.0 installed"
+        },
+        {
+          "test": "Accessibility",
+          "status": "passed",
+          "message": "4 ARIA labels found"
+        },
+        {
+          "test": "State Persistence",
+          "status": "passed",
+          "message": "LocalStorage implemented"
+        },
+        {
+          "test": "Start Mechanism",
+          "status": "passed",
+          "message": "Start mechanism found"
+        },
+        {
+          "test": "Score System",
+          "status": "passed",
+          "message": "Score tracking found"
+        },
+        {
+          "test": "Mobile Support",
+          "status": "passed",
+          "message": "Viewport meta tag found"
+        },
+        {
+          "test": "RTL Support",
+          "status": "passed",
+          "message": "RTL direction set"
+        }
+      ]
+    },
+    {
+      "name": "puzzle-slider-game.html",
+      "tests": [
+        {
+          "test": "Error Handler",
+          "status": "passed",
+          "message": "Error Handler v6.0 installed"
+        },
+        {
+          "test": "Audio System",
+          "status": "passed",
+          "message": "Audio System v6.0 installed"
+        },
+        {
+          "test": "Accessibility",
+          "status": "passed",
+          "message": "3 ARIA labels found"
+        },
+        {
+          "test": "State Persistence",
+          "status": "passed",
+          "message": "LocalStorage implemented"
+        },
+        {
+          "test": "Start Mechanism",
+          "status": "passed",
+          "message": "Start mechanism found"
+        },
+        {
+          "test": "Score System",
+          "status": "passed",
+          "message": "Score tracking found"
+        },
+        {
+          "test": "Mobile Support",
+          "status": "passed",
+          "message": "Viewport meta tag found"
+        },
+        {
+          "test": "RTL Support",
+          "status": "passed",
+          "message": "RTL direction set"
+        }
+      ]
+    },
+    {
+      "name": "quick-draw-game.html",
+      "tests": [
+        {
+          "test": "Error Handler",
+          "status": "passed",
+          "message": "Error Handler v6.0 installed"
+        },
+        {
+          "test": "Audio System",
+          "status": "passed",
+          "message": "Audio System v6.0 installed"
+        },
+        {
+          "test": "Accessibility",
+          "status": "passed",
+          "message": "1 ARIA labels found"
+        },
+        {
+          "test": "State Persistence",
+          "status": "passed",
+          "message": "LocalStorage implemented"
+        },
+        {
+          "test": "Start Mechanism",
+          "status": "passed",
+          "message": "Start mechanism found"
+        },
+        {
+          "test": "Score System",
+          "status": "passed",
+          "message": "Score tracking found"
+        },
+        {
+          "test": "Mobile Support",
+          "status": "passed",
+          "message": "Viewport meta tag found"
+        },
+        {
+          "test": "RTL Support",
+          "status": "passed",
+          "message": "RTL direction set"
+        }
+      ]
+    },
+    {
+      "name": "simon-says-game.html",
+      "tests": [
+        {
+          "test": "Error Handler",
+          "status": "passed",
+          "message": "Error Handler v6.0 installed"
+        },
+        {
+          "test": "Audio System",
+          "status": "passed",
+          "message": "Audio System v6.0 installed"
+        },
+        {
+          "test": "Accessibility",
+          "status": "passed",
+          "message": "1 ARIA labels found"
+        },
+        {
+          "test": "State Persistence",
+          "status": "passed",
+          "message": "LocalStorage implemented"
+        },
+        {
+          "test": "Start Mechanism",
+          "status": "passed",
+          "message": "Start mechanism found"
+        },
+        {
+          "test": "Score System",
+          "status": "passed",
+          "message": "Score tracking found"
+        },
+        {
+          "test": "Mobile Support",
+          "status": "passed",
+          "message": "Viewport meta tag found"
+        },
+        {
+          "test": "RTL Support",
+          "status": "passed",
+          "message": "RTL direction set"
+        }
+      ]
+    },
+    {
+      "name": "snakes-and-ladders-game.html",
+      "tests": [
+        {
+          "test": "Error Handler",
+          "status": "passed",
+          "message": "Error Handler v6.0 installed"
+        },
+        {
+          "test": "Audio System",
+          "status": "passed",
+          "message": "Audio System v6.0 installed"
+        },
+        {
+          "test": "Accessibility",
+          "status": "passed",
+          "message": "2 ARIA labels found"
+        },
+        {
+          "test": "State Persistence",
+          "status": "passed",
+          "message": "LocalStorage implemented"
+        },
+        {
+          "test": "Start Mechanism",
+          "status": "passed",
+          "message": "Start mechanism found"
+        },
+        {
+          "test": "Score System",
+          "status": "passed",
+          "message": "Score tracking found"
+        },
+        {
+          "test": "Mobile Support",
+          "status": "passed",
+          "message": "Viewport meta tag found"
+        },
+        {
+          "test": "RTL Support",
+          "status": "passed",
+          "message": "RTL direction set"
+        }
+      ]
+    },
+    {
+      "name": "tic-tac-toe-game.html",
+      "tests": [
+        {
+          "test": "Error Handler",
+          "status": "passed",
+          "message": "Error Handler v6.0 installed"
+        },
+        {
+          "test": "Audio System",
+          "status": "passed",
+          "message": "Audio System v6.0 installed"
+        },
+        {
+          "test": "Accessibility",
+          "status": "passed",
+          "message": "1 ARIA labels found"
+        },
+        {
+          "test": "State Persistence",
+          "status": "passed",
+          "message": "LocalStorage implemented"
+        },
+        {
+          "test": "Start Mechanism",
+          "status": "passed",
+          "message": "Start mechanism found"
+        },
+        {
+          "test": "Score System",
+          "status": "passed",
+          "message": "Score tracking found"
+        },
+        {
+          "test": "Mobile Support",
+          "status": "passed",
+          "message": "Viewport meta tag found"
+        },
+        {
+          "test": "RTL Support",
+          "status": "passed",
+          "message": "RTL direction set"
+        }
+      ]
+    },
+    {
+      "name": "word-scramble-game.html",
+      "tests": [
+        {
+          "test": "Error Handler",
+          "status": "passed",
+          "message": "Error Handler v6.0 installed"
+        },
+        {
+          "test": "Audio System",
+          "status": "passed",
+          "message": "Audio System v6.0 installed"
+        },
+        {
+          "test": "Accessibility",
+          "status": "passed",
+          "message": "2 ARIA labels found"
+        },
+        {
+          "test": "State Persistence",
+          "status": "passed",
+          "message": "LocalStorage implemented"
+        },
+        {
+          "test": "Start Mechanism",
+          "status": "passed",
+          "message": "Start mechanism found"
+        },
+        {
+          "test": "Score System",
+          "status": "passed",
+          "message": "Score tracking found"
+        },
+        {
+          "test": "Mobile Support",
+          "status": "passed",
+          "message": "Viewport meta tag found"
+        },
+        {
+          "test": "RTL Support",
+          "status": "passed",
+          "message": "RTL direction set"
+        }
+      ]
+    },
+    {
+      "name": "hebrew-english-learning-game.html",
+      "tests": [
+        {
+          "test": "Error Handler",
+          "status": "passed",
+          "message": "Error Handler v6.0 installed"
+        },
+        {
+          "test": "Audio System",
+          "status": "passed",
+          "message": "Audio System v6.0 installed"
+        },
+        {
+          "test": "Accessibility",
+          "status": "passed",
+          "message": "12 ARIA labels found"
+        },
+        {
+          "test": "State Persistence",
+          "status": "warning",
+          "message": "No localStorage usage"
+        },
+        {
+          "test": "Start Mechanism",
+          "status": "passed",
+          "message": "Start mechanism found"
+        },
+        {
+          "test": "Score System",
+          "status": "passed",
+          "message": "Score tracking found"
+        },
+        {
+          "test": "Mobile Support",
+          "status": "passed",
+          "message": "Viewport meta tag found"
+        },
+        {
+          "test": "RTL Support",
+          "status": "passed",
+          "message": "RTL direction set"
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "total": 80,
+    "passed": 79,
+    "failed": 0,
+    "warnings": 1
+  }
+}

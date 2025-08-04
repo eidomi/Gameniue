@@ -18,7 +18,8 @@ const games = [
     'simon-says-game.html',
     'snakes-and-ladders-game.html',
     'tic-tac-toe-game.html',
-    'word-scramble-game.html'
+    'word-scramble-game.html',
+    'hebrew-english-learning-game.html'
 ];
 
 const testResults = {

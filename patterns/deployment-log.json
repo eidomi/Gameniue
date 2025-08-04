@@ -1,61 +1,66 @@
 {
-  "timestamp": "2025-08-03T21:27:52.576Z",
+  "timestamp": "2025-08-04T06:34:21.855Z",
   "results": {
-    "success": [
+    "success": [],
+    "skipped": [
       {
         "file": "/Users/yehudamizrahi/Gameniue/games/color-match-game.html",
-        "status": "success",
-        "backup": "/Users/yehudamizrahi/Gameniue/games/color-match-game.html.backup.1754256472565"
+        "status": "skipped",
+        "reason": "already installed"
+      },
+      {
+        "file": "/Users/yehudamizrahi/Gameniue/games/hebrew-english-learning-game.html",
+        "status": "skipped",
+        "reason": "already installed"
       },
       {
         "file": "/Users/yehudamizrahi/Gameniue/games/math-quiz-game.html",
-        "status": "success",
-        "backup": "/Users/yehudamizrahi/Gameniue/games/math-quiz-game.html.backup.1754256472567"
+        "status": "skipped",
+        "reason": "already installed"
       },
       {
         "file": "/Users/yehudamizrahi/Gameniue/games/memory-match-game.html",
-        "status": "success",
-        "backup": "/Users/yehudamizrahi/Gameniue/games/memory-match-game.html.backup.1754256472568"
+        "status": "skipped",
+        "reason": "already installed"
       },
       {
         "file": "/Users/yehudamizrahi/Gameniue/games/puzzle-slider-game.html",
-        "status": "success",
-        "backup": "/Users/yehudamizrahi/Gameniue/games/puzzle-slider-game.html.backup.1754256472570"
+        "status": "skipped",
+        "reason": "already installed"
       },
       {
         "file": "/Users/yehudamizrahi/Gameniue/games/quick-draw-game.html",
-        "status": "success",
-        "backup": "/Users/yehudamizrahi/Gameniue/games/quick-draw-game.html.backup.1754256472572"
+        "status": "skipped",
+        "reason": "already installed"
       },
       {
         "file": "/Users/yehudamizrahi/Gameniue/games/simon-says-game.html",
-        "status": "success",
-        "backup": "/Users/yehudamizrahi/Gameniue/games/simon-says-game.html.backup.1754256472573"
+        "status": "skipped",
+        "reason": "already installed"
       },
       {
         "file": "/Users/yehudamizrahi/Gameniue/games/snakes-and-ladders-game.html",
-        "status": "success",
-        "backup": "/Users/yehudamizrahi/Gameniue/games/snakes-and-ladders-game.html.backup.1754256472573"
+        "status": "skipped",
+        "reason": "already installed"
       },
       {
         "file": "/Users/yehudamizrahi/Gameniue/games/tic-tac-toe-game.html",
-        "status": "success",
-        "backup": "/Users/yehudamizrahi/Gameniue/games/tic-tac-toe-game.html.backup.1754256472574"
+        "status": "skipped",
+        "reason": "already installed"
       },
       {
         "file": "/Users/yehudamizrahi/Gameniue/games/word-scramble-game.html",
-        "status": "success",
-        "backup": "/Users/yehudamizrahi/Gameniue/games/word-scramble-game.html.backup.1754256472575"
+        "status": "skipped",
+        "reason": "already installed"
       }
     ],
-    "skipped": [],
     "failed": [],
     "errors": []
   },
   "summary": {
-    "total": 9,
-    "success": 9,
-    "skipped": 0,
+    "total": 10,
+    "success": 0,
+    "skipped": 10,
     "failed": 0,
     "errors": 0
   }

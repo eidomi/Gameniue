@@ -36,19 +36,15 @@ think carefully and
 
 
 
-1. create type test file for all games 
-   - Create a type test file for all games in ./tests
-   - Ensure the type test file covers all game types
-   - Ensure the type test file is comprehensive and well-structured
-   - Ensure the type test file is easy to read and understand
-   - Ensure the type test file is maintainable and reusable
-   - Ensure the type test file is version controlled
-   - Ensure the type test file is documented
-   - Ensure the type test file is easily discoverable
-2. start type test for all the games 
-   - Start the type test for all games in ./tests
-   - Ensure all games are tested
-
+Create new game hebrew-learn-english
+   - Ask yourself:
+      - Will you play this game again?
+      - Is the game fun?
+      - Is the game engaging?
+      - Is the game challenging?
+      - Is the game rewarding?
+      - Is the game accessible?
+   # Task Execution Workflow
 **Think carefully Step-by-Step**
    - Analyze the current task requirements
    - Minimize the scope to essential features

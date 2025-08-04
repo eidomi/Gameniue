@@ -1,10 +1,10 @@
 # 🎮 Gameniue - ארץ המשחקים
 
-A collection of 10 educational Hebrew games for the whole family, built with pure HTML, CSS, and JavaScript.
+A collection of 11 educational Hebrew games for the whole family, built with pure HTML, CSS, and JavaScript.
 
 ## 🎯 Features
 
-- 10 different educational games
+- 11 different educational games
 - Hebrew interface with RTL support
 - Mobile-responsive design
 - No external dependencies
@@ -27,6 +27,7 @@ A collection of 10 educational Hebrew games for the whole family, built with pur
 8. **Pattern Memory** - Remember visual patterns
 9. **Puzzle Slider** - Number sliding puzzle
 10. **Quick Draw** - Drawing and guessing game
+11. **Hebrew-English Learning** - Learn English vocabulary with fun games
 
 ## 🚀 Quick Start
 
