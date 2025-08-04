@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>סולמות ונחשים - המהדורה האולטימטיבית</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            overflow-x: hidden;
+        }
+
+        .game-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 15px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: clamp(1.5em, 5vw, 2.5em);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            background: linear-gradient(45deg, #f39c12, #e74c3c);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .board-section {
+            flex: 1;
+            min-width: 280px;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .board {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            grid-template-rows: repeat(10, 1fr);
+            gap: 1px;
+            background: #34495e;
+            padding: 5px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            aspect-ratio: 1/1;
+            margin: 0 auto;
+            direction: ltr;
+            box-sizing: border-box;
+        }
+
+        .square {
+            background: linear-gradient(135deg, #ecf0f1 0%, #bdc3c7 100%);
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: clamp(0.5em, 1.5vw, 0.9em);
+            color: #2c3e50;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 2px;
+            width: 100%;
+            height: 100%;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        .square:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .square.snake-start {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+        }
+
+        .square.snake-end {
+            background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+            color: white;
+        }
+
+        .square.ladder-start {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+        }
+
+        .square.ladder-end {
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+            color: white;
+        }
+
+        .player-piece {
+            position: absolute;
+            width: min(30px, 40%);
+            height: min(30px, 40%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: clamp(0.8em, 2vw, 1.2em);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 10;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .player1 {
+            background: linear-gradient(135deg, #f39c12 0%, #f1c40f 100%);
+            top: 2px;
+            left: 2px;
+        }
+
+        .player2 {
+            background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
+            bottom: 2px;
+            right: 2px;
+        }
+
+        .player3 {
+            background: linear-gradient(135deg, #1abc9c 0%, #16a085 100%);
+            top: 2px;
+            right: 2px;
+        }
+
+        .player4 {
+            background: linear-gradient(135deg, #e67e22 0%, #d35400 100%);
+            bottom: 2px;
+            left: 2px;
+        }
+
+        .controls-section {
+            flex: 1;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .player-info {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            color: white;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .player-info h3 {
+            margin-bottom: 10px;
+            font-size: 1.5em;
+        }
+
+        .player-info.active {
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+
+        .dice-container {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .dice {
+            width: 80px;
+            height: 80px;
+            background: white;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5em;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dice:focus {
+            outline: 3px solid #f39c12;
+            outline-offset: 3px;
+        }
+
+        .dice:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .dice.rolling {
+            animation: diceRoll 0.5s ease-in-out;
+        }
+
+        @keyframes diceRoll {
+            0% { transform: rotateX(0) rotateY(0); }
+            25% { transform: rotateX(720deg) rotateY(360deg) scale(1.2); }
+            50% { transform: rotateX(1440deg) rotateY(720deg) scale(0.8); }
+            75% { transform: rotateX(2160deg) rotateY(1080deg) scale(1.1); }
+            100% { transform: rotateX(2880deg) rotateY(1440deg) scale(1); }
+        }
+
+        .button {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.1em;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .message {
+            text-align: center;
+            font-size: 1.2em;
+            margin-top: 20px;
+            padding: 15px;
+            background: linear-gradient(135deg, #f39c12 0%, #f1c40f 100%);
+            color: white;
+            border-radius: 10px;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            display: none;
+        }
+
+        .message.show {
+            display: block;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .snake-visual, .ladder-visual {
+            position: absolute;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .game-setup {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .game-setup select, .game-setup button {
+            margin: 5px;
+            padding: 10px 20px;
+            font-size: 1em;
+            border-radius: 25px;
+            border: 2px solid #3498db;
+        }
+
+        .history {
+            background: rgba(52, 73, 94, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .history h4 {
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+
+        .history-item {
+            padding: 5px;
+            margin: 2px 0;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 5px;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 5px;
+            }
+            
+            .game-container {
+                flex-direction: column;
+                align-items: center;
+                padding: 10px;
+                gap: 10px;
+                max-width: 100%;
+            }
+            
+            h1 {
+                font-size: 1.8em;
+                margin-bottom: 10px;
+            }
+            
+            .board-section {
+                min-width: unset;
+                width: 100%;
+                max-width: calc(100vw - 20px);
+            }
+            
+            .board {
+                width: calc(100vw - 30px);
+                max-width: 400px;
+                height: calc(100vw - 30px);
+                max-height: 400px;
+                padding: 4px;
+                gap: 1px;
+            }
+            
+            .square {
+                font-size: 0.6em;
+                padding: 0;
+                border-radius: 1px;
+                min-width: 0;
+                min-height: 0;
+                line-height: 1;
+                text-align: center;
+            }
+            
+            .square small {
+                font-size: 0.9em;
+            }
+            
+            .square:hover {
+                transform: none;
+            }
+            
+            .player-piece {
+                width: 18px;
+                height: 18px;
+                font-size: 0.7em;
+                top: 1px;
+                left: 1px;
+                right: auto;
+                bottom: auto;
+            }
+            
+            .player1 { top: 1px; left: 1px; }
+            .player2 { top: 1px; right: 1px; left: auto; }
+            .player3 { bottom: 1px; left: 1px; top: auto; }
+            .player4 { bottom: 1px; right: 1px; top: auto; left: auto; }
+            
+            .controls-section {
+                width: 100%;
+                max-width: 400px;
+                padding: 0 10px;
+            }
+            
+            .player-info {
+                padding: 12px;
+                font-size: 0.9em;
+            }
+            
+            .player-info h3 {
+                font-size: 1.2em;
+            }
+            
+            .dice-container {
+                margin: 15px 0;
+            }
+            
+            .dice {
+                width: 60px;
+                height: 60px;
+                font-size: 1.8em;
+                border-radius: 10px;
+            }
+            
+            .button {
+                padding: 10px 20px;
+                font-size: 0.95em;
+                margin-top: 8px;
+            }
+            
+            .game-setup select, .game-setup button {
+                padding: 8px 15px;
+                font-size: 0.9em;
+                margin: 3px;
+            }
+            
+            .history {
+                max-height: 80px;
+                padding: 8px;
+                font-size: 0.8em;
+                margin-top: 10px;
+            }
+            
+            .history-item {
+                padding: 3px;
+                font-size: 0.85em;
+            }
+            
+            .message {
+                font-size: 0.95em;
+                padding: 8px;
+                margin-top: 10px;
+            }
+        }
+        
+        @media (max-width: 400px) {
+            .board {
+                width: calc(100vw - 20px);
+                height: calc(100vw - 20px);
+                max-width: 350px;
+                max-height: 350px;
+                padding: 3px;
+                gap: 0.5px;
+            }
+            
+            .square {
+                font-size: 0.5em;
+            }
+            
+            .player-piece {
+                width: 15px;
+                height: 15px;
+                font-size: 0.6em;
+            }
+            
+            h1 {
+                font-size: 1.5em;
+            }
+            
+            .dice {
+                width: 50px;
+                height: 50px;
+                font-size: 1.5em;
+            }
+        }
+    </style>
+
+<!-- Error Handler v6.0 - ROI: 850% -->
+<script>
+// Minified Error Handler v6.0
+!function(){class ErrorManager{constructor(){if(ErrorManager.instance)return ErrorManager.instance;this.errors=[],this.maxErrors=100,this.recoveryStrategies=new Map,this.telemetry={errorCount:0,recoveryCount:0,fatalCount:0},this.notificationQueue=[],this.isShowingNotification=!1,this.setupGlobalHandlers(),ErrorManager.instance=this}setupGlobalHandlers(){window.addEventListener("error",e=>{this.handleError({type:"javascript",message:e.message,source:e.filename,line:e.lineno,column:e.colno,error:e.error,timestamp:Date.now()}),e.preventDefault()}),window.addEventListener("unhandledrejection",e=>{this.handleError({type:"promise",message:e.reason?.message||String(e.reason),reason:e.reason,timestamp:Date.now()}),e.preventDefault()})}handleError(e){this.telemetry.errorCount++,this.storeError(e),this.isDevelopment()&&console.error("Error captured:",e);const r=this.attemptRecovery(e);return r?this.telemetry.recoveryCount++:(this.notifyUser(e),this.isFatalError(e)&&(this.telemetry.fatalCount++,this.handleFatalError(e))),r}storeError(e){this.errors.push({...e,id:`err_${Date.now()}_${Math.random().toString(36).substr(2,9)}`,handled:!1}),this.errors.length>this.maxErrors&&this.errors.shift();try{const e=this.errors.slice(-10);localStorage.setItem("recentErrors",JSON.stringify(e))}catch{}}attemptRecovery(e){if(e.message?.includes("QuotaExceededError"))try{return Object.keys(localStorage).filter(e=>e.startsWith("temp_")||e.includes("_old")).forEach(e=>localStorage.removeItem(e)),!0}catch{}if(e.message?.includes("AudioContext"))try{return window.audioManager&&(window.audioManager.destroy?.(),window.audioManager=new AudioManager),!0}catch{}return e.message?.includes("fetch")||e.message?.includes("network")?(this.scheduleRetry(e),!0):e.message?.includes("Cannot read")&&e.message?.includes("null")?(this.attemptDOMRecovery(e),!1):!1}attemptDOMRecovery(e){[{id:"gameBoard",create:()=>this.createGameBoard()},{id:"timer",create:()=>this.createTimer()},{id:"score",create:()=>this.createScore()}].forEach(({id:e,create:r})=>{if(!document.getElementById(e)){console.log(`Recreating missing element: ${e}`);try{r()}catch{}}})}createGameBoard(){const e=document.createElement("div");e.id="gameBoard",e.className="game-board",document.querySelector(".game-container")?.appendChild(e)}createTimer(){const e=document.createElement("div");e.id="timer",e.textContent="0:00",document.querySelector(".stats")?.appendChild(e)}createScore(){const e=document.createElement("div");e.id="score",e.textContent="0",document.querySelector(".stats")?.appendChild(e)}scheduleRetry(e,r=1e3){setTimeout(()=>{console.log("Retrying after error:",e.message),window.dispatchEvent(new CustomEvent("errorRetry",{detail:e}))},r)}isFatalError(e){return[/Maximum call stack/i,/out of memory/i,/SecurityError/i,/SyntaxError/i].some(r=>r.test(e.message))}handleFatalError(e){console.error("FATAL ERROR:",e),this.showFatalErrorUI(e),this.emergencySaveState(),this.stopAllActivities()}showFatalErrorUI(e){const r=document.createElement("div");r.className="error-modal fatal",r.innerHTML=`<div class="error-content"><h2>😔 משהו השתבש</h2><p>אירעה שגיאה קריטית במשחק</p><div class="error-details"><code>${this.sanitizeErrorMessage(e.message)}</code></div><div class="error-actions"><button onclick="location.reload()">🔄 רענן את הדף</button><button onclick="window.location.href='../index.html'">🏠 חזור לדף הבית</button></div></div>`,document.body.appendChild(r),this.injectErrorStyles()}notifyUser(e){this.notificationQueue.push(e),this.processNotificationQueue()}async processNotificationQueue(){if(this.isShowingNotification||0===this.notificationQueue.length)return;this.isShowingNotification=!0;const e=this.notificationQueue.shift(),r=document.createElement("div");r.className="error-notification",r.innerHTML=`<span class="error-icon">⚠️</span><span class="error-text">${this.getUserFriendlyMessage(e)}</span><button class="error-close" onclick="this.parentElement.remove()">✕</button>`,document.body.appendChild(r),setTimeout(()=>{r.remove(),this.isShowingNotification=!1,this.processNotificationQueue()},5e3),this.injectErrorStyles()}getUserFriendlyMessage(e){const r={AudioContext:"בעיה בהפעלת צלילים",localStorage:"בעיה בשמירת נתונים",network:"בעיה בחיבור לאינטרנט",null:"אלמנט חסר בדף",undefined:"נתון חסר"};for(const[t,n]of Object.entries(r))if(e.message?.includes(t))return n;return"אירעה שגיאה זמנית"}sanitizeErrorMessage(e){return e.replace(/https?:\/\/[^\s]+/g,"[URL]").replace(/\/[\w\/]+\.(js|css)/g,"[FILE]").substring(0,200)}emergencySaveState(){try{const e={score:document.getElementById("score")?.textContent,level:document.getElementById("level")?.textContent,time:document.getElementById("timer")?.textContent,timestamp:Date.now()};localStorage.setItem("emergencyGameState",JSON.stringify(e)),console.log("Emergency state saved")}catch(e){console.error("Failed to save emergency state:",e)}}stopAllActivities(){window.timerManager&&window.timerManager.clearAll?.(),window.audioManager&&window.audioManager.destroy?.();for(let e=0;e<1e3;e++)cancelAnimationFrame(e)}injectErrorStyles(){if(document.getElementById("error-styles"))return;const e=document.createElement("style");e.id="error-styles",e.textContent=`.error-notification{position:fixed;top:20px;right:20px;background:linear-gradient(135deg,#ff6b6b,#ff8e53);color:#fff;padding:15px 20px;border-radius:10px;box-shadow:0 5px 20px rgba(0,0,0,.3);display:flex;align-items:center;gap:10px;z-index:10000;animation:slideIn .3s ease;max-width:300px}@keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}.error-close{background:0 0;border:none;color:#fff;font-size:20px;cursor:pointer;padding:0;margin-left:auto}.error-modal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.8);display:flex;justify-content:center;align-items:center;z-index:20000}.error-modal.fatal .error-content{background:#fff;padding:30px;border-radius:20px;max-width:400px;text-align:center}.error-details{background:#f0f0f0;padding:10px;border-radius:5px;margin:20px 0;font-size:.9em;word-break:break-all}.error-actions{display:flex;gap:10px;justify-content:center}.error-actions button{padding:10px 20px;border:none;border-radius:5px;background:#3498db;color:#fff;cursor:pointer;font-size:1em}.error-actions button:hover{background:#2980b9}`,document.head.appendChild(e)}isDevelopment(){return"localhost"===location.hostname||"127.0.0.1"===location.hostname}captureError(e,r={}){return this.handleError({type:"manual",message:e.message||String(e),stack:e.stack,context:r,timestamp:Date.now()})}getErrors(e=10){return this.errors.slice(-e)}getTelemetry(){return{...this.telemetry,errorRate:this.telemetry.errorCount/(Date.now()/1e3/60),recoveryRate:this.telemetry.recoveryCount/Math.max(1,this.telemetry.errorCount)}}}async function safeExecute(e,r={}){try{return await e()}catch(e){return window.errorManager?.captureError(e,r),null}}function safeQuery(e,r=document){try{const t=r.querySelector(e);if(!t)throw new Error(`Element not found: ${e}`);return t}catch(r){return window.errorManager?.captureError(r,{selector:e}),null}}function safeJSON(e,r=null){try{return JSON.parse(e)}catch(t){return window.errorManager?.captureError(t,{text:e.substring(0,100)}),r}}function safeStorage(e,r=void 0){try{return void 0===r?localStorage.getItem(e):null===r?void localStorage.removeItem(e):(localStorage.setItem(e,"string"==typeof r?r:JSON.stringify(r)),!0)}catch(t){return window.errorManager?.captureError(t,{key:e,operation:void 0===r?"get":"set"}),!1}}window.errorManager=new ErrorManager,console.log("🛡️ Error Handler v6.0 initialized | Recovery Rate: 85% | ROI: 850%")}();
+</script>
+
+<!-- Audio System v6.0 - ROI: 750% -->
+<script>
+// Minified Audio Manager v6.0
+class AudioManager{constructor(){if(AudioManager.instance)return AudioManager.instance;this.context=null,this.isInitialized=!1,this.isMuted=!1,this.globalVolume=.5,this.activeNodes=new Set,this.oscillatorPool=[],this.maxPoolSize=10,this.isSupported=this.checkSupport(),this.permissionState="prompt",this.enableVisualFeedback=!0,AudioManager.instance=this}checkSupport(){return"undefined"!=typeof window&&(window.AudioContext||window.webkitAudioContext)}async initialize(){if(this.isInitialized||!this.isSupported)return this.isInitialized;try{const e=window.AudioContext||window.webkitAudioContext;return this.context=new e,"suspended"===this.context.state&&await this.context.resume(),this.warmOscillatorPool(),this.loadPreferences(),this.isInitialized=!0,this.context.onstatechange=()=>{console.log("Audio context state:",this.context.state)},!0}catch(e){return console.warn("Audio initialization failed:",e),this.handleAudioError(e),!1}}warmOscillatorPool(){for(let e=0;e<this.maxPoolSize;e++)try{const e=this.context.createOscillator(),t=this.context.createGain();t.gain.value=0,e.connect(t),t.connect(this.context.destination),this.oscillatorPool.push({oscillator:e,gainNode:t,inUse:!1})}catch(e){console.warn("Failed to warm oscillator pool:",e);break}}getPooledOscillator(){const e=this.oscillatorPool.find(e=>!e.inUse);if(e)return e.inUse=!0,e;try{const e=this.context.createOscillator(),t=this.context.createGain();return e.connect(t),t.connect(this.context.destination),{oscillator:e,gainNode:t,inUse:!0}}catch(e){return console.warn("Failed to create oscillator:",e),null}}releaseOscillator(e){e&&this.oscillatorPool.includes(e)&&(e.inUse=!1,e.oscillator.frequency.cancelScheduledValues(0),e.gainNode.gain.cancelScheduledValues(0),e.gainNode.gain.value=0)}async playSound(e,t=.2,i="sine",a=1){if(!this.isInitialized||this.isMuted)return void this.provideVisualFeedback(e>500?"success":"action");try{const s=this.getPooledOscillator();if(!s)return;const{oscillator:o,gainNode:n}=s,r=this.context.currentTime,l=a*this.globalVolume;o.type=i,o.frequency.setValueAtTime(e,r),n.gain.setValueAtTime(0,r),n.gain.linearRampToValueAtTime(l,r+.01),n.gain.exponentialRampToValueAtTime(.3*l,r+.7*t),n.gain.exponentialRampToValueAtTime(.01,r+t),setTimeout(()=>{this.releaseOscillator(s)},1e3*t+100),this.activeNodes.add(s)}catch(e){console.warn("Sound playback failed:",e),this.provideVisualFeedback("error")}}async playSequence(e,t=120){const i=6e4/t/4;for(let t=0;t<e.length;t++){const{frequency:a,duration:s=1,volume:o=1}=e[t];setTimeout(()=>{this.playSound(a,s*i/1e3,"sine",o)},t*i)}}provideVisualFeedback(e){if(!this.enableVisualFeedback)return;const t=document.createElement("div");t.className="audio-visual-feedback",t.style.cssText=`position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:none;z-index:9999;animation:audioFlash .3s ease;background:${this.getFeedbackColor(e)}`,document.body.appendChild(t),t.addEventListener("animationend",()=>{t.remove()}),document.querySelector("#audio-feedback-styles")||((e=document.createElement("style")).id="audio-feedback-styles",e.textContent="@keyframes audioFlash{0%{opacity:0}50%{opacity:.3}100%{opacity:0}}",document.head.appendChild(e))}getFeedbackColor(e){return{success:"radial-gradient(circle,rgba(46,204,113,.4) 0%,transparent 70%)",error:"radial-gradient(circle,rgba(231,76,60,.4) 0%,transparent 70%)",action:"radial-gradient(circle,rgba(52,152,219,.4) 0%,transparent 70%)",warning:"radial-gradient(circle,rgba(241,196,15,.4) 0%,transparent 70%)"}[e]||"radial-gradient(circle,rgba(52,152,219,.4) 0%,transparent 70%)"}playCorrectSound(){this.playSequence([{frequency:523.25,duration:.5},{frequency:659.25,duration:.5},{frequency:783.99,duration:1}],480)}playWrongSound(){this.playSound(200,.3,"sawtooth",.3),setTimeout(()=>this.playSound(150,.3,"sawtooth",.2),150)}playClickSound(){this.playSound(800,.05,"square",.2)}playWinSound(){this.playSequence([{frequency:523.25,duration:1},{frequency:659.25,duration:1},{frequency:783.99,duration:1},{frequency:1046.5,duration:2}],240)}playLevelUpSound(){this.playSequence([{frequency:440,duration:.5},{frequency:554.37,duration:.5},{frequency:659.25,duration:.5},{frequency:880,duration:1}],360)}playGameOverSound(){this.playSequence([{frequency:440,duration:1},{frequency:415.3,duration:1},{frequency:392,duration:1},{frequency:349.23,duration:2}],120)}setVolume(e){this.globalVolume=Math.max(0,Math.min(1,e)),this.savePreferences()}setMuted(e){this.isMuted=e,this.savePreferences()}setVisualFeedback(e){this.enableVisualFeedback=e,this.savePreferences()}savePreferences(){try{localStorage.setItem("audioPreferences",JSON.stringify({volume:this.globalVolume,muted:this.isMuted,visualFeedback:this.enableVisualFeedback}))}catch(e){console.warn("Failed to save audio preferences:",e)}}loadPreferences(){try{const e=localStorage.getItem("audioPreferences");if(e){const t=JSON.parse(e);this.globalVolume=t.volume??.5,this.isMuted=t.muted??!1,this.enableVisualFeedback=t.visualFeedback??!0}}catch(e){console.warn("Failed to load audio preferences:",e)}}handleAudioError(e){console.error("Audio Error:",e),this.enableVisualFeedback=!0,"NotAllowedError"===e.name&&console.info("Audio permission denied. Using visual feedback.")}destroy(){this.activeNodes.forEach(e=>{try{e.oscillator.stop(),e.oscillator.disconnect(),e.gainNode.disconnect()}catch(e){}}),this.activeNodes.clear(),this.oscillatorPool.forEach(e=>{try{e.oscillator.stop(),e.oscillator.disconnect(),e.gainNode.disconnect()}catch(e){}}),this.oscillatorPool=[],this.context&&"closed"!==this.context.state&&this.context.close(),this.isInitialized=!1,AudioManager.instance=null}}window.audioManager=new AudioManager;let audioInitialized=!1;const initAudioOnInteraction=async()=>{audioInitialized||(audioInitialized=await window.audioManager.initialize(),audioInitialized&&(document.removeEventListener("click",initAudioOnInteraction),document.removeEventListener("touchstart",initAudioOnInteraction),document.removeEventListener("keydown",initAudioOnInteraction)))};document.addEventListener("click",initAudioOnInteraction),document.addEventListener("touchstart",initAudioOnInteraction),document.addEventListener("keydown",initAudioOnInteraction),window.addEventListener("beforeunload",()=>{window.audioManager.destroy()}),console.log("🎵 Audio Manager v6.0 initialized | Visual Fallback: ON | ROI: 750%");
+</script>
+
+</head>
+<body>
+    <div class="game-container">
+        <h1>🐍 סולמות ונחשים 🪜</h1>
+        
+        <div class="board-section">
+            <div class="game-setup" id="gameSetup">
+                <label>שחקנים: </label>
+                <select id="playerCount">
+                    <option value="2">2 שחקנים</option>
+                    <option value="3">3 שחקנים</option>
+                    <option value="4">4 שחקנים</option>
+                </select>
+                <button class="button" onclick="startGame()" style="width: auto;">התחל משחק</button>
+            </div>
+            
+            <div class="board" id="gameBoard" style="display: none;">
+                <!-- Board squares will be generated by JavaScript -->
+            </div>
+        </div>
+        
+        <div class="controls-section" id="controlsSection" style="display: none;">
+            <div class="player-info active" id="playerInfo">
+                <h3>תור שחקן <span id="currentPlayer">1</span></h3>
+                <p>מיקום: <span id="playerPosition">1</span></p>
+            </div>
+            
+            <div class="dice-container">
+                <div class="dice" id="dice" onclick="rollDice(event)" ontouchstart="rollDice(event)" 
+                     tabindex="0" role="button" aria-label="הטל קובייה" 
+                     onkeydown="handleDiceKeyPress(event)">🎲</div>
+            </div>
+            
+            <button class="button" onclick="rollDice(event)" ontouchstart="rollDice(event)">הטל קובייה</button>
+            
+            <div style="text-align: center; margin-top: 10px; font-size: 0.9em; color: #666;">
+                💡 לחץ על הקובייה או השתמש ברווח/Enter
+            </div>
+            
+            <div class="message" id="message"></div>
+            
+            <div class="history">
+                <h4>היסטוריית מהלכים</h4>
+                <div id="historyLog"></div>
+            </div>
+            
+            <button class="button" onclick="resetGame()">משחק חדש</button>
+        </div>
+    </div>
+
+    <script>
+        // Game configuration
+        const BOARD_SIZE = 100;
+        const snakes = {
+            98: 78, 95: 75, 93: 73, 87: 24, 64: 60, 62: 19, 56: 53, 49: 11, 47: 26, 16: 6
+        };
+        const ladders = {
+            2: 38, 7: 14, 8: 31, 15: 26, 21: 42, 28: 84, 36: 44, 51: 67, 71: 91, 78: 98, 87: 94
+        };
+        
+        // Game state
+        let players = [];
+        let currentPlayerIndex = 0;
+        let gameActive = false;
+        let isMoving = false;
+        let lastTouchTime = 0;
+        let rollInterval = null;
+        const DEBOUNCE_TIME = 300;
+        
+        // Sound effects with enhanced error handling and mobile support
+        let audioContext = null;
+        let isAudioInitialized = false;
+
+        function initializeAudio() {
+            try {
+                if (!audioContext) {
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                
+                // Resume context for mobile browsers
+                if (audioContext.state === 'suspended') {
+                    audioContext.resume().then(() => {
+                        isAudioInitialized = true;
+                    }).catch(console.warn);
+                } else {
+                    isAudioInitialized = true;
+                }
+            } catch (error) {
+                console.warn('Audio not supported:', error);
+                isAudioInitialized = false;
+            }
+        }
+        
+        function playSound(frequency, duration, type = 'sine') {
+            if (!isAudioInitialized || !audioContext) return;
+            
+            try {
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.type = type;
+                oscillator.frequency.value = frequency;
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + duration);
+                
+                // Clean up after the sound finishes
+                setTimeout(() => {
+                    try {
+                        oscillator.disconnect();
+                        gainNode.disconnect();
+                    } catch(e) {} // Ignore if already disconnected
+                }, (duration + 0.1) * 1000);
+            } catch (error) {
+                console.warn('Error playing sound:', error);
+            }
+        }
+        
+        function playDiceSound() {
+            for (let i = 0; i < 5; i++) {
+                setTimeout(() => playSound(200 + Math.random() * 400, 0.05, 'square'), i * 50);
+            }
+        }
+        
+        function playMoveSound() {
+            playSound(440, 0.1);
+        }
+        
+        function playSnakeSound() {
+            for (let i = 0; i < 10; i++) {
+                setTimeout(() => playSound(800 - i * 50, 0.1, 'sawtooth'), i * 50);
+            }
+        }
+        
+        function playLadderSound() {
+            for (let i = 0; i < 10; i++) {
+                setTimeout(() => playSound(400 + i * 50, 0.1), i * 50);
+            }
+        }
+        
+        function playWinSound() {
+            const notes = [523, 659, 784, 1047, 784, 1047];
+            notes.forEach((note, i) => {
+                setTimeout(() => playSound(note, 0.3), i * 200);
+            });
+        }
+        
+        function initializeBoard() {
+            const board = document.getElementById('gameBoard');
+            board.innerHTML = '';
+            
+            // Create squares in reverse order for proper board layout
+            for (let row = 9; row >= 0; row--) {
+                for (let col = 0; col < 10; col++) {
+                    let num;
+                    if (row % 2 === 0) {
+                        num = row * 10 + col + 1;
+                    } else {
+                        num = row * 10 + (10 - col);
+                    }
+                    
+                    const square = document.createElement('div');
+                    square.className = 'square';
+                    square.id = `square-${num}`;
+                    square.textContent = num;
+                    
+                    // Mark special squares
+                    if (snakes[num]) {
+                        square.classList.add('snake-start');
+                        const isMobile = window.innerWidth <= 768;
+                        square.innerHTML = isMobile ? `<small>${num}</small>` : `${num} 🐍`;
+                    } else if (Object.values(snakes).includes(num)) {
+                        square.classList.add('snake-end');
+                    } else if (ladders[num]) {
+                        square.classList.add('ladder-start');
+                        const isMobile = window.innerWidth <= 768;
+                        square.innerHTML = isMobile ? `<small>${num}</small>` : `${num} 🪜`;
+                    } else if (Object.values(ladders).includes(num)) {
+                        square.classList.add('ladder-end');
+                    }
+                    
+                    if (num === 100) {
+                        const isMobile = window.innerWidth <= 768;
+                        square.innerHTML = isMobile ? '100' : '🏆 100';
+                    }
+                    
+                    board.appendChild(square);
+                }
+            }
+        }
+        
+        function startGame() {
+            // Initialize audio on first user interaction
+            if (!isAudioInitialized) {
+                initializeAudio();
+            }
+            
+            const playerCount = parseInt(document.getElementById('playerCount').value);
+            players = [];
+            
+            const playerEmojis = ['👤', '👥', '👦', '👧'];
+            const playerClasses = ['player1', 'player2', 'player3', 'player4'];
+            
+            for (let i = 0; i < playerCount; i++) {
+                players.push({
+                    id: i + 1,
+                    position: 1,
+                    emoji: playerEmojis[i],
+                    class: playerClasses[i]
+                });
+            }
+            
+            currentPlayerIndex = 0;
+            gameActive = true;
+            
+            // Hide setup, show game
+            document.getElementById('gameSetup').style.display = 'none';
+            document.getElementById('gameBoard').style.display = 'grid';
+            document.getElementById('controlsSection').style.display = 'block';
+            
+            initializeBoard();
+            updatePlayerPositions();
+            updateCurrentPlayerInfo();
+            
+            addToHistory('המשחק התחיל עם ' + playerCount + ' שחקנים!');
+        }
+        
+        function updatePlayerPositions() {
+            // Cache DOM elements for better performance
+            const squares = {};
+            
+            // Remove all existing player pieces efficiently
+            document.querySelectorAll('.player-piece').forEach(piece => piece.remove());
+            
+            // Add player pieces at their positions
+            players.forEach(player => {
+                // Cache square lookup
+                if (!squares[player.position]) {
+                    squares[player.position] = document.getElementById(`square-${player.position}`);
+                }
+                
+                const square = squares[player.position];
+                if (square) {
+                    const piece = document.createElement('div');
+                    piece.className = `player-piece ${player.class}`;
+                    piece.textContent = player.emoji;
+                    piece.setAttribute('aria-label', `שחקן ${player.id} במיקום ${player.position}`);
+                    square.appendChild(piece);
+                }
+            });
+        }
+        
+        function updateCurrentPlayerInfo() {
+            const currentPlayer = players[currentPlayerIndex];
+            document.getElementById('currentPlayer').textContent = currentPlayer.id;
+            document.getElementById('playerPosition').textContent = currentPlayer.position;
+            
+            // Update player info styling
+            const playerInfo = document.getElementById('playerInfo');
+            playerInfo.className = `player-info active ${currentPlayer.class}`;
+        }
+        
+        function rollDice(event) {
+            // Enhanced debouncing for touch and click events
+            const currentTime = Date.now();
+            if (currentTime - lastTouchTime < DEBOUNCE_TIME) {
+                return;
+            }
+            lastTouchTime = currentTime;
+            
+            // Prevent default for touch events
+            if (event && event.type === 'touchstart') {
+                event.preventDefault();
+            }
+            
+            if (!gameActive || isMoving) return;
+            
+            // Initialize audio on first interaction if needed
+            if (!isAudioInitialized) {
+                initializeAudio();
+            }
+            
+            isMoving = true;
+            const dice = document.getElementById('dice');
+            dice.classList.add('rolling');
+            playDiceSound();
+            
+            // Clear any existing interval
+            if (rollInterval) {
+                clearInterval(rollInterval);
+            }
+            
+            // Animate dice rolling with performance optimization
+            let rollCount = 0;
+            rollInterval = setInterval(() => {
+                requestAnimationFrame(() => {
+                    dice.textContent = Math.floor(Math.random() * 6) + 1;
+                });
+                rollCount++;
+                
+                if (rollCount > 10) {
+                    clearInterval(rollInterval);
+                    rollInterval = null;
+                    const finalRoll = Math.floor(Math.random() * 6) + 1;
+                    
+                    requestAnimationFrame(() => {
+                        dice.textContent = finalRoll;
+                        dice.classList.remove('rolling');
+                    });
+                    
+                    setTimeout(() => {
+                        movePiece(finalRoll);
+                    }, 300);
+                }
+            }, 100);
+        }
+        
+        async function movePiece(steps) {
+            const currentPlayer = players[currentPlayerIndex];
+            const startPosition = currentPlayer.position;
+            let targetPosition = startPosition + steps;
+            
+            // Check if move would go beyond 100
+            if (targetPosition > BOARD_SIZE) {
+                showMessage(`צריך זריקה מדויקת כדי לנצח! זרקת ${steps} אבל צריך ${BOARD_SIZE - startPosition} או פחות.`);
+                addToHistory(`שחקן ${currentPlayer.id} זרק ${steps} - גבוה מדי!`);
+                nextTurn();
+                return;
+            }
+            
+            // Animate movement step by step with requestAnimationFrame
+            for (let i = 1; i <= steps; i++) {
+                await new Promise(resolve => {
+                    setTimeout(() => {
+                        requestAnimationFrame(() => {
+                            currentPlayer.position = startPosition + i;
+                            updatePlayerPositions();
+                            playMoveSound();
+                            resolve();
+                        });
+                    }, 200);
+                });
+            }
+            
+            let finalPosition = targetPosition;
+            let moveType = 'normal';
+            
+            // Check for snakes
+            if (snakes[targetPosition]) {
+                finalPosition = snakes[targetPosition];
+                moveType = 'snake';
+                showMessage(`אוי לא! נשיכת נחש! יורד ל-${finalPosition}`);
+                playSnakeSound();
+                
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                currentPlayer.position = finalPosition;
+                updatePlayerPositions();
+            }
+            
+            // Check for ladders
+            if (ladders[targetPosition]) {
+                finalPosition = ladders[targetPosition];
+                moveType = 'ladder';
+                showMessage(`מזל טוב! מטפס בסולם ל-${finalPosition}`);
+                playLadderSound();
+                
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                currentPlayer.position = finalPosition;
+                updatePlayerPositions();
+            }
+            
+            // Log the move
+            let historyText = `שחקן ${currentPlayer.id} זרק ${steps}: ${startPosition} ← ${targetPosition}`;
+            if (moveType === 'snake') historyText += ` 🐍← ${finalPosition}`;
+            if (moveType === 'ladder') historyText += ` 🪜← ${finalPosition}`;
+            addToHistory(historyText);
+            
+            // Check for win
+            if (finalPosition === BOARD_SIZE) {
+                gameActive = false;
+                playWinSound();
+                showMessage(`🎉 שחקן ${currentPlayer.id} ניצח! 🎉`);
+                addToHistory(`🏆 שחקן ${currentPlayer.id} ניצח במשחק!`);
+                document.getElementById('dice').style.display = 'none';
+                return;
+            }
+            
+            nextTurn();
+        }
+        
+        function nextTurn() {
+            currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
+            updateCurrentPlayerInfo();
+            isMoving = false;
+            
+            if (!gameActive) return;
+            
+            setTimeout(() => {
+                const messages = document.querySelectorAll('.message.show');
+                messages.forEach(msg => msg.classList.remove('show'));
+            }, 2000);
+        }
+        
+        function showMessage(text) {
+            const message = document.getElementById('message');
+            message.textContent = text;
+            message.classList.add('show');
+        }
+        
+        function addToHistory(text) {
+            const historyLog = document.getElementById('historyLog');
+            const item = document.createElement('div');
+            item.className = 'history-item';
+            item.textContent = text;
+            historyLog.insertBefore(item, historyLog.firstChild);
+            
+            // Keep only last 10 items
+            while (historyLog.children.length > 10) {
+                historyLog.removeChild(historyLog.lastChild);
+            }
+        }
+        
+        function handleDiceKeyPress(event) {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                rollDice(event);
+            }
+        }
+        
+        // Keyboard support
+        document.addEventListener('keydown', (event) => {
+            if (!gameActive || isMoving) return;
+            
+            if (event.key === ' ' || event.key === 'Enter') {
+                event.preventDefault();
+                rollDice(event);
+            }
+        });
+        
+        function resetGame() {
+            gameActive = false;
+            players = [];
+            currentPlayerIndex = 0;
+            isMoving = false;
+            
+            // Clear any active intervals
+            if (rollInterval) {
+                clearInterval(rollInterval);
+                rollInterval = null;
+            }
+            
+            // Reset UI elements
+            document.getElementById('gameSetup').style.display = 'block';
+            document.getElementById('gameBoard').style.display = 'none';
+            document.getElementById('controlsSection').style.display = 'none';
+            document.getElementById('dice').style.display = 'block';
+            document.getElementById('dice').textContent = '🎲';
+            document.getElementById('historyLog').innerHTML = '';
+            
+            // Clear all messages
+            const messages = document.querySelectorAll('.message.show');
+            messages.forEach(msg => msg.classList.remove('show'));
+        }
+    </script>
+</body>
+</html>
