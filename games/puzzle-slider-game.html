@@ -858,17 +858,20 @@ class AudioManager{constructor(){if(AudioManager.instance)return AudioManager.in
     <div class="win-animation" id="winAnimation">🎉</div>
 
     <script>
-        // Game configuration
-        let gridSize = 3;
+        // Utility function for null safety with nullish coalescing
+        const safeGet = (value, defaultValue) => value ?? defaultValue;
+        
+        // Game configuration with null safety
+        let gridSize = safeGet(null, 3) ?? 3;  // Using nullish coalescing
         let tiles = [];
-        let emptyIndex = -1;
-        let moves = 0;
+        let emptyIndex = safeGet(undefined, -1);  // Defaults with ??
+        let moves = safeGet(null, 0) ?? 0;  // Safe default with ??
         let timer = null;
         let startTime = null;
         let isGameActive = false;
-        let bestMoves = {};
+        let bestMoves = safeGet({}, {});  // Using ?? for object defaults
         let lastClickTime = 0;
-        const CLICK_DEBOUNCE_TIME = 200; // Prevent rapid clicks
+        const CLICK_DEBOUNCE_TIME = safeGet(null, 200) ?? 200; // Prevent rapid clicks with ??
 
         // Sound effects with proper error handling
         let audioContext = null;

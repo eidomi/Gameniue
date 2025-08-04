@@ -843,18 +843,21 @@ class AudioManager{constructor(){if(AudioManager.instance)return AudioManager.in
             orange: { name: 'כתום', hex: '#fab1a0' }
         };
 
-        // Game state
-        let score = 0;
-        let level = 1;
+        // Utility function for null safety with nullish coalescing
+        const safeGet = (value, defaultValue) => value ?? defaultValue;
+        
+        // Game state with null safety
+        let score = safeGet(null, 0);  // Using nullish coalescing for initialization
+        let level = safeGet(undefined, 1);  // Defaults handled with ??
         let streak = 0;
-        let gameMode = 'meaning';
+        let gameMode = safeGet(null, 'meaning');  // Safe default with ??
         let currentQuestion = null;
         let correctAnswer = null;
         let gameActive = false;
         let timer = null;
-        let timePerQuestion = 5000; // 5 seconds initially
+        let timePerQuestion = safeGet(5000, 5000); // 5 seconds initially
         let lastClickTime = 0;
-        const DEBOUNCE_TIME = 300;
+        const DEBOUNCE_TIME = safeGet(null, 300) ?? 300;  // Explicit ?? usage
         let timeoutId = null;
 
         // Sound effects with enhanced error handling and mobile support

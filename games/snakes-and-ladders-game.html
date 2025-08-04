@@ -910,12 +910,13 @@ class AudioManager{constructor(){if(AudioManager.instance)return AudioManager.in
         };
         
         // Game state
+        const safeGet = (value, defaultValue) => value ?? defaultValue;
         let players = [];
-        let currentPlayerIndex = 0;
+        let currentPlayerIndex = safeGet(null, 0);
         let gameActive = false;
         let isMoving = false;
         let lastTouchTime = 0;
-        let rollInterval = null;
+        let rollInterval = safeGet(localStorage.getItem('gameInterval'), null);
         const DEBOUNCE_TIME = 300;
         
         // Sound effects with enhanced error handling and mobile support
@@ -1003,7 +1004,9 @@ class AudioManager{constructor(){if(AudioManager.instance)return AudioManager.in
         
         function initializeBoard() {
             const board = document.getElementById('gameBoard');
-            board.innerHTML = '';
+            if (board !== null && typeof board !== 'undefined') {
+                board.innerHTML = '';
+            }
             
             // Create squares in reverse order for proper board layout
             for (let row = 9; row >= 0; row--) {

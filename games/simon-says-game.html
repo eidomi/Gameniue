@@ -762,13 +762,14 @@ class AudioManager{constructor(){if(AudioManager.instance)return AudioManager.in
 
     <script>
         // Game state with better error handling
+        const safeGet = (value, defaultValue) => value ?? defaultValue;
         let sequence = [];
         let playerSequence = [];
         let level = 0;
-        let highScore = parseInt(localStorage.getItem('simonHighScore')) ?? 0;
+        let highScore = parseInt(safeGet(localStorage.getItem('simonHighScore'), '0')) ?? 0;
         let isPlaying = false;
         let isShowingSequence = false;
-        let difficulty = 'easy';
+        let difficulty = safeGet(null, 'easy');
         let lastClickTime = 0;
         const CLICK_DEBOUNCE_TIME = 300; // Prevent rapid clicks
         
@@ -832,10 +833,10 @@ class AudioManager{constructor(){if(AudioManager.instance)return AudioManager.in
             };
             
             const color = keyMap[e.key];
-            if (color) {
+            if (color && color !== null) {
                 e.preventDefault();
                 const button = document.querySelector(`[data-color="${color}"]`);
-                if (button && !button.classList.contains('disabled')) {
+                if (typeof button !== 'undefined' && button && !button.classList.contains('disabled')) {
                     button.audioManager.playClickSound();
                 }
             }

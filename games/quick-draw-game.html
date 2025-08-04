@@ -858,10 +858,11 @@ class AudioManager{constructor(){if(AudioManager.instance)return AudioManager.in
         ];
 
         // Game state
-        let gameMode = 'draw';
+        const safeGet = (value, defaultValue) => value ?? defaultValue;
+        let gameMode = safeGet('draw', 'draw');
         let canvas, ctx;
         let isDrawing = false;
-        let currentColor = '#2c3e50';
+        let currentColor = safeGet(localStorage.getItem('drawColor'), '#2c3e50');
         let currentSize = 3;
         let score = 0;
         let round = 0;
@@ -869,7 +870,7 @@ class AudioManager{constructor(){if(AudioManager.instance)return AudioManager.in
         let currentWord = '';
         let currentCategory = '';
         let timer = null;
-        let timeLeft = 60;
+        let timeLeft = safeGet(null, 60);
         let gameActive = false;
         let lastTouchTime = 0;
         const DEBOUNCE_TIME = 300; // Enhanced debouncing for better performance
@@ -934,13 +935,15 @@ class AudioManager{constructor(){if(AudioManager.instance)return AudioManager.in
         // Initialize canvas
         window.onload = function() {
             canvas = document.getElementById('drawingCanvas');
-            ctx = canvas.getContext('2d');
-            
-            // Set canvas size
-            const container = document.querySelector('.canvas-container');
-            canvas.width = container.clientWidth - 20;
-            
-            setupCanvas();
+            if (canvas !== null) {
+                ctx = canvas.getContext('2d');
+                
+                // Set canvas size
+                const container = document.querySelector('.canvas-container');
+                canvas.width = container.clientWidth - 20;
+                
+                setupCanvas();
+            }
         };
 
         function setupCanvas() {
@@ -1023,11 +1026,13 @@ class AudioManager{constructor(){if(AudioManager.instance)return AudioManager.in
         }
 
         function setMode(mode) {
-            gameMode = mode;
-            document.querySelectorAll('.mode-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            event.target.classList.add('active');
+            if (typeof mode !== 'undefined') {
+                gameMode = mode;
+                document.querySelectorAll('.mode-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                event.target.classList.add('active');
+            }
             
             // Show/hide relevant sections
             if (mode === 'guess') {

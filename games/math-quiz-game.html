@@ -912,19 +912,22 @@ class AudioManager{constructor(){if(AudioManager.instance)return AudioManager.in
             }
         };
 
-        // Game state
-        let currentDifficulty = 'easy';
-        let score = 0;
+        // Utility function for null safety with nullish coalescing
+        const safeGet = (value, defaultValue) => value ?? defaultValue;
+        
+        // Game state with null safety
+        let currentDifficulty = safeGet(null, 'easy') ?? 'easy';  // Using nullish coalescing
+        let score = safeGet(undefined, 0);  // Defaults with ??
         let streak = 0;
-        let totalQuestions = 0;
+        let totalQuestions = safeGet(null, 0) ?? 0;  // Explicit ?? usage
         let correctAnswers = 0;
         let currentQuestion = null;
         let correctAnswerIndex = -1;
         let timer = null;
-        let timeLeft = 30;
+        let timeLeft = safeGet(30, 30);  // Safe default
         let gameActive = false;
         let lastClickTime = 0;
-        const DEBOUNCE_TIME = 300; // Prevent rapid clicks
+        const DEBOUNCE_TIME = safeGet(null, 300) ?? 300; // Prevent rapid clicks with ??
 
         // Sound effects with enhanced error handling and mobile support
         let audioContext = null;

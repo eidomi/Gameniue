@@ -407,16 +407,11 @@ think a lot and review pattern   in ./patterns
 # - Ensure hebrew-learn-english game has sound for the words in english -> player needs to hear how to pronunce the word
 
 
-## Task Overview 
-# 1. Address all issues in /Users/yehudamizrahi/Gameniue/tests/test-report-1754303875391.json
-# 2. Ensure all issues are documented in ./issues
-# 3. Ensure all issues are version controlled
-# 4. Ensure all issues are easily discoverable
-# 5. Ensure all issues are easily accessible
-# 6. Ensure all issues are easily maintainable
-
-# Enhanced Methodology Workflow
-
+## Task Overview
+# Review issues/type-safety/TYPE-001-null-safety.md
+# Implement null safety in the project
+# Task Methodology Workflow
+#   **Think carefully And Follow Step-by-Step**
 #   Phase -1: Pre-Planning (NEW)
 
 #   BEFORE starting:
@@ -462,7 +457,7 @@ think a lot and review pattern   in ./patterns
 #     - Note time savings
 #     - Create reusable snippets
 
-#   Key Principles for Every Task
+#   Key Principles for Every Task - MUST READ!
 
 #   1. ROI-First Thinking
 

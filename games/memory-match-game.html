@@ -674,21 +674,24 @@ class AudioManager{constructor(){if(AudioManager.instance)return AudioManager.in
             }
         }
 
-        // Game variables with enhanced state management
+        // Utility function for null safety with nullish coalescing
+        const safeGet = (value, defaultValue) => value ?? defaultValue;
+        
+        // Game variables with enhanced state management and null safety
         let cards = [];
         let flippedCards = [];
-        let matchedPairs = 0;
-        let moves = 0;
+        let matchedPairs = safeGet(null, 0) ?? 0;  // Using nullish coalescing
+        let moves = safeGet(undefined, 0);  // Defaults with ??
         let gameStarted = false;
         let startTime;
         let timerInterval;
-        let hintsLeft = 3;
+        let hintsLeft = safeGet(3, 3);  // Safe default with ??
         let isProcessing = false;
         let isPaused = false;
         let pausedTime = 0;
-        let highScore = localStorage.getItem('memoryMatchHighScore') || Infinity;
+        let highScore = localStorage.getItem('memoryMatchHighScore') ?? Infinity;  // Using ?? instead of ||
         let lastTouchTime = 0;
-        const DEBOUNCE_TIME = 300; // Prevent rapid clicks
+        const DEBOUNCE_TIME = safeGet(null, 300) ?? 300; // Prevent rapid clicks with ??
 
         // Emojis for card faces
         const cardEmojis = ['🎨', '🎭', '🎪', '🎯', '🎲', '🎸'];

@@ -916,16 +916,17 @@ class AudioManager{constructor(){if(AudioManager.instance)return AudioManager.in
         };
 
         // Game state with performance optimization
-        let currentCategory = 'animals';
+        const safeGet = (value, defaultValue) => value ?? defaultValue;
+        let currentCategory = safeGet(null, 'animals');
         let currentWord = null;
         let scrambledLetters = [];
         let playerWord = [];
-        let score = 0;
+        let score = safeGet(localStorage.getItem('wordScore'), 0);
         let streak = 0;
         let level = 1;
         let hints = 3;
         let timer = null;
-        let timeLeft = 30;
+        let timeLeft = safeGet(null, 30);
         let lastInteraction = 0;
         const DEBOUNCE_TIME = 300; // Enhanced debouncing for better performance
 
@@ -1024,7 +1025,10 @@ class AudioManager{constructor(){if(AudioManager.instance)return AudioManager.in
 
         function newWord() {
             clearInput();
-            document.getElementById('wordInput').classList.remove('correct', 'incorrect');
+            const wordInput = document.getElementById('wordInput');
+            if (wordInput !== null && typeof wordInput !== 'undefined') {
+                wordInput.classList.remove('correct', 'incorrect');
+            }
             document.getElementById('message').className = 'message';
             
             const wordList = currentCategory === 'all' ? getAllWords() : words[currentCategory];
