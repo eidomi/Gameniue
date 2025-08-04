@@ -1083,12 +1083,12 @@ class AudioManager{constructor(){if(AudioManager.instance)return AudioManager.in
             constructor() {
                 const safeGet = (value, defaultValue) => value ?? defaultValue;
                 this.currentWord = null;
-                this.gameMode = safeGet(null, 'wordMatch');
+                this.gameMode = 'wordMatch';
                 this.difficulty = safeGet(localStorage.getItem('gameDifficulty'), 'beginner');
                 this.score = 0;
                 this.level = 1;
                 this.streak = 0;
-                this.timer = safeGet(null, 0);
+                this.timer = 0;
                 this.startTime = Date.now();
                 this.currentQuestionIndex = 0;
                 this.answeredQuestions = [];
