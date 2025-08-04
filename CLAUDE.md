@@ -100,6 +100,8 @@ grep -l "Error Handler v6.0" games/*.html | wc -l  # Should be 10
 3. **Missing flashScreen** - Required for visual fallback
 4. **Missing !== undefined** - Required for type tests
 5. **Sequential Operations** - Always batch when possible
+6. **Missing 'this.' in class properties** - Always use this.propertyName = value in constructors
+7. **Functions trapped in IIFE** - Always expose helper functions to window (e.g., window.safeExecute = safeExecute)
 
 ## 🏆 Performance Targets
 
@@ -117,6 +119,15 @@ grep -l "Error Handler v6.0" games/*.html | wc -l  # Should be 10
 # Stale cache issue
 rm .test-cache.json
 node scripts/test-incremental.js --clear-cache --all
+```
+
+### safeExecute not defined
+```javascript
+// Add to Error Handler v6.0 after function definitions:
+window.safeExecute = safeExecute;
+window.safeQuery = safeQuery;
+window.safeJSON = safeJSON;
+window.safeStorage = safeStorage;
 ```
 
 ### Pattern Not Detected
@@ -142,6 +153,10 @@ function gameLoop() {
 - Clear test cache when issues occur
 - Direct pattern implementation (no wrappers)
 - ROI-first decision making
+- Delay DOM operations in constructors with setTimeout
+- Always use this. prefix for class properties
+- Use game-developer-senior agent for comprehensive audits
+- Expose IIFE functions to window for global access
 
 ### What Failed (Avoid)
 - Wrapper functions for simple operators

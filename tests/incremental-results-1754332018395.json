@@ -1,0 +1,35 @@
+{
+  "total": 16,
+  "passed": 16,
+  "failed": 0,
+  "skipped": 0,
+  "files": {
+    "hebrew-english-learning-game.html": {
+      "tests": {
+        "type": {
+          "passed": 4,
+          "failed": 0,
+          "failures": []
+        },
+        "visual": {
+          "passed": 4,
+          "failed": 0,
+          "failures": []
+        },
+        "performance": {
+          "passed": 4,
+          "failed": 0,
+          "failures": []
+        },
+        "sound": {
+          "passed": 4,
+          "failed": 0,
+          "failures": []
+        }
+      },
+      "total": 16,
+      "passed": 16,
+      "failed": 0
+    }
+  }
+}
