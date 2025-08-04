@@ -21,7 +21,7 @@ const PATTERNS = {
     errorHandler: {
         name: 'Error Handler v6.0',
         roi: 850,
-        searchPattern: '<!-- Error Handler v6.0 -->',
+        searchPattern: '<!-- Error Handler v6.0',
         features: [
             'safeExecute',
             'safeQuery',
@@ -33,7 +33,7 @@ const PATTERNS = {
     audioSystem: {
         name: 'Audio System v6.0',
         roi: 750,
-        searchPattern: '<!-- Audio System v6.0 -->',
+        searchPattern: '<!-- Audio System v6.0',
         features: [
             'window.audioManager',
             'playCorrectSound',

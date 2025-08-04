@@ -403,7 +403,7 @@ Options:
   --changed          Run tests for changed files only (default)
   --category <name>  Run tests for specific category
   --watch            Watch for changes and auto-run tests
-  --clear-cache      Clear test cache
+  --clear-cache      Clear test cache (can be combined with other flags)
   --help             Show this help message
 
 Categories: ${Object.keys(TEST_CATEGORIES).join(', ')}
@@ -422,7 +422,10 @@ Examples:
             fs.unlinkSync(CACHE_FILE);
             console.log('✅ Cache cleared');
         }
-        return;
+        // Don't return here - continue with tests if other flags are present
+        if (args.length === 1) {
+            return;
+        }
     }
 
     if (args.includes('--watch')) {
