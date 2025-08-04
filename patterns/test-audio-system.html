@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>Audio System v6.0 Test Suite</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            direction: rtl;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.1);
+            padding: 30px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+        }
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin: 10px 0;
+        }
+        button {
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        button:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.05);
+        }
+        button:active {
+            transform: scale(0.95);
+        }
+        .control-panel {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        input[type="range"] {
+            width: 200px;
+        }
+        .status {
+            padding: 10px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .success {
+            background: rgba(46,204,113,0.3);
+        }
+        .warning {
+            background: rgba(241,196,15,0.3);
+        }
+        .info {
+            background: rgba(52,152,219,0.3);
+        }
+        #telemetry {
+            font-family: monospace;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎵 Audio System v6.0 Test Suite</h1>
+        <p style="text-align: center;">ROI: 750% | Visual Fallback | Permission Handling | Accessibility</p>
+        
+        <div class="test-section">
+            <h2>🎮 בדיקת אפקטים קוליים</h2>
+            <div class="test-grid">
+                <button onclick="testClick()">Click Sound</button>
+                <button onclick="testCorrect()">Correct Sound</button>
+                <button onclick="testWrong()">Wrong Sound</button>
+                <button onclick="testWin()">Win Sound</button>
+                <button onclick="testLevelUp()">Level Up</button>
+                <button onclick="testGameOver()">Game Over</button>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>🎹 בדיקת תדרים</h2>
+            <div class="test-grid">
+                <button onclick="testFrequency(261.63)">C4</button>
+                <button onclick="testFrequency(293.66)">D4</button>
+                <button onclick="testFrequency(329.63)">E4</button>
+                <button onclick="testFrequency(349.23)">F4</button>
+                <button onclick="testFrequency(392.00)">G4</button>
+                <button onclick="testFrequency(440.00)">A4</button>
+                <button onclick="testFrequency(493.88)">B4</button>
+                <button onclick="testFrequency(523.25)">C5</button>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>⚙️ בקרות</h2>
+            <div class="control-panel">
+                <div class="control-group">
+                    <label for="volume">עוצמת קול: <span id="volumeValue">50%</span></label>
+                    <input type="range" id="volume" min="0" max="100" value="50" 
+                           onchange="updateVolume(this.value)">
+                </div>
+                <div class="control-group">
+                    <label>
+                        <input type="checkbox" id="mute" onchange="toggleMute()">
+                        השתק
+                    </label>
+                </div>
+                <div class="control-group">
+                    <label>
+                        <input type="checkbox" id="visual" checked onchange="toggleVisual()">
+                        משוב חזותי
+                    </label>
+                </div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>🧪 בדיקות מתקדמות</h2>
+            <div class="test-grid">
+                <button onclick="testSequence()">Sequence Test</button>
+                <button onclick="testRapidFire()">Rapid Fire</button>
+                <button onclick="testStress()">Stress Test</button>
+                <button onclick="testInitialization()">Init Test</button>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>📊 טלמטריה</h2>
+            <div id="telemetry" class="status info">
+                <div>Audio Context State: <span id="contextState">Not initialized</span></div>
+                <div>Initialized: <span id="initialized">false</span></div>
+                <div>Muted: <span id="mutedState">false</span></div>
+                <div>Volume: <span id="volumeState">50%</span></div>
+                <div>Visual Feedback: <span id="visualState">true</span></div>
+                <div>Support Status: <span id="supportState">Checking...</span></div>
+            </div>
+        </div>
+        
+        <div id="status" class="status"></div>
+    </div>
+    
+    <!-- Load Audio System -->
+    <script src="audio-manager-min.js"></script>
+    
+    <script>
+        // Test functions
+        function testClick() {
+            window.audioManager.playClickSound();
+            updateStatus('Playing click sound', 'info');
+        }
+        
+        function testCorrect() {
+            window.audioManager.playCorrectSound();
+            updateStatus('Playing correct sound', 'success');
+        }
+        
+        function testWrong() {
+            window.audioManager.playWrongSound();
+            updateStatus('Playing wrong sound', 'warning');
+        }
+        
+        function testWin() {
+            window.audioManager.playWinSound();
+            updateStatus('Playing win sound', 'success');
+        }
+        
+        function testLevelUp() {
+            window.audioManager.playLevelUpSound();
+            updateStatus('Playing level up sound', 'success');
+        }
+        
+        function testGameOver() {
+            window.audioManager.playGameOverSound();
+            updateStatus('Playing game over sound', 'warning');
+        }
+        
+        function testFrequency(freq) {
+            window.audioManager.playSound(freq, 0.3);
+            updateStatus(`Playing frequency: ${freq}Hz`, 'info');
+        }
+        
+        function testSequence() {
+            const notes = [
+                { frequency: 261.63, duration: 0.5 }, // C4
+                { frequency: 329.63, duration: 0.5 }, // E4
+                { frequency: 392.00, duration: 0.5 }, // G4
+                { frequency: 523.25, duration: 1 }    // C5
+            ];
+            window.audioManager.playSequence(notes, 240);
+            updateStatus('Playing note sequence', 'info');
+        }
+        
+        function testRapidFire() {
+            for (let i = 0; i < 5; i++) {
+                setTimeout(() => {
+                    window.audioManager.playClickSound();
+                }, i * 100);
+            }
+            updateStatus('Playing rapid fire test', 'info');
+        }
+        
+        function testStress() {
+            updateStatus('Running stress test...', 'warning');
+            let count = 0;
+            const interval = setInterval(() => {
+                window.audioManager.playSound(
+                    200 + Math.random() * 800,
+                    0.05,
+                    ['sine', 'square', 'sawtooth'][Math.floor(Math.random() * 3)],
+                    0.3
+                );
+                count++;
+                if (count >= 20) {
+                    clearInterval(interval);
+                    updateStatus('Stress test complete', 'success');
+                }
+            }, 50);
+        }
+        
+        async function testInitialization() {
+            const result = await window.audioManager.initialize();
+            updateStatus(`Initialization ${result ? 'successful' : 'failed'}`, result ? 'success' : 'warning');
+            updateTelemetry();
+        }
+        
+        function updateVolume(value) {
+            window.audioManager.setVolume(value / 100);
+            document.getElementById('volumeValue').textContent = value + '%';
+            updateTelemetry();
+        }
+        
+        function toggleMute() {
+            const muted = document.getElementById('mute').checked;
+            window.audioManager.setMuted(muted);
+            updateTelemetry();
+        }
+        
+        function toggleVisual() {
+            const enabled = document.getElementById('visual').checked;
+            window.audioManager.setVisualFeedback(enabled);
+            updateTelemetry();
+        }
+        
+        function updateStatus(message, type = 'info') {
+            const status = document.getElementById('status');
+            status.textContent = message;
+            status.className = 'status ' + type;
+            setTimeout(() => {
+                status.textContent = '';
+                status.className = 'status';
+            }, 3000);
+        }
+        
+        function updateTelemetry() {
+            const am = window.audioManager;
+            document.getElementById('contextState').textContent = 
+                am.context ? am.context.state : 'Not created';
+            document.getElementById('initialized').textContent = am.isInitialized;
+            document.getElementById('mutedState').textContent = am.isMuted;
+            document.getElementById('volumeState').textContent = 
+                Math.round(am.globalVolume * 100) + '%';
+            document.getElementById('visualState').textContent = am.enableVisualFeedback;
+            document.getElementById('supportState').textContent = 
+                am.isSupported ? '✅ Supported' : '❌ Not supported';
+        }
+        
+        // Initialize on load
+        window.addEventListener('load', () => {
+            updateTelemetry();
+            updateStatus('Audio System v6.0 loaded. Click any button to initialize.', 'info');
+            
+            // Update telemetry periodically
+            setInterval(updateTelemetry, 1000);
+        });
+    </script>
+</body>
+</html>

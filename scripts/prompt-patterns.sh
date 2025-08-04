@@ -36,8 +36,19 @@ think carefully and
 
 
 
-start with "#Priority 1: Deploy Error Handling" from session-notes/pattern-optimization-session.md## Next Steps
-### 
+1. create type test file for all games 
+   - Create a type test file for all games in ./tests
+   - Ensure the type test file covers all game types
+   - Ensure the type test file is comprehensive and well-structured
+   - Ensure the type test file is easy to read and understand
+   - Ensure the type test file is maintainable and reusable
+   - Ensure the type test file is version controlled
+   - Ensure the type test file is documented
+   - Ensure the type test file is easily discoverable
+2. start type test for all the games 
+   - Start the type test for all games in ./tests
+   - Ensure all games are tested
+
 **Think carefully Step-by-Step**
    - Analyze the current task requirements
    - Minimize the scope to essential features
@@ -129,6 +140,34 @@ Key Takeaways
   3. **Documentation multiplies value**
   4. **Simple solutions often outperform complex ones**
   5. **Team learning is invaluable ROI**
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # ## Methodology
 # - Follow the Methodology step by step with todo list
 # - Read .methodology/task-methodology/README-v9.0.md (1087

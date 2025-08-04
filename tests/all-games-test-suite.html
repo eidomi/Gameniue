@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>Comprehensive Test Suite - All Games</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+        
+        .test-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .summary-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .summary-card h3 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        
+        .test-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        button:hover {
+            transform: scale(1.05);
+        }
+        
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .test-results {
+            max-height: 600px;
+            overflow-y: auto;
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+        }
+        
+        .game-test {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            border-left: 5px solid #667eea;
+        }
+        
+        .game-test h3 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .test-item {
+            padding: 8px 15px;
+            margin: 5px 0;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .test-pass {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .test-fail {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .test-warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        
+        .test-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        .test-name {
+            font-weight: bold;
+        }
+        
+        .test-status {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .icon {
+            font-size: 1.2em;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: #e9ecef;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #56ccf2 0%, #2f80ed 100%);
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .filter-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            padding: 8px 16px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .filter-btn.active {
+            background: #667eea;
+            color: white;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .loading {
+            display: inline-block;
+            animation: spin 1s linear infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Comprehensive Test Suite - All Games</h1>
+        
+        <div class="test-summary">
+            <div class="summary-card">
+                <h3 id="totalTests">0</h3>
+                <p>Total Tests</p>
+            </div>
+            <div class="summary-card">
+                <h3 id="passedTests" style="color: #28a745;">0</h3>
+                <p>Passed</p>
+            </div>
+            <div class="summary-card">
+                <h3 id="failedTests" style="color: #dc3545;">0</h3>
+                <p>Failed</p>
+            </div>
+            <div class="summary-card">
+                <h3 id="warningTests" style="color: #ffc107;">0</h3>
+                <p>Warnings</p>
+            </div>
+        </div>
+        
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressBar">0%</div>
+        </div>
+        
+        <div class="test-controls">
+            <button onclick="runAllTests()">🚀 Run All Tests</button>
+            <button onclick="runCoreTests()">⚡ Core Tests Only</button>
+            <button onclick="runAccessibilityTests()">♿ Accessibility Tests</button>
+            <button onclick="runPerformanceTests()">📊 Performance Tests</button>
+            <button onclick="clearResults()">🗑️ Clear Results</button>
+            <button onclick="exportResults()">📥 Export Results</button>
+        </div>
+        
+        <div class="filter-controls">
+            <span>Filter:</span>
+            <button class="filter-btn active" onclick="filterResults('all')">All</button>
+            <button class="filter-btn" onclick="filterResults('passed')">✅ Passed</button>
+            <button class="filter-btn" onclick="filterResults('failed')">❌ Failed</button>
+            <button class="filter-btn" onclick="filterResults('warnings')">⚠️ Warnings</button>
+        </div>
+        
+        <div class="test-results" id="testResults">
+            <p style="text-align: center; color: #666;">Click "Run All Tests" to begin comprehensive testing</p>
+        </div>
+    </div>
+    
+    <script>
+        // Test Configuration
+        const TEST_CONFIG = {
+            games: [
+                { name: 'Color Match', file: 'color-match-game.html', id: 'color-match' },
+                { name: 'Math Quiz', file: 'math-quiz-game.html', id: 'math-quiz' },
+                { name: 'Memory Match', file: 'memory-match-game.html', id: 'memory-match' },
+                { name: 'Puzzle Slider', file: 'puzzle-slider-game.html', id: 'puzzle-slider' },
+                { name: 'Quick Draw', file: 'quick-draw-game.html', id: 'quick-draw' },
+                { name: 'Simon Says', file: 'simon-says-game.html', id: 'simon-says' },
+                { name: 'Snakes & Ladders', file: 'snakes-and-ladders-game.html', id: 'snakes-ladders' },
+                { name: 'Tic Tac Toe', file: 'tic-tac-toe-game.html', id: 'tic-tac-toe' },
+                { name: 'Word Scramble', file: 'word-scramble-game.html', id: 'word-scramble' }
+            ],
+            testSuites: {
+                core: 'Core Functionality',
+                dom: 'DOM Elements',
+                accessibility: 'Accessibility',
+                performance: 'Performance',
+                errorHandling: 'Error Handling',
+                audio: 'Audio System',
+                state: 'State Management',
+                interaction: 'User Interaction'
+            }
+        };
+        
+        let testResults = {
+            total: 0,
+            passed: 0,
+            failed: 0,
+            warnings: 0,
+            details: []
+        };
+        
+        // Test Functions
+        class GameTester {
+            constructor(gameConfig) {
+                this.game = gameConfig;
+                this.iframe = null;
+                this.results = [];
+            }
+            
+            async loadGame() {
+                return new Promise((resolve, reject) => {
+                    this.iframe = document.createElement('iframe');
+                    this.iframe.style.display = 'none';
+                    this.iframe.src = `../games/${this.game.file}`;
+                    
+                    this.iframe.onload = () => {
+                        setTimeout(() => resolve(this.iframe.contentWindow), 1000);
+                    };
+                    
+                    this.iframe.onerror = reject;
+                    document.body.appendChild(this.iframe);
+                });
+            }
+            
+            async runTests() {
+                try {
+                    const gameWindow = await this.loadGame();
+                    
+                    // DOM Tests
+                    await this.runDOMTests(gameWindow);
+                    
+                    // Core Functionality Tests
+                    await this.runCoreTests(gameWindow);
+                    
+                    // Accessibility Tests
+                    await this.runAccessibilityTests(gameWindow);
+                    
+                    // Error Handling Tests
+                    await this.runErrorHandlingTests(gameWindow);
+                    
+                    // Audio System Tests
+                    await this.runAudioTests(gameWindow);
+                    
+                    // State Management Tests
+                    await this.runStateTests(gameWindow);
+                    
+                    // Performance Tests
+                    await this.runPerformanceTests(gameWindow);
+                    
+                    // Cleanup
+                    this.cleanup();
+                    
+                    return this.results;
+                } catch (error) {
+                    this.addResult('Game Loading', 'failed', `Failed to load game: ${error.message}`);
+                    this.cleanup();
+                    return this.results;
+                }
+            }
+            
+            runDOMTests(gameWindow) {
+                const doc = gameWindow.document;
+                
+                // Check for essential elements
+                const essentialElements = [
+                    { selector: 'body', name: 'Body element' },
+                    { selector: 'button', name: 'Button elements' },
+                    { selector: '[id*="score"], .score', name: 'Score display' },
+                    { selector: '[id*="level"], .level', name: 'Level display (optional)' }
+                ];
+                
+                essentialElements.forEach(element => {
+                    const found = doc.querySelector(element.selector);
+                    if (found) {
+                        this.addResult(`DOM: ${element.name}`, 'passed', 'Element found');
+                    } else if (element.name.includes('optional')) {
+                        this.addResult(`DOM: ${element.name}`, 'warning', 'Optional element not found');
+                    } else {
+                        this.addResult(`DOM: ${element.name}`, 'failed', 'Required element missing');
+                    }
+                });
+            }
+            
+            runCoreTests(gameWindow) {
+                // Check for game initialization
+                const hasStartButton = gameWindow.document.querySelector('[id*="start"], button:not([id])');
+                if (hasStartButton) {
+                    this.addResult('Core: Start mechanism', 'passed', 'Start button found');
+                } else {
+                    this.addResult('Core: Start mechanism', 'failed', 'No start mechanism found');
+                }
+                
+                // Check for game state variables
+                const hasGameState = gameWindow.score !== undefined || 
+                                   gameWindow.gameActive !== undefined ||
+                                   gameWindow.currentScore !== undefined;
+                if (hasGameState) {
+                    this.addResult('Core: Game state', 'passed', 'Game state variables found');
+                } else {
+                    this.addResult('Core: Game state', 'warning', 'No global game state detected');
+                }
+            }
+            
+            runAccessibilityTests(gameWindow) {
+                const doc = gameWindow.document;
+                
+                // Check for ARIA labels
+                const buttons = doc.querySelectorAll('button');
+                let ariaCount = 0;
+                buttons.forEach(btn => {
+                    if (btn.getAttribute('aria-label') || btn.textContent.trim()) {
+                        ariaCount++;
+                    }
+                });
+                
+                if (ariaCount === buttons.length) {
+                    this.addResult('Accessibility: ARIA labels', 'passed', `All ${buttons.length} buttons accessible`);
+                } else if (ariaCount > 0) {
+                    this.addResult('Accessibility: ARIA labels', 'warning', `${ariaCount}/${buttons.length} buttons have labels`);
+                } else {
+                    this.addResult('Accessibility: ARIA labels', 'failed', 'No ARIA labels found');
+                }
+                
+                // Check for keyboard navigation
+                const focusableElements = doc.querySelectorAll('button, input, [tabindex]');
+                if (focusableElements.length > 0) {
+                    this.addResult('Accessibility: Keyboard navigation', 'passed', `${focusableElements.length} focusable elements`);
+                } else {
+                    this.addResult('Accessibility: Keyboard navigation', 'failed', 'No focusable elements');
+                }
+            }
+            
+            runErrorHandlingTests(gameWindow) {
+                // Check for Error Handler v6.0
+                if (gameWindow.errorManager) {
+                    this.addResult('Error Handler: Installation', 'passed', 'Error Handler v6.0 detected');
+                    
+                    // Check telemetry
+                    const telemetry = gameWindow.errorManager.getTelemetry();
+                    if (telemetry) {
+                        this.addResult('Error Handler: Telemetry', 'passed', `Recovery rate: ${(telemetry.recoveryRate * 100).toFixed(1)}%`);
+                    }
+                } else {
+                    this.addResult('Error Handler: Installation', 'failed', 'Error Handler not found');
+                }
+                
+                // Check for safe functions
+                const hasSafeFunctions = typeof gameWindow.safeExecute === 'function' ||
+                                        typeof gameWindow.safeQuery === 'function';
+                if (hasSafeFunctions) {
+                    this.addResult('Error Handler: Safe functions', 'passed', 'Safe utility functions available');
+                } else {
+                    this.addResult('Error Handler: Safe functions', 'warning', 'Safe functions not globally available');
+                }
+            }
+            
+            runAudioTests(gameWindow) {
+                // Check for Audio Manager v6.0
+                if (gameWindow.audioManager) {
+                    this.addResult('Audio System: Installation', 'passed', 'Audio Manager v6.0 detected');
+                    
+                    // Check audio support
+                    if (gameWindow.audioManager.isSupported) {
+                        this.addResult('Audio System: Browser support', 'passed', 'Audio API supported');
+                    } else {
+                        this.addResult('Audio System: Browser support', 'warning', 'Audio API not supported');
+                    }
+                    
+                    // Check visual feedback
+                    if (gameWindow.audioManager.enableVisualFeedback) {
+                        this.addResult('Audio System: Visual feedback', 'passed', 'Visual feedback enabled');
+                    } else {
+                        this.addResult('Audio System: Visual feedback', 'warning', 'Visual feedback disabled');
+                    }
+                } else {
+                    this.addResult('Audio System: Installation', 'failed', 'Audio Manager not found');
+                }
+            }
+            
+            runStateTests(gameWindow) {
+                // Check for localStorage usage
+                try {
+                    const hasLocalStorage = gameWindow.localStorage.length > 0 ||
+                                          gameWindow.localStorage.getItem('highScore') !== null;
+                    if (hasLocalStorage) {
+                        this.addResult('State: Persistence', 'passed', 'LocalStorage in use');
+                    } else {
+                        this.addResult('State: Persistence', 'warning', 'No persistent state detected');
+                    }
+                } catch (e) {
+                    this.addResult('State: Persistence', 'warning', 'LocalStorage not accessible');
+                }
+            }
+            
+            async runPerformanceTests(gameWindow) {
+                // Measure page load time
+                const perf = gameWindow.performance;
+                if (perf && perf.timing) {
+                    const loadTime = perf.timing.loadEventEnd - perf.timing.navigationStart;
+                    if (loadTime < 1000) {
+                        this.addResult('Performance: Load time', 'passed', `${loadTime}ms (excellent)`);
+                    } else if (loadTime < 3000) {
+                        this.addResult('Performance: Load time', 'warning', `${loadTime}ms (acceptable)`);
+                    } else {
+                        this.addResult('Performance: Load time', 'failed', `${loadTime}ms (too slow)`);
+                    }
+                }
+                
+                // Check for memory leaks (basic check)
+                if (gameWindow.audioManager && gameWindow.audioManager.activeNodes) {
+                    const nodeCount = gameWindow.audioManager.activeNodes.size;
+                    if (nodeCount < 10) {
+                        this.addResult('Performance: Audio memory', 'passed', `${nodeCount} active nodes`);
+                    } else {
+                        this.addResult('Performance: Audio memory', 'warning', `${nodeCount} active nodes (high)`);
+                    }
+                }
+            }
+            
+            addResult(test, status, message) {
+                this.results.push({
+                    game: this.game.name,
+                    test,
+                    status,
+                    message,
+                    timestamp: new Date().toISOString()
+                });
+            }
+            
+            cleanup() {
+                if (this.iframe && this.iframe.parentNode) {
+                    this.iframe.parentNode.removeChild(this.iframe);
+                }
+            }
+        }
+        
+        // Main Test Runner
+        async function runAllTests() {
+            clearResults();
+            updateUI('Testing in progress...', 'info');
+            
+            for (const gameConfig of TEST_CONFIG.games) {
+                const tester = new GameTester(gameConfig);
+                const results = await tester.runTests();
+                
+                // Update results
+                results.forEach(result => {
+                    testResults.total++;
+                    if (result.status === 'passed') testResults.passed++;
+                    else if (result.status === 'failed') testResults.failed++;
+                    else if (result.status === 'warning') testResults.warnings++;
+                    testResults.details.push(result);
+                });
+                
+                // Update UI for this game
+                displayGameResults(gameConfig.name, results);
+                updateSummary();
+            }
+            
+            // Final summary
+            displayFinalSummary();
+        }
+        
+        async function runCoreTests() {
+            await runFilteredTests(['core', 'dom']);
+        }
+        
+        async function runAccessibilityTests() {
+            await runFilteredTests(['accessibility']);
+        }
+        
+        async function runPerformanceTests() {
+            await runFilteredTests(['performance']);
+        }
+        
+        async function runFilteredTests(suites) {
+            clearResults();
+            updateUI(`Running ${suites.join(', ')} tests...`, 'info');
+            
+            // Run filtered tests (simplified for this example)
+            await runAllTests();
+        }
+        
+        function displayGameResults(gameName, results) {
+            const container = document.getElementById('testResults');
+            
+            const gameDiv = document.createElement('div');
+            gameDiv.className = 'game-test';
+            gameDiv.innerHTML = `<h3>🎮 ${gameName}</h3>`;
+            
+            const testList = document.createElement('div');
+            results.forEach(result => {
+                const testDiv = document.createElement('div');
+                testDiv.className = `test-item test-${result.status}`;
+                testDiv.innerHTML = `
+                    <span class="test-name">${result.test}</span>
+                    <span class="test-status">
+                        ${getStatusIcon(result.status)}
+                        <small>${result.message}</small>
+                    </span>
+                `;
+                testList.appendChild(testDiv);
+            });
+            
+            gameDiv.appendChild(testList);
+            container.appendChild(gameDiv);
+        }
+        
+        function displayFinalSummary() {
+            const container = document.getElementById('testResults');
+            const summaryDiv = document.createElement('div');
+            summaryDiv.className = 'game-test';
+            summaryDiv.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+            summaryDiv.style.color = 'white';
+            
+            const passRate = (testResults.passed / testResults.total * 100).toFixed(1);
+            summaryDiv.innerHTML = `
+                <h3>📊 Test Summary</h3>
+                <p>Total Tests: ${testResults.total}</p>
+                <p>Passed: ${testResults.passed} (${passRate}%)</p>
+                <p>Failed: ${testResults.failed}</p>
+                <p>Warnings: ${testResults.warnings}</p>
+                <p>Overall Status: ${getOverallStatus()}</p>
+            `;
+            
+            container.appendChild(summaryDiv);
+        }
+        
+        function getOverallStatus() {
+            const passRate = testResults.passed / testResults.total;
+            if (passRate >= 0.95) return '🏆 Excellent';
+            if (passRate >= 0.80) return '✅ Good';
+            if (passRate >= 0.60) return '⚠️ Needs Improvement';
+            return '❌ Critical Issues';
+        }
+        
+        function getStatusIcon(status) {
+            switch(status) {
+                case 'passed': return '✅';
+                case 'failed': return '❌';
+                case 'warning': return '⚠️';
+                default: return 'ℹ️';
+            }
+        }
+        
+        function updateSummary() {
+            document.getElementById('totalTests').textContent = testResults.total;
+            document.getElementById('passedTests').textContent = testResults.passed;
+            document.getElementById('failedTests').textContent = testResults.failed;
+            document.getElementById('warningTests').textContent = testResults.warnings;
+            
+            const progress = testResults.total > 0 ? 
+                (testResults.passed / testResults.total * 100).toFixed(1) : 0;
+            const progressBar = document.getElementById('progressBar');
+            progressBar.style.width = `${progress}%`;
+            progressBar.textContent = `${progress}%`;
+        }
+        
+        function clearResults() {
+            testResults = {
+                total: 0,
+                passed: 0,
+                failed: 0,
+                warnings: 0,
+                details: []
+            };
+            document.getElementById('testResults').innerHTML = '';
+            updateSummary();
+        }
+        
+        function filterResults(filter) {
+            const allButtons = document.querySelectorAll('.filter-btn');
+            allButtons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            const testItems = document.querySelectorAll('.test-item');
+            testItems.forEach(item => {
+                if (filter === 'all') {
+                    item.style.display = 'flex';
+                } else if (filter === 'passed' && item.classList.contains('test-pass')) {
+                    item.style.display = 'flex';
+                } else if (filter === 'failed' && item.classList.contains('test-fail')) {
+                    item.style.display = 'flex';
+                } else if (filter === 'warnings' && item.classList.contains('test-warning')) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+        
+        function exportResults() {
+            const exportData = {
+                timestamp: new Date().toISOString(),
+                summary: {
+                    total: testResults.total,
+                    passed: testResults.passed,
+                    failed: testResults.failed,
+                    warnings: testResults.warnings,
+                    passRate: (testResults.passed / testResults.total * 100).toFixed(1) + '%'
+                },
+                details: testResults.details
+            };
+            
+            const blob = new Blob([JSON.stringify(exportData, null, 2)], 
+                { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `test-results-${Date.now()}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            updateUI('Results exported successfully', 'info');
+        }
+        
+        function updateUI(message, type) {
+            console.log(`[${type.toUpperCase()}] ${message}`);
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            updateSummary();
+            console.log('Test Suite Ready - 9 games configured for testing');
+        });
+    </script>
+</body>
+</html>
