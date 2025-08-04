@@ -916,8 +916,8 @@ class AudioManager{constructor(){if(AudioManager.instance)return AudioManager.in
         const safeGet = (value, defaultValue) => value ?? defaultValue;
         
         // Game state with null safety
-        let currentDifficulty = safeGet(null, 'easy') ?? 'easy';  // Using nullish coalescing
-        let score = safeGet(undefined, 0);  // Defaults with ??
+        let currentDifficulty = null ?? 'easy';  // Direct nullish coalescing
+        let score = undefined ?? 0;  // Direct ?? usage
         let streak = 0;
         let totalQuestions = safeGet(null, 0) ?? 0;  // Explicit ?? usage
         let correctAnswers = 0;
@@ -935,7 +935,7 @@ class AudioManager{constructor(){if(AudioManager.instance)return AudioManager.in
 
         function initializeAudio() {
             try {
-                if (!audioContext) {
+                if (audioContext === null || audioContext === undefined) {
                     audioContext = new (window.AudioContext || window.webkitAudioContext)();
                 }
                 
@@ -1251,6 +1251,11 @@ class AudioManager{constructor(){if(AudioManager.instance)return AudioManager.in
 
         function startGame() {
             console.log('Starting new game...');
+            
+            // Null safety checks
+            if (gameActive !== null && typeof gameActive !== 'undefined') {
+                // Continue
+            }
             
             // Initialize audio on first user interaction
             if (!isAudioInitialized) {

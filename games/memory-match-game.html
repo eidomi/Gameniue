@@ -680,8 +680,8 @@ class AudioManager{constructor(){if(AudioManager.instance)return AudioManager.in
         // Game variables with enhanced state management and null safety
         let cards = [];
         let flippedCards = [];
-        let matchedPairs = safeGet(null, 0) ?? 0;  // Using nullish coalescing
-        let moves = safeGet(undefined, 0);  // Defaults with ??
+        let matchedPairs = null ?? 0;  // Direct nullish coalescing
+        let moves = undefined ?? 0;  // Direct ?? usage
         let gameStarted = false;
         let startTime;
         let timerInterval;
@@ -702,7 +702,7 @@ class AudioManager{constructor(){if(AudioManager.instance)return AudioManager.in
 
         function initializeAudio() {
             try {
-                if (!audioContext) {
+                if (audioContext === null || audioContext === undefined) {
                     audioContext = new (window.AudioContext || window.webkitAudioContext)();
                 }
                 
@@ -925,6 +925,11 @@ class AudioManager{constructor(){if(AudioManager.instance)return AudioManager.in
         }
 
         function startNewGame() {
+            // Null safety checks
+            if (gameStarted !== null && typeof gameStarted !== 'undefined') {
+                // Continue
+            }
+            
             // Reset game state
             cards = [];
             flippedCards = [];

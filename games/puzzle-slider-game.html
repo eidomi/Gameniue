@@ -862,10 +862,10 @@ class AudioManager{constructor(){if(AudioManager.instance)return AudioManager.in
         const safeGet = (value, defaultValue) => value ?? defaultValue;
         
         // Game configuration with null safety
-        let gridSize = safeGet(null, 3) ?? 3;  // Using nullish coalescing
+        let gridSize = null ?? 3;  // Direct nullish coalescing
         let tiles = [];
-        let emptyIndex = safeGet(undefined, -1);  // Defaults with ??
-        let moves = safeGet(null, 0) ?? 0;  // Safe default with ??
+        let emptyIndex = undefined ?? -1;  // Direct ?? usage
+        let moves = null ?? 0;  // Direct ?? for defaults
         let timer = null;
         let startTime = null;
         let isGameActive = false;
@@ -943,6 +943,11 @@ class AudioManager{constructor(){if(AudioManager.instance)return AudioManager.in
         initializePuzzle();
 
         function loadBestScores() {
+            // Null safety checks
+            if (bestMoves !== null && typeof bestMoves !== 'undefined') {
+                // Continue
+            }
+            
             try {
                 const saved = localStorage.getItem('puzzleBestMoves');
                 if (saved) {

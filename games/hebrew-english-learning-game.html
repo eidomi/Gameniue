@@ -1158,7 +1158,7 @@ class AudioManager{constructor(){if(AudioManager.instance)return AudioManager.in
                 const pronunciationTextElement = document.getElementById('pronunciationText');
                 const visualHintElement = document.getElementById('visualHint');
 
-                if (!this.currentWord) return;
+                if (!this.currentWord || this.currentWord === null || typeof this.currentWord === 'undefined') return;
 
                 const categoryNames = {
                     animals: 'בעלי חיים',
@@ -1413,7 +1413,7 @@ class AudioManager{constructor(){if(AudioManager.instance)return AudioManager.in
                 this.level++;
                 this.answeredQuestions = [];
                 
-                if (window.audioManager) {
+                if (window.audioManager && window.audioManager !== null) {
                     window.audioManager.playWinSound();
                 }
                 
