@@ -411,8 +411,8 @@ think a lot and review pattern   in ./patterns
 # Review issues/type-safety/TYPE-001-null-safety.md
 # Implement null safety in the project
 # Task Methodology Workflow
-#   **Think carefully And Follow Step-by-Step**
-#   Phase -1: Pre-Planning (NEW)
+#   Think carefully And Follow All Phases Step-by-Step
+#   Phase -1: Pre-Planning
 
 #   BEFORE starting:
 #     1. Define ONE clear success metric
@@ -421,7 +421,7 @@ think a lot and review pattern   in ./patterns
 #     4. List anti-patterns to avoid
 #     5. Check for existing solutions
 
-#   Phase 0: Initialize (ENHANCED)
+#   Phase 0: Initialize
 
 #   Add:
 #     - Verify Claude.md is loaded
@@ -430,7 +430,7 @@ think a lot and review pattern   in ./patterns
 #     - Set up rollback point
 #     - Define test validation command
 
-#   Phase 2: Run Tests (ENHANCED)
+#   Phase 2: Run Tests
 
 #   Add:
 #     - Store baseline metrics
@@ -439,7 +439,7 @@ think a lot and review pattern   in ./patterns
 #     - Document which tests matter most
 #     - Skip lengthy tests during development
 
-#   Phase 3: Continuous Validation (ENHANCED)
+#   Phase 3: Continuous Validation
 
 #   Add:
 #     - Incremental test runs (not full suite)
@@ -448,7 +448,7 @@ think a lot and review pattern   in ./patterns
 #     - Accessibility spot checks
 #     - Mobile responsiveness verify
 
-#   Phase 7: Documentation (ENHANCED)
+#   Phase 7: Documentation
 
 #   Add:
 #     - Update CLAUDE.md with learned patterns
@@ -457,6 +457,7 @@ think a lot and review pattern   in ./patterns
 #     - Note time savings
 #     - Create reusable snippets
 
+#   Phase 8: Task Principles
 #   Key Principles for Every Task - MUST READ!
 
 #   1. ROI-First Thinking
