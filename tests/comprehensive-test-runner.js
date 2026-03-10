@@ -204,14 +204,16 @@ function checkResourceOptimization(gameContent) {
 // Sound Testing Functions
 function checkAudioSystem(gameContent) {
     const hasAudioManager = gameContent.includes('AudioManager') || gameContent.includes('audioManager');
+    const hasAudioV7 = gameContent.includes('Audio System v7.0') || gameContent.includes('Audio Manager v7.0');
     const hasAudioV6 = gameContent.includes('Audio System v6.0') || gameContent.includes('Audio Manager v6.0');
+    const hasAudio = hasAudioV7 || hasAudioV6;
     const hasErrorHandler = gameContent.includes('Error Handler v6.0');
-    
+
     return {
-        status: hasAudioV6 ? 'pass' : hasAudioManager ? 'warning' : 'fail',
-        score: hasAudioV6 ? 100 : hasAudioManager ? 50 : 0,
-        message: `Audio v6.0=${hasAudioV6}, Error Handler=${hasErrorHandler}`,
-        hasAudioV6,
+        status: hasAudio ? 'pass' : hasAudioManager ? 'warning' : 'fail',
+        score: hasAudioV7 ? 100 : hasAudioV6 ? 90 : hasAudioManager ? 50 : 0,
+        message: `Audio v7.0=${hasAudioV7}, Audio v6.0=${hasAudioV6}, Error Handler=${hasErrorHandler}`,
+        hasAudioV6: hasAudio,
         hasErrorHandler
     };
 }

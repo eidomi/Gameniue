@@ -49,8 +49,8 @@ function validateGame(gamePath) {
     testResults.summary.total++;
     
     // Test 2: Audio System v6.0
-    if (content.includes('Audio System v6.0') || content.includes('AudioManager')) {
-        results.push({ test: 'Audio System', status: 'passed', message: 'Audio System v6.0 installed' });
+    if (content.includes('Audio System v7.0') || content.includes('Audio System v6.0') || content.includes('AudioManager')) {
+        results.push({ test: 'Audio System', status: 'passed', message: 'Audio System installed' });
         testResults.summary.passed++;
     } else {
         results.push({ test: 'Audio System', status: 'failed', message: 'Audio System not found' });
