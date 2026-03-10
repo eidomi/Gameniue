@@ -38,3 +38,7 @@ Thumbs.db
 *.bak
 *.old
 *.backup/
+.vercel
+.env*.local
+.mcp.json
+.firecrawl/
