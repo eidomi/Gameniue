@@ -5,6 +5,57 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>משחק זיכרון - התאמת קלפים</title>
     <style>
+        /* === Design System v1.0 === */
+        :root {
+            /* Color palette */
+            --color-primary: #667eea;
+            --color-primary-dark: #764ba2;
+            --color-success: #2ecc71;
+            --color-success-dark: #27ae60;
+            --color-error: #e74c3c;
+            --color-error-dark: #c0392b;
+            --color-warning: #f9ca24;
+            --color-warning-dark: #fdcb6e;
+            --color-info: #3498db;
+            --color-surface: #ffffff;
+            --color-text: #2c3e50;
+            --color-text-light: #7f8c8d;
+
+            /* Game-specific theme */
+            --game-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --game-accent: #667eea;
+
+            /* Shadows (3-tier depth) */
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 8px 25px rgba(0, 0, 0, 0.15);
+            --shadow-lg: 0 25px 50px rgba(0, 0, 0, 0.2);
+
+            /* Radius progression */
+            --radius-sm: 12px;
+            --radius-md: 20px;
+            --radius-lg: 30px;
+            --radius-pill: 50px;
+
+            /* Spacing scale */
+            --space-xs: 4px;
+            --space-sm: 8px;
+            --space-md: 16px;
+            --space-lg: 24px;
+            --space-xl: 32px;
+
+            /* Typography */
+            --font-family: 'Arial', system-ui, sans-serif;
+            --font-size-sm: 0.875rem;
+            --font-size-md: 1rem;
+            --font-size-lg: 1.25rem;
+            --font-size-xl: 2rem;
+
+            /* Transitions */
+            --transition-fast: 0.15s ease;
+            --transition-normal: 0.3s ease;
+            --transition-slow: 0.5s ease;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -12,8 +63,8 @@
         }
 
         body {
-            font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: var(--font-family);
+            background: var(--game-gradient);
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -34,12 +85,12 @@
             color: white;
             border: none;
             padding: 12px 25px;
-            border-radius: 50px;
+            border-radius: var(--radius-pill);
             font-size: 1.1em;
             font-weight: bold;
             cursor: pointer;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-            transition: all 0.3s ease;
+            transition: all var(--transition-normal);
         }
 
         .back-button button:hover {
@@ -53,10 +104,13 @@
         }
 
         .game-container {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 30px;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: var(--radius-lg);
             padding: 40px;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            box-shadow: var(--shadow-lg);
             max-width: 700px;
             width: 100%;
         }
@@ -115,7 +169,7 @@
             font-weight: bold;
             cursor: pointer;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-            transition: all 0.3s ease;
+            transition: all var(--transition-normal);
         }
 
         .controls button:hover {
