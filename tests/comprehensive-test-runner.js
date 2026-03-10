@@ -216,6 +216,18 @@ function checkAudioSystem(gameContent) {
     };
 }
 
+function checkDesignSystem(gameContent) {
+    const hasCSSVariables = gameContent.includes('--color-primary');
+    const hasGlassmorphism = gameContent.includes('backdrop-filter');
+    const hasGameGradient = gameContent.includes('--game-gradient');
+
+    return {
+        status: hasCSSVariables && hasGlassmorphism ? 'pass' : hasCSSVariables ? 'warning' : 'fail',
+        score: (hasCSSVariables ? 50 : 0) + (hasGlassmorphism ? 50 : 0),
+        message: `CSS Variables=${hasCSSVariables}, Glassmorphism=${hasGlassmorphism}, Game Theme=${hasGameGradient}`
+    };
+}
+
 function checkPronunciationSupport(gameContent, gameName) {
     // Special check for hebrew-english-learning-game
     if (!gameName.includes('hebrew-english')) {
@@ -290,7 +302,13 @@ function runTests() {
             pronunciation: checkPronunciationSupport(gameContent, game)
         };
         gameResults.categories.sound = soundResults;
-        
+
+        // Design System Tests
+        console.log('🎨 Design System Tests:');
+        gameResults.categories['Design System'] = {
+            'CSS Variables': checkDesignSystem(gameContent)
+        };
+
         // Calculate game score
         let totalScore = 0;
         let testCount = 0;
