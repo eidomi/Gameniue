@@ -211,7 +211,7 @@ class IncrementalTestRunner {
             'memory usage': () => true, // Would measure memory
             'frame rate': () => true, // Would measure FPS
             'script execution': () => !content.includes('console.error'),
-            'audio system': () => content.includes('Audio System v6.0'),
+            'audio system': () => content.includes('Audio System v6.0') || content.includes('Audio System v7.0'),
             'visual fallback': () => content.includes('flashScreen'),
             'sound effects': () => content.includes('audioManager'),
             'pronunciation': () => content.includes('speechSynthesis') || true
