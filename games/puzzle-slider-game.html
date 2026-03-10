@@ -866,82 +866,22 @@ class AudioManager{constructor(){if(AudioManager.instance)return AudioManager.in
         // Utility function for null safety with nullish coalescing
         const safeGet = (value, defaultValue) => value ?? defaultValue;
         
-        // Game configuration with null safety
-        let gridSize = null ?? 3;  // Direct nullish coalescing
+        // Hebrew letter mapping for tile display
+        const hebrewLetters = ['א','ב','ג','ד','ה','ו','ז','ח','ט','י','כ','ל','מ','נ','ס','ע','פ','צ','ק','ר','ש','ת','ך','ם','ן'];
+
+        // Game configuration
+        let gridSize = 3;
         let tiles = [];
-        let emptyIndex = undefined ?? -1;  // Direct ?? usage
-        let moves = null ?? 0;  // Direct ?? for defaults
+        let emptyIndex = -1;
+        let moves = 0;
         let timer = null;
         let startTime = null;
         let isGameActive = false;
-        let bestMoves = safeGet({}, {});  // Using ?? for object defaults
+        let bestMoves = {};
         let lastClickTime = 0;
-        const CLICK_DEBOUNCE_TIME = safeGet(null, 200) ?? 200; // Prevent rapid clicks with ??
+        const CLICK_DEBOUNCE_TIME = 200;
 
-        // Sound effects with proper error handling
-        let audioContext = null;
-        let isAudioInitialized = false;
-
-        function initializeAudio() {
-            try {
-                if (!audioContext) {
-                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                }
-                
-                // Resume context for mobile browsers
-                if (audioContext.state === 'suspended') {
-                    audioContext.resume().then(() => {
-                        isAudioInitialized = true;
-                    }).catch(console.warn);
-                } else {
-                    isAudioInitialized = true;
-                }
-            } catch (error) {
-                console.warn('Audio not supported:', error);
-                isAudioInitialized = false;
-            }
-        }
-
-        function playSound(frequency, duration = 0.2, type = 'sine') {
-            if (!isAudioInitialized || !audioContext) return;
-            
-            try {
-                const oscillator = audioContext.createOscillator();
-                const gainNode = audioContext.createGain();
-                
-                oscillator.connect(gainNode);
-                gainNode.connect(audioContext.destination);
-                
-                oscillator.type = type;
-                oscillator.frequency.value = frequency;
-                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
-                
-                oscillator.start(audioContext.currentTime);
-                oscillator.stop(audioContext.currentTime + duration);
-                
-                // Clean up after the sound finishes
-                setTimeout(() => {
-                    try {
-                        oscillator.disconnect();
-                        gainNode.disconnect();
-                    } catch(e) {} // Ignore if already disconnected
-                }, (duration + 0.1) * 1000);
-            } catch (error) {
-                console.warn('Error playing sound:', error);
-            }
-        }
-
-        function playMoveSound() {
-            playSound(600, 0.1);
-        }
-
-        function playWinSound() {
-            const notes = [523, 659, 784, 1047, 784, 1047];
-            notes.forEach((note, i) => {
-                setTimeout(() => playSound(note, 0.3), i * 150);
-            });
-        }
+        // Audio: Uses global window.audioManager (Audio Manager v6.0)
 
         // Initialize
         loadBestScores();
@@ -1020,14 +960,15 @@ class AudioManager{constructor(){if(AudioManager.instance)return AudioManager.in
                     tileElement.classList.add('empty');
                     tileElement.setAttribute('aria-label', 'מקום ריק');
                 } else {
-                    tileElement.textContent = tile;
+                    const hebrewLetter = hebrewLetters[tile - 1];
+                    tileElement.textContent = hebrewLetter;
                     tileElement.onclick = () => moveTile(index);
-                    
+
                     // Add accessibility attributes
                     tileElement.setAttribute('tabindex', '0');
                     tileElement.setAttribute('role', 'button');
-                    tileElement.setAttribute('aria-label', `אריח ${tile}`);
-                    
+                    tileElement.setAttribute('aria-label', `אריח ${hebrewLetter}`);
+
                     // Keyboard support for individual tiles
                     tileElement.onkeydown = (e) => {
                         if (e.key === 'Enter' || e.key === ' ') {
@@ -1035,11 +976,11 @@ class AudioManager{constructor(){if(AudioManager.instance)return AudioManager.in
                             moveTile(index);
                         }
                     };
-                    
+
                     // Check if tile is in correct position
                     if (tile === index + 1) {
                         tileElement.classList.add('correct');
-                        tileElement.setAttribute('aria-label', `אריח ${tile} - במקום הנכון`);
+                        tileElement.setAttribute('aria-label', `אריח ${hebrewLetter} - במקום הנכון`);
                     }
                 }
                 
@@ -1056,10 +997,6 @@ class AudioManager{constructor(){if(AudioManager.instance)return AudioManager.in
             }
             
             if (!isGameActive) {
-                // Initialize audio on first user interaction
-                if (!isAudioInitialized) {
-                    initializeAudio();
-                }
                 return;
             }
             
@@ -1084,7 +1021,7 @@ class AudioManager{constructor(){if(AudioManager.instance)return AudioManager.in
                 moves++;
                 updateStats();
                 
-                playMoveSound();
+                if (window.audioManager) window.audioManager.playClickSound();
                 
                 // Add sliding animation with requestAnimationFrame
                 const tileElements = document.querySelectorAll('.puzzle-tile');
@@ -1103,7 +1040,7 @@ class AudioManager{constructor(){if(AudioManager.instance)return AudioManager.in
                 }
             } else {
                 // Provide feedback for invalid moves
-                playSound(150, 0.1, 'sawtooth'); // Error sound
+                if (window.audioManager) window.audioManager.playWrongSound(); // Error sound
             }
         }
 
@@ -1117,11 +1054,6 @@ class AudioManager{constructor(){if(AudioManager.instance)return AudioManager.in
         }
 
         function shufflePuzzle() {
-            // Initialize audio on first user interaction
-            if (!isAudioInitialized) {
-                initializeAudio();
-            }
-            
             // Ensure puzzle is solvable by making valid moves
             const shuffleMoves = gridSize * gridSize * 20;
             
@@ -1191,7 +1123,7 @@ class AudioManager{constructor(){if(AudioManager.instance)return AudioManager.in
             isGameActive = false;
             clearInterval(timer);
             
-            playWinSound();
+            if (window.audioManager) window.audioManager.playWinSound();
             
             // Show win animation
             document.getElementById('winAnimation').classList.add('show');
@@ -1229,7 +1161,7 @@ class AudioManager{constructor(){if(AudioManager.instance)return AudioManager.in
                 const tile = document.createElement('div');
                 tile.className = 'preview-tile';
                 if (i < gridSize * gridSize) {
-                    tile.textContent = i;
+                    tile.textContent = hebrewLetters[i - 1];
                 }
                 previewGrid.appendChild(tile);
             }

@@ -854,7 +854,7 @@ class AudioManager{constructor(){if(AudioManager.instance)return AudioManager.in
         </div>
 
         <div class="timer-container">
-            <div class="timer" id="timer">0:30</div>
+            <div class="timer" id="timer">2:00</div>
         </div>
 
         <div class="streak-indicator">
@@ -894,19 +894,19 @@ class AudioManager{constructor(){if(AudioManager.instance)return AudioManager.in
             easy: {
                 operations: ['+', '-'],
                 range: [1, 20],
-                time: 30,
+                time: 120,
                 scoreMultiplier: 1
             },
             medium: {
                 operations: ['+', '-', '×'],
                 range: [1, 50],
-                time: 25,
+                time: 60,
                 scoreMultiplier: 2
             },
             hard: {
                 operations: ['+', '-', '×', '÷'],
                 range: [1, 100],
-                time: 20,
+                time: 30,
                 scoreMultiplier: 3
             },
             expert: {
@@ -920,91 +920,22 @@ class AudioManager{constructor(){if(AudioManager.instance)return AudioManager.in
         // Utility function for null safety with nullish coalescing
         const safeGet = (value, defaultValue) => value ?? defaultValue;
         
-        // Game state with null safety
-        let currentDifficulty = null ?? 'easy';  // Direct nullish coalescing
-        let score = undefined ?? 0;  // Direct ?? usage
+        // Game state
+        let currentDifficulty = 'easy';
+        let score = 0;
         let streak = 0;
-        let totalQuestions = safeGet(null, 0) ?? 0;  // Explicit ?? usage
+        let totalQuestions = 0;
         let correctAnswers = 0;
         let currentQuestion = null;
         let correctAnswerIndex = -1;
         let timer = null;
-        let timeLeft = safeGet(30, 30);  // Safe default
+        let timeLeft = 30;
         let gameActive = false;
         let lastClickTime = 0;
-        const DEBOUNCE_TIME = safeGet(null, 300) ?? 300; // Prevent rapid clicks with ??
+        const DEBOUNCE_TIME = 300;
 
         // Sound effects with enhanced error handling and mobile support
-        let audioContext = null;
-        let isAudioInitialized = false;
-
-        function initializeAudio() {
-            try {
-                if (audioContext === null || audioContext === undefined) {
-                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                }
-                
-                // Resume context for mobile browsers
-                if (audioContext.state === 'suspended') {
-                    audioContext.resume().then(() => {
-                        isAudioInitialized = true;
-                    }).catch(console.warn);
-                } else {
-                    isAudioInitialized = true;
-                }
-            } catch (error) {
-                console.warn('Audio not supported:', error);
-                isAudioInitialized = false;
-            }
-        }
-
-        function playSound(frequency, duration = 0.2, type = 'sine') {
-            if (!isAudioInitialized || !audioContext) return;
-            
-            try {
-                const oscillator = audioContext.createOscillator();
-                const gainNode = audioContext.createGain();
-                
-                oscillator.connect(gainNode);
-                gainNode.connect(audioContext.destination);
-                
-                oscillator.type = type;
-                oscillator.frequency.value = frequency;
-                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
-                
-                oscillator.start(audioContext.currentTime);
-                oscillator.stop(audioContext.currentTime + duration);
-                
-                // Clean up after the sound finishes
-                setTimeout(() => {
-                    try {
-                        oscillator.disconnect();
-                        gainNode.disconnect();
-                    } catch(e) {} // Ignore if already disconnected
-                }, (duration + 0.1) * 1000);
-            } catch (error) {
-                console.warn('Error playing sound:', error);
-            }
-        }
-
-        function playCorrectSound() {
-            const notes = [523, 659, 784];
-            notes.forEach((note, i) => {
-                setTimeout(() => playSound(note, 0.15), i * 100);
-            });
-        }
-
-        function playWrongSound() {
-            playSound(200, 0.5, 'sawtooth');
-        }
-
-        function playComboSound() {
-            const notes = [523, 659, 784, 1047];
-            notes.forEach((note, i) => {
-                setTimeout(() => playSound(note, 0.2), i * 50);
-            });
-        }
+        // Audio functions provided by global window.audioManager (Audio System v6.0)
 
         function setDifficulty(difficulty) {
             currentDifficulty = difficulty;
@@ -1043,11 +974,12 @@ class AudioManager{constructor(){if(AudioManager.instance)return AudioManager.in
                         });
                         document.querySelector(`[onclick="setDifficulty('${nextLevel}')"]`).classList.add('active');
                         
-                        // Automatically start a new game with the new difficulty level
-                        startGame();
+                        // Reset streak and generate new question without resetting score
+                        streak = 0;
+                        generateQuestion();
                     }, 2500);
                     
-                    playComboSound(); // Celebration sound
+                    if (window.audioManager) window.audioManager.playCorrectSound(); // Celebration sound
                     return true; // Level progression occurred
                 }
             }
@@ -1135,7 +1067,7 @@ class AudioManager{constructor(){if(AudioManager.instance)return AudioManager.in
                 return;
             }
             const answers = [currentQuestion.answer];
-            const variance = Math.max(10, Math.floor(currentQuestion.answer * 0.3));
+            const variance = Math.max(3, Math.min(10, Math.floor(Math.abs(currentQuestion.answer) * 0.4)));
             
             while (answers.length < 4) {
                 let wrongAnswer;
@@ -1180,13 +1112,9 @@ class AudioManager{constructor(){if(AudioManager.instance)return AudioManager.in
             lastClickTime = currentTime;
             
             if (!gameActive) {
-                // Initialize audio on first interaction if needed
-                if (!isAudioInitialized) {
-                    initializeAudio();
-                }
                 return;
             }
-            
+
             const buttons = document.querySelectorAll('.answer-btn');
             buttons.forEach(btn => btn.disabled = true);
             
@@ -1204,15 +1132,15 @@ class AudioManager{constructor(){if(AudioManager.instance)return AudioManager.in
                 
                 score += baseScore + streakBonus + timeBonus;
                 
-                playCorrectSound();
+                if (window.audioManager) window.audioManager.playCorrectSound();
                 updateStreakDisplay();
-                
+
                 // Check for level progression at 5 stars
                 const leveledUp = checkLevelProgression();
-                
+
                 if (streak > 0 && streak % 5 === 0 && !leveledUp) {
                     showCombo(streak);
-                    playComboSound();
+                    if (window.audioManager) window.audioManager.playCorrectSound();
                 } else if (!leveledUp) {
                     showMessage('נכון! כל הכבוד!', 'success');
                 }
@@ -1222,7 +1150,7 @@ class AudioManager{constructor(){if(AudioManager.instance)return AudioManager.in
                 buttons[correctAnswerIndex].classList.add('correct');
                 streak = 0;
                 
-                playWrongSound();
+                if (window.audioManager) window.audioManager.playWrongSound();
                 updateStreakDisplay();
                 showMessage(`לא נכון. התשובה הנכונה: ${currentQuestion ? currentQuestion.answer : 'לא ידוע'}`, 'error');
             }
@@ -1261,12 +1189,7 @@ class AudioManager{constructor(){if(AudioManager.instance)return AudioManager.in
             if (gameActive !== null && typeof gameActive !== 'undefined') {
                 // Continue
             }
-            
-            // Initialize audio on first user interaction
-            if (!isAudioInitialized) {
-                initializeAudio();
-            }
-            
+
             // Hide any existing messages
             document.getElementById('message').className = 'message';
             

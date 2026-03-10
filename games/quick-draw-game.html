@@ -867,6 +867,7 @@ class AudioManager{constructor(){if(AudioManager.instance)return AudioManager.in
         let gameMode = safeGet('draw', 'draw');
         let canvas, ctx;
         let isDrawing = false;
+        let lastDrawSoundTime = 0;
         let currentColor = safeGet(localStorage.getItem('drawColor'), '#2c3e50');
         let currentSize = 3;
         let score = 0;
@@ -875,66 +876,14 @@ class AudioManager{constructor(){if(AudioManager.instance)return AudioManager.in
         let currentWord = '';
         let currentCategory = '';
         let timer = null;
-        let timeLeft = safeGet(null, 60);
+        let timeLeft = 60;
         let gameActive = false;
         let lastTouchTime = 0;
         const DEBOUNCE_TIME = 300; // Enhanced debouncing for better performance
 
         // Audio System v5.0 - Mobile-compatible with error handling and memory cleanup
-        let audioContext = null;
-        let isAudioInitialized = false;
-
-        function initializeAudio() {
-            try {
-                if (!audioContext) {
-                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                }
-                
-                // Resume context for mobile browsers
-                if (audioContext.state === 'suspended') {
-                    audioContext.resume().then(() => {
-                        isAudioInitialized = true;
-                    }).catch(console.warn);
-                } else {
-                    isAudioInitialized = true;
-                }
-            } catch (e) {
-                console.warn('Audio not supported:', e);
-                isAudioInitialized = false;
-            }
-        }
-
-        function playSound(frequency, duration = 0.2, type = 'sine') {
-            if (!isAudioInitialized || !audioContext) return;
-            
-            try {
-                const oscillator = audioContext.createOscillator();
-                const gainNode = audioContext.createGain();
-                
-                oscillator.connect(gainNode);
-                gainNode.connect(audioContext.destination);
-                
-                oscillator.type = type;
-                oscillator.frequency.value = frequency;
-                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
-                
-                oscillator.start(audioContext.currentTime);
-                oscillator.stop(audioContext.currentTime + duration);
-            } catch (e) {
-                console.warn('Audio playback failed:', e);
-            }
-        }
-
-        function playCorrectSound() {
-            const notes = [523, 659, 784];
-            notes.forEach((note, i) => {
-                setTimeout(() => playSound(note, 0.15), i * 100);
-            });
-        }
-
         function playDrawSound() {
-            playSound(800 + Math.random() * 400, 0.05);
+            if (window.audioManager) window.audioManager.playSound(800 + Math.random() * 400, 0.05);
         }
 
         // Initialize canvas
@@ -992,7 +941,11 @@ class AudioManager{constructor(){if(AudioManager.instance)return AudioManager.in
             ctx.lineTo(x, y);
             ctx.stroke();
             
-            playDrawSound();
+            const now = Date.now();
+            if (now - lastDrawSoundTime > 200) {
+                playDrawSound();
+                lastDrawSoundTime = now;
+            }
         }
 
         function stopDrawing() {
@@ -1054,11 +1007,6 @@ class AudioManager{constructor(){if(AudioManager.instance)return AudioManager.in
         }
 
         function startGame() {
-            // Initialize audio on first user interaction
-            if (!isAudioInitialized) {
-                initializeAudio();
-            }
-            
             gameActive = true;
             score = 0;
             round = 0;
@@ -1093,13 +1041,16 @@ class AudioManager{constructor(){if(AudioManager.instance)return AudioManager.in
             
             round++;
             clearCanvas();
-            selectNewWord();
-            
+
             if (gameMode === 'guess') {
+                const sample = drawingSamples[Math.floor(Math.random() * drawingSamples.length)];
+                currentWord = sample.word;
+                document.getElementById('wordCategory').textContent = '';
                 document.getElementById('guessInput').value = '';
                 document.getElementById('currentWord').textContent = '?????';
-                simulateDrawing();
+                simulateDrawing(sample);
             } else {
+                selectNewWord();
                 document.getElementById('currentWord').textContent = currentWord;
             }
             
@@ -1155,8 +1106,11 @@ class AudioManager{constructor(){if(AudioManager.instance)return AudioManager.in
 
         function timeUp() {
             if (gameMode === 'draw') {
-                score += 5; // Partial points for drawing
-                showMessage('הזמן נגמר! קיבלת 5 נקודות על הציור', 'info');
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const drawnPixels = Array.from(imageData.data).filter((v, i) => i % 4 === 3 && v > 0).length;
+                const pointsEarned = drawnPixels > 100 ? 5 : 0;
+                score += pointsEarned;
+                showMessage(pointsEarned > 0 ? 'הזמן נגמר! קיבלת 5 נקודות על הציור' : 'הזמן נגמר! נסה לצייר יותר', 'info');
             } else {
                 showMessage(`הזמן נגמר! המילה הייתה: ${currentWord}`, 'info');
             }
@@ -1177,7 +1131,7 @@ class AudioManager{constructor(){if(AudioManager.instance)return AudioManager.in
                 const points = Math.max(10, Math.floor(timeLeft / 3));
                 score += points;
                 
-                playCorrectSound();
+                if (window.audioManager) window.audioManager.playCorrectSound();
                 showMessage(`נכון! קיבלת ${points} נקודות!`, 'success');
                 
                 setTimeout(() => {
@@ -1190,9 +1144,9 @@ class AudioManager{constructor(){if(AudioManager.instance)return AudioManager.in
             }
         }
 
-        function simulateDrawing() {
+        function simulateDrawing(sample) {
             // Simple AI drawing simulation
-            const sample = drawingSamples[Math.floor(Math.random() * drawingSamples.length)];
+            if (!sample) sample = drawingSamples[Math.floor(Math.random() * drawingSamples.length)];
             let strokeIndex = 0;
             let pointIndex = 0;
             
@@ -1258,17 +1212,11 @@ class AudioManager{constructor(){if(AudioManager.instance)return AudioManager.in
         window.addEventListener('beforeunload', () => {
             clearInterval(timer);
             timer = null;
-            if (audioContext && audioContext.state !== 'closed') {
-                audioContext.close().catch(console.warn);
-            }
         });
 
         window.addEventListener('pagehide', () => {
             clearInterval(timer);
             timer = null;
-            if (audioContext && audioContext.state !== 'closed') {
-                audioContext.close().catch(console.warn);
-            }
         });
 
         // Enhanced visibility API for pause/resume v5.0
@@ -1290,11 +1238,6 @@ class AudioManager{constructor(){if(AudioManager.instance)return AudioManager.in
                 return;
             }
             lastTouchTime = currentTime;
-
-            // Initialize audio on first user interaction
-            if (!isAudioInitialized) {
-                initializeAudio();
-            }
 
             if (e.key === 'Enter' && !gameActive) {
                 startGame();

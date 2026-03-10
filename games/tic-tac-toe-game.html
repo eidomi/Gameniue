@@ -791,66 +791,7 @@ class AudioManager{constructor(){if(AudioManager.instance)return AudioManager.in
             [0, 4, 8], [2, 4, 6] // Diagonals
         ];
 
-        // Audio System v5.0 - Mobile-compatible with error handling and memory cleanup
-        let audioContext = null;
-        let isAudioInitialized = false;
-
-        function initializeAudio() {
-            try {
-                if (!audioContext) {
-                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                }
-                
-                // Resume context for mobile browsers
-                if (audioContext.state === 'suspended') {
-                    audioContext.resume().then(() => {
-                        isAudioInitialized = true;
-                    }).catch(console.warn);
-                } else {
-                    isAudioInitialized = true;
-                }
-            } catch (e) {
-                console.warn('Audio not supported:', e);
-                isAudioInitialized = false;
-            }
-        }
-
-        function playSound(frequency, duration, type = 'sine') {
-            if (!isAudioInitialized || !audioContext) return;
-            
-            try {
-                const oscillator = audioContext.createOscillator();
-                const gainNode = audioContext.createGain();
-                
-                oscillator.connect(gainNode);
-                gainNode.connect(audioContext.destination);
-                
-                oscillator.type = type;
-                oscillator.frequency.value = frequency;
-                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
-                
-                oscillator.start(audioContext.currentTime);
-                oscillator.stop(audioContext.currentTime + duration);
-            } catch (e) {
-                console.warn('Audio playback failed:', e);
-            }
-        }
-
-        function playMoveSound() {
-            playSound(currentPlayer === 'X' ? 523 : 659, 0.1);
-        }
-
-        function playWinSound() {
-            const notes = [523, 659, 784, 1047];
-            notes.forEach((note, i) => {
-                setTimeout(() => playSound(note, 0.2), i * 100);
-            });
-        }
-
-        function playDrawSound() {
-            playSound(440, 0.3, 'sawtooth');
-        }
+        // Audio: Uses global window.audioManager (Audio Manager v6.0)
 
         // Initialize the game
         function initGame() {
@@ -875,16 +816,11 @@ class AudioManager{constructor(){if(AudioManager.instance)return AudioManager.in
         }
 
         function makeMove(index, player) {
-            // Initialize audio on first user interaction
-            if (!isAudioInitialized) {
-                initializeAudio();
-            }
-            
             board[index] = player;
             const cell = document.querySelector(`[data-index="${index}"]`);
             cell.textContent = player;
             cell.classList.add('taken', player.toLowerCase());
-            playMoveSound();
+            if (window.audioManager) window.audioManager.playClickSound();
 
             if (checkWin()) {
                 endGame(false);
@@ -981,13 +917,13 @@ class AudioManager{constructor(){if(AudioManager.instance)return AudioManager.in
                 message.textContent = 'תיקו! 🤝';
                 message.className = 'message draw show';
                 scores.draw++;
-                playDrawSound();
+                if (window.audioManager) window.audioManager.playWrongSound();
             } else {
                 const winner = currentPlayer;
                 message.textContent = `שחקן ${winner} ניצח! 🎉`;
                 message.className = 'message win show';
                 scores[winner]++;
-                playWinSound();
+                if (window.audioManager) window.audioManager.playWinSound();
 
                 // Highlight winning cells
                 winConditions.forEach(condition => {
@@ -1064,22 +1000,11 @@ class AudioManager{constructor(){if(AudioManager.instance)return AudioManager.in
             });
             
             // Update live regions
-            document.getElementById('currentPlayer').setAttribute('aria-live', 'polite');
-            document.getElementById('gameStatus').setAttribute('aria-live', 'assertive');
+            const messageEl = document.getElementById('message');
+            if (messageEl) messageEl.setAttribute('aria-live', 'assertive');
         }
 
-        // Enhanced cleanup for memory management v5.0
-        window.addEventListener('beforeunload', () => {
-            if (audioContext && audioContext.state !== 'closed') {
-                audioContext.close().catch(console.warn);
-            }
-        });
-
-        window.addEventListener('pagehide', () => {
-            if (audioContext && audioContext.state !== 'closed') {
-                audioContext.close().catch(console.warn);
-            }
-        });
+        // Audio cleanup handled by global window.audioManager.destroy() on beforeunload
 
         // Enhanced keyboard support with debouncing v5.0
         document.addEventListener('keydown', (e) => {
@@ -1090,11 +1015,6 @@ class AudioManager{constructor(){if(AudioManager.instance)return AudioManager.in
                 return;
             }
             lastTouchTime = currentTime;
-
-            // Initialize audio on first user interaction
-            if (!isAudioInitialized) {
-                initializeAudio();
-            }
 
             // Number keys (1-9) for cell selection
             if (e.key >= '1' && e.key <= '9') {

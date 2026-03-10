@@ -680,9 +680,9 @@ class AudioManager{constructor(){if(AudioManager.instance)return AudioManager.in
                 moves,
                 hintsLeft,
                 elapsedTime: Math.floor((Date.now() - startTime) / 1000),
-                matchedEmojis: cards
+                matchedPairIndices: cards
                     .filter(card => card.classList.contains('matched'))
-                    .map(card => card.dataset.emoji),
+                    .map(card => card.dataset.pairIndex),
                 timestamp: Date.now()
             };
             
@@ -729,82 +729,30 @@ class AudioManager{constructor(){if(AudioManager.instance)return AudioManager.in
         // Game variables with enhanced state management and null safety
         let cards = [];
         let flippedCards = [];
-        let matchedPairs = null ?? 0;  // Direct nullish coalescing
-        let moves = undefined ?? 0;  // Direct ?? usage
+        let matchedPairs = 0;
+        let moves = 0;
         let gameStarted = false;
         let startTime;
         let timerInterval;
-        let hintsLeft = safeGet(3, 3);  // Safe default with ??
+        let hintsLeft = 3;
         let isProcessing = false;
         let isPaused = false;
         let pausedTime = 0;
-        let highScore = localStorage.getItem('memoryMatchHighScore') ?? Infinity;  // Using ?? instead of ||
+        let highScore = parseInt(localStorage.getItem('memoryMatchHighScore'), 10) || Infinity;
         let lastTouchTime = 0;
-        const DEBOUNCE_TIME = safeGet(null, 300) ?? 300; // Prevent rapid clicks with ??
+        const DEBOUNCE_TIME = 300;
 
-        // Emojis for card faces
-        const cardEmojis = ['🎨', '🎭', '🎪', '🎯', '🎲', '🎸'];
+        // Hebrew-English vocabulary pairs for card faces
+        const cardPairs = [
+            { hebrew: 'כלב', english: 'Dog', emoji: '🐕' },
+            { hebrew: 'חתול', english: 'Cat', emoji: '🐈' },
+            { hebrew: 'בית', english: 'House', emoji: '🏠' },
+            { hebrew: 'שמש', english: 'Sun', emoji: '☀️' },
+            { hebrew: 'ספר', english: 'Book', emoji: '📖' },
+            { hebrew: 'פרח', english: 'Flower', emoji: '🌸' }
+        ];
         
-        // Audio System v5.0 - Mobile-compatible with error handling and memory cleanup
-        let audioContext = null;
-        let isAudioInitialized = false;
-
-        function initializeAudio() {
-            try {
-                if (audioContext === null || audioContext === undefined) {
-                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                }
-                
-                // Resume context for mobile browsers
-                if (audioContext.state === 'suspended') {
-                    audioContext.resume().then(() => {
-                        isAudioInitialized = true;
-                    }).catch(console.warn);
-                } else {
-                    isAudioInitialized = true;
-                }
-            } catch (e) {
-                console.warn('Audio not supported:', e);
-                isAudioInitialized = false;
-            }
-        }
-
-        function createBeep(frequency, duration, volume = 0.1) {
-            if (!isAudioInitialized || !audioContext) return;
-            
-            try {
-                const oscillator = audioContext.createOscillator();
-                const gainNode = audioContext.createGain();
-                
-                oscillator.connect(gainNode);
-                gainNode.connect(audioContext.destination);
-                
-                oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
-                gainNode.gain.setValueAtTime(volume, audioContext.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
-                
-                oscillator.start(audioContext.currentTime);
-                oscillator.stop(audioContext.currentTime + duration);
-            } catch (e) {
-                console.warn('Audio playback failed:', e);
-            }
-        }
-
-        function playFlipSound() {
-            createBeep(800, 0.1);
-        }
-
-        function playMatchSound() {
-            createBeep(1200, 0.2);
-            setTimeout(() => createBeep(1500, 0.2), 100);
-        }
-
-        function playWinSound() {
-            const notes = [523.25, 659.25, 783.99, 1046.50];
-            notes.forEach((note, i) => {
-                setTimeout(() => createBeep(note, 0.3), i * 150);
-            });
-        }
+        // Audio: Uses global window.audioManager (Audio Manager v6.0)
 
         // Performance optimization with requestAnimationFrame
         function updateTimer() {
@@ -837,17 +785,25 @@ class AudioManager{constructor(){if(AudioManager.instance)return AudioManager.in
             return newArray;
         }
 
-        function createCard(emoji, index) {
+        function createCard(cardData, index) {
             const card = document.createElement('div');
             card.className = 'card';
-            card.dataset.emoji = emoji;
+            card.dataset.pairIndex = cardData.pairIndex;
+            card.dataset.cardType = cardData.type;
+            card.dataset.displayText = cardData.text;
+
+            const isHebrew = cardData.type === 'hebrew';
+            const textStyle = isHebrew
+                ? 'font-size: 1.8em; font-family: Arial, sans-serif; direction: rtl;'
+                : 'font-size: 1em;';
+
             card.innerHTML = `
                 <div class="card-inner">
                     <div class="card-front">?</div>
-                    <div class="card-back">${emoji}</div>
+                    <div class="card-back" style="${textStyle}">${cardData.text}</div>
                 </div>
             `;
-            
+
             card.addEventListener('click', () => flipCard(card));
             return card;
         }
@@ -861,11 +817,6 @@ class AudioManager{constructor(){if(AudioManager.instance)return AudioManager.in
             }
             lastTouchTime = currentTime;
 
-            // Initialize audio on first user interaction
-            if (!isAudioInitialized) {
-                initializeAudio();
-            }
-
             if (isProcessing || isPaused || card.classList.contains('flipped') || card.classList.contains('matched')) {
                 return;
             }
@@ -874,7 +825,7 @@ class AudioManager{constructor(){if(AudioManager.instance)return AudioManager.in
                 startGame();
             }
 
-            playFlipSound();
+            if (window.audioManager) window.audioManager.playClickSound();
             card.classList.add('flipped');
             flippedCards.push(card);
 
@@ -889,20 +840,20 @@ class AudioManager{constructor(){if(AudioManager.instance)return AudioManager.in
 
         function checkMatch() {
             const [card1, card2] = flippedCards;
-            
-            if (card1.dataset.emoji === card2.dataset.emoji) {
+
+            if (card1.dataset.pairIndex === card2.dataset.pairIndex && card1 !== card2) {
                 setTimeout(() => {
                     card1.classList.add('matched');
                     card2.classList.add('matched');
-                    playMatchSound();
+                    if (window.audioManager) window.audioManager.playCorrectSound();
                     matchedPairs++;
                     updateStats();
                     updateAccessibility();
-                    
-                    if (matchedPairs === cardEmojis.length) {
+
+                    if (matchedPairs === cardPairs.length) {
                         endGame();
                     }
-                    
+
                     flippedCards = [];
                     isProcessing = false;
                 }, 600);
@@ -952,7 +903,7 @@ class AudioManager{constructor(){if(AudioManager.instance)return AudioManager.in
             const time = document.getElementById('timer').textContent;
             const winMessage = document.getElementById('winMessage');
             
-            playWinSound();
+            if (window.audioManager) window.audioManager.playWinSound();
             
             // Check for high score
             if (moves < highScore) {
@@ -1000,14 +951,19 @@ class AudioManager{constructor(){if(AudioManager.instance)return AudioManager.in
             document.getElementById('winMessage').style.display = 'none';
             document.getElementById('hintButton').textContent = 'רמז (נותרו 3)';
             
-            // Create new deck
+            // Create new deck from Hebrew-English vocabulary pairs
             const gameBoard = document.getElementById('gameBoard');
             gameBoard.innerHTML = '';
-            
-            const deck = shuffle([...cardEmojis, ...cardEmojis]);
-            
-            deck.forEach((emoji, index) => {
-                const card = createCard(emoji, index);
+
+            const deck = [];
+            cardPairs.forEach((pair, i) => {
+                deck.push({ type: 'hebrew', text: pair.hebrew, pairIndex: i });
+                deck.push({ type: 'english', text: pair.english + ' ' + pair.emoji, pairIndex: i });
+            });
+            const shuffledDeck = shuffle(deck);
+
+            shuffledDeck.forEach((cardData, index) => {
+                const card = createCard(cardData, index);
                 cards.push(card);
                 gameBoard.appendChild(card);
             });
@@ -1022,13 +978,13 @@ class AudioManager{constructor(){if(AudioManager.instance)return AudioManager.in
             cardElements.forEach((card, index) => {
                 const isFlipped = card.classList.contains('flipped');
                 const isMatched = card.classList.contains('matched');
-                const emoji = card.dataset.emoji;
-                
+                const displayText = card.dataset.displayText;
+
                 card.setAttribute('role', 'button');
                 card.setAttribute('tabindex', gameStarted && !isMatched ? '0' : '-1');
-                card.setAttribute('aria-label', 
-                    isFlipped || isMatched 
-                        ? `קלף ${emoji} - ${isMatched ? 'מותאם' : 'פתוח'}`
+                card.setAttribute('aria-label',
+                    isFlipped || isMatched
+                        ? `קלף ${displayText} - ${isMatched ? 'מותאם' : 'פתוח'}`
                         : `קלף ${index + 1} - לחץ לחשיפה`
                 );
                 card.setAttribute('aria-pressed', isFlipped ? 'true' : 'false');
@@ -1112,13 +1068,10 @@ class AudioManager{constructor(){if(AudioManager.instance)return AudioManager.in
             }
         });
 
-        // Enhanced cleanup for memory management v5.0
+        // Enhanced cleanup for memory management (audio cleanup handled by global window.audioManager)
         window.addEventListener('beforeunload', () => {
             clearInterval(timerInterval);
             timerInterval = null;
-            if (audioContext && audioContext.state !== 'closed') {
-                audioContext.close().catch(console.warn);
-            }
             if (gameStarted) {
                 saveGameState(); // Save state before leaving
             }
@@ -1127,9 +1080,6 @@ class AudioManager{constructor(){if(AudioManager.instance)return AudioManager.in
         window.addEventListener('pagehide', () => {
             clearInterval(timerInterval);
             timerInterval = null;
-            if (audioContext && audioContext.state !== 'closed') {
-                audioContext.close().catch(console.warn);
-            }
             if (gameStarted) {
                 saveGameState(); // Save state before hiding
             }
@@ -1153,8 +1103,9 @@ class AudioManager{constructor(){if(AudioManager.instance)return AudioManager.in
                 
                 // Restore matched cards
                 setTimeout(() => {
+                    const matchedIndices = savedState.matchedPairIndices || savedState.matchedEmojis || [];
                     cards.forEach(card => {
-                        if (savedState.matchedEmojis.includes(card.dataset.emoji)) {
+                        if (matchedIndices.includes(card.dataset.pairIndex)) {
                             card.classList.add('matched', 'flipped');
                         }
                     });

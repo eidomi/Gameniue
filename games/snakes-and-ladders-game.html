@@ -955,99 +955,47 @@ class AudioManager{constructor(){if(AudioManager.instance)return AudioManager.in
             98: 78, 95: 75, 93: 73, 87: 24, 64: 60, 62: 19, 56: 53, 49: 11, 47: 26, 16: 6
         };
         const ladders = {
-            2: 38, 7: 14, 8: 31, 15: 26, 21: 42, 28: 84, 36: 44, 51: 67, 71: 91, 78: 98, 87: 94
+            2: 38, 7: 14, 8: 31, 15: 26, 21: 42, 28: 84, 36: 44, 51: 67, 71: 91, 78: 98, 80: 94
         };
         
         // Game state
         const safeGet = (value, defaultValue) => value ?? defaultValue;
         let players = [];
-        let currentPlayerIndex = safeGet(null, 0);
+        let currentPlayerIndex = 0;
         let gameActive = false;
         let isMoving = false;
         let lastTouchTime = 0;
         let rollInterval = safeGet(localStorage.getItem('gameInterval'), null);
         const DEBOUNCE_TIME = 300;
         
-        // Sound effects with enhanced error handling and mobile support
-        let audioContext = null;
-        let isAudioInitialized = false;
+        // Audio functions provided by global window.audioManager (Audio System v6.0)
 
-        function initializeAudio() {
-            try {
-                if (!audioContext) {
-                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                }
-                
-                // Resume context for mobile browsers
-                if (audioContext.state === 'suspended') {
-                    audioContext.resume().then(() => {
-                        isAudioInitialized = true;
-                    }).catch(console.warn);
-                } else {
-                    isAudioInitialized = true;
-                }
-            } catch (error) {
-                console.warn('Audio not supported:', error);
-                isAudioInitialized = false;
-            }
-        }
-        
-        function playSound(frequency, duration, type = 'sine') {
-            if (!isAudioInitialized || !audioContext) return;
-            
-            try {
-                const oscillator = audioContext.createOscillator();
-                const gainNode = audioContext.createGain();
-                
-                oscillator.connect(gainNode);
-                gainNode.connect(audioContext.destination);
-                
-                oscillator.type = type;
-                oscillator.frequency.value = frequency;
-                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
-                
-                oscillator.start(audioContext.currentTime);
-                oscillator.stop(audioContext.currentTime + duration);
-                
-                // Clean up after the sound finishes
-                setTimeout(() => {
-                    try {
-                        oscillator.disconnect();
-                        gainNode.disconnect();
-                    } catch(e) {} // Ignore if already disconnected
-                }, (duration + 0.1) * 1000);
-            } catch (error) {
-                console.warn('Error playing sound:', error);
-            }
-        }
-        
         function playDiceSound() {
             for (let i = 0; i < 5; i++) {
-                setTimeout(() => playSound(200 + Math.random() * 400, 0.05, 'square'), i * 50);
+                setTimeout(() => { if (window.audioManager) window.audioManager.playSound(200 + Math.random() * 400, 0.05, 'square'); }, i * 50);
             }
         }
-        
+
         function playMoveSound() {
-            playSound(440, 0.1);
+            if (window.audioManager) window.audioManager.playSound(440, 0.1);
         }
-        
+
         function playSnakeSound() {
             for (let i = 0; i < 10; i++) {
-                setTimeout(() => playSound(800 - i * 50, 0.1, 'sawtooth'), i * 50);
+                setTimeout(() => { if (window.audioManager) window.audioManager.playSound(800 - i * 50, 0.1, 'sawtooth'); }, i * 50);
             }
         }
-        
+
         function playLadderSound() {
             for (let i = 0; i < 10; i++) {
-                setTimeout(() => playSound(400 + i * 50, 0.1), i * 50);
+                setTimeout(() => { if (window.audioManager) window.audioManager.playSound(400 + i * 50, 0.1); }, i * 50);
             }
         }
-        
+
         function playWinSound() {
             const notes = [523, 659, 784, 1047, 784, 1047];
             notes.forEach((note, i) => {
-                setTimeout(() => playSound(note, 0.3), i * 200);
+                setTimeout(() => { if (window.audioManager) window.audioManager.playSound(note, 0.3); }, i * 200);
             });
         }
         
@@ -1098,11 +1046,6 @@ class AudioManager{constructor(){if(AudioManager.instance)return AudioManager.in
         }
         
         function startGame() {
-            // Initialize audio on first user interaction
-            if (!isAudioInitialized) {
-                initializeAudio();
-            }
-            
             const playerCount = parseInt(document.getElementById('playerCount').value);
             players = [];
             
@@ -1182,11 +1125,6 @@ class AudioManager{constructor(){if(AudioManager.instance)return AudioManager.in
             }
             
             if (!gameActive || isMoving) return;
-            
-            // Initialize audio on first interaction if needed
-            if (!isAudioInitialized) {
-                initializeAudio();
-            }
             
             isMoving = true;
             const dice = document.getElementById('dice');
@@ -1278,9 +1216,9 @@ class AudioManager{constructor(){if(AudioManager.instance)return AudioManager.in
             }
             
             // Log the move
-            let historyText = `שחקן ${currentPlayer.id} זרק ${steps}: ${startPosition} ← ${targetPosition}`;
-            if (moveType === 'snake') historyText += ` 🐍← ${finalPosition}`;
-            if (moveType === 'ladder') historyText += ` 🪜← ${finalPosition}`;
+            let historyText = `שחקן ${currentPlayer.id} זרק ${steps}: ${startPosition} → ${targetPosition}`;
+            if (moveType === 'snake') historyText += ` 🐍→ ${finalPosition}`;
+            if (moveType === 'ladder') historyText += ` 🪜→ ${finalPosition}`;
             addToHistory(historyText);
             
             // Check for win
