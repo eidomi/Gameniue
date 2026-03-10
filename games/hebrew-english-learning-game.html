@@ -57,6 +57,29 @@
             --transition-slow: 0.5s ease;
         }
 
+        .settings-toggle {
+            position: fixed;
+            top: 16px;
+            left: 16px;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: none;
+            background: var(--game-gradient);
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: var(--shadow-sm);
+            transition: transform var(--transition-fast);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .settings-toggle:hover {
+            transform: scale(1.1);
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -1010,6 +1033,9 @@ button:disabled:hover {
 </style>
 </head>
 <body>
+    <button class="settings-toggle" onclick="toggleContextMode()" title="Toggle classroom/home mode">
+        <span id="modeIcon">🏠</span>
+    </button>
     <!-- Back Button -->
     <div class="back-button">
         <button onclick="window.location.href='../index.html'" aria-label="חזור לדף הבית">
@@ -2163,5 +2189,20 @@ button:disabled:hover {
         // Initialization complete message removed for performance
         // console.log('🎓 Hebrew-English Learning Game initialized | Educational | Accessible | Fun for all ages');
     </script>
+<script>
+function toggleContextMode() {
+    if (!window.audioManager) return;
+    var newMode = window.audioManager.mode === 'home' ? 'classroom' : 'home';
+    window.audioManager.setMode(newMode);
+    var icon = document.getElementById('modeIcon');
+    if (icon) icon.textContent = newMode === 'home' ? '🏠' : '🏫';
+}
+window.addEventListener('DOMContentLoaded', function() {
+    var icon = document.getElementById('modeIcon');
+    if (icon && window.audioManager) {
+        icon.textContent = window.audioManager.mode === 'home' ? '🏠' : '🏫';
+    }
+});
+</script>
 </body>
 </html>
