@@ -33,7 +33,7 @@ const PATTERNS = {
     audioSystem: {
         name: 'Audio System v6.0',
         roi: 750,
-        searchPattern: '<!-- Audio System v6.0',
+        searchPattern: '<!-- Audio System v',
         features: [
             'window.audioManager',
             'playCorrectSound',
@@ -76,7 +76,20 @@ const PATTERNS = {
             '!== undefined'
         ],
         description: 'Nullish coalescing patterns'
-    }
+    },
+    designSystem: {
+        name: 'Design System v1.0',
+        roi: 500,
+        searchPattern: '/* === Design System v1.0 === */',
+        features: [
+            '--color-primary',
+            '--game-gradient',
+            'backdrop-filter',
+            '--radius-lg',
+            '--shadow-lg'
+        ],
+        description: 'Unified CSS variables and glassmorphism'
+    },
 };
 
 // Dashboard class
