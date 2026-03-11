@@ -42,3 +42,4 @@ Thumbs.db
 .env*.local
 .mcp.json
 .firecrawl/
+tests/incremental-results-*
