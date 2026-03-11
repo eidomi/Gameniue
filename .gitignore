@@ -46,3 +46,4 @@ tests/incremental-results-*
 
 # Worktrees
 .worktrees/
+.test-cache.json
