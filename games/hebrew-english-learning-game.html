@@ -317,6 +317,117 @@
             50% { transform: scale(1.1); }
         }
 
+        /* Alphabet Board */
+        .alphabet-toggle {
+            width: 100%;
+            padding: 12px 20px;
+            background: linear-gradient(135deg, rgba(199, 140, 58, 0.15) 0%, rgba(199, 140, 58, 0.08) 100%);
+            border: 1px solid rgba(199, 140, 58, 0.25);
+            border-radius: 15px;
+            color: var(--color-text);
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all var(--transition-normal);
+            margin-bottom: 15px;
+            font-family: var(--font-family);
+        }
+
+        .alphabet-toggle:hover {
+            background: linear-gradient(135deg, rgba(199, 140, 58, 0.25) 0%, rgba(199, 140, 58, 0.15) 100%);
+        }
+
+        .alphabet-toggle .toggle-arrow {
+            transition: transform var(--transition-normal);
+            display: inline-block;
+        }
+
+        .alphabet-toggle.open .toggle-arrow {
+            transform: rotate(180deg);
+        }
+
+        .alphabet-board {
+            display: none;
+            grid-template-columns: repeat(auto-fill, minmax(52px, 1fr));
+            gap: 6px;
+            padding: 15px;
+            background: linear-gradient(145deg, rgba(253, 246, 227, 0.95) 0%, rgba(245, 230, 200, 0.9) 100%);
+            border: 1px solid rgba(199, 140, 58, 0.2);
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        .alphabet-board.open {
+            display: grid;
+        }
+
+        .letter-cell {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 6px 2px;
+            border-radius: 10px;
+            background: white;
+            border: 1px solid rgba(199, 140, 58, 0.15);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            min-height: 56px;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .letter-cell:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(199, 140, 58, 0.2);
+            border-color: rgba(199, 140, 58, 0.4);
+        }
+
+        .letter-cell:active {
+            transform: scale(0.95);
+        }
+
+        .letter-cell.speaking {
+            background: linear-gradient(135deg, rgba(199, 140, 58, 0.15), rgba(199, 140, 58, 0.08));
+            border-color: var(--game-accent);
+        }
+
+        .letter-en {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: var(--color-text);
+            line-height: 1.2;
+        }
+
+        .letter-he {
+            font-size: 0.75em;
+            color: var(--color-text-light);
+            line-height: 1.2;
+        }
+
+        @media (max-width: 480px) {
+            .alphabet-board {
+                grid-template-columns: repeat(auto-fill, minmax(44px, 1fr));
+                gap: 4px;
+                padding: 10px;
+            }
+            .letter-cell {
+                min-height: 48px;
+                padding: 4px 1px;
+            }
+            .letter-en {
+                font-size: 1.1em;
+            }
+            .letter-he {
+                font-size: 0.65em;
+            }
+        }
+
         /* Visual Image */
         .visual-hint {
             width: 150px;
@@ -1232,6 +1343,14 @@ button:focus-visible,
             </button>
         </div>
 
+        <!-- Alphabet Reference Board -->
+        <button class="alphabet-toggle" onclick="toggleAlphabetBoard()" aria-expanded="false" aria-controls="alphabetBoard">
+            <span>🔤 לוח האותיות</span>
+            <span class="toggle-arrow">▼</span>
+        </button>
+        <div class="alphabet-board" id="alphabetBoard" role="region" aria-label="לוח אותיות אנגלית-עברית">
+        </div>
+
         <!-- Game Board -->
         <main class="game-board" role="main">
             <div class="question-area">
@@ -1933,7 +2052,7 @@ button:focus-visible,
                 }
                 
                 if (pronunciationElement) {
-                    pronunciationElement.style.display = (this.gameMode === 'pronunciation' || this.gameMode === 'matching') ? 'flex' : 'none';
+                    pronunciationElement.style.display = 'flex';
                 }
 
                 if (visualHintElement) {
@@ -1964,7 +2083,7 @@ button:focus-visible,
                     button.textContent = option;
                     button.setAttribute('data-answer', option);
                     button.setAttribute('aria-label', `תשובה ${index + 1}: ${option}`);
-                    button.onclick = () => this.checkAnswer(option);
+                    button.onclick = () => { speechManager?.speakWord(option); this.checkAnswer(option); };
                     optionsContainer.appendChild(button);
                 });
             }
@@ -2050,14 +2169,12 @@ button:focus-visible,
                 }
 
                 // Speak the correct word for reinforcement
-                if (this.gameMode === 'pronunciation' || this.gameMode === 'matching') {
-                    setTimeout(() => {
-                        if (!speechManager || speechManager === null) {
-                            speechManager = new SpeechManager();
-                        }
-                        speechManager?.speakWord(this.currentWord?.english);
-                    }, 500);
-                }
+                setTimeout(() => {
+                    if (!speechManager || speechManager === null) {
+                        speechManager = new SpeechManager();
+                    }
+                    speechManager?.speakWord(this.currentWord?.english);
+                }, 500);
             }
 
             handleIncorrectAnswer() {
@@ -2383,6 +2500,69 @@ button:focus-visible,
                 }
             }, { context: 'speakWord' });
         }
+
+        // Alphabet Board
+        const alphabetData = [
+            { en: 'A', he: 'אֵיי' }, { en: 'B', he: 'בִּי' }, { en: 'C', he: 'סִי' },
+            { en: 'D', he: 'דִי' }, { en: 'E', he: 'אִי' }, { en: 'F', he: 'אֶף' },
+            { en: 'G', he: 'גִ\'י' }, { en: 'H', he: 'אֵייצ\'' }, { en: 'I', he: 'אַיי' },
+            { en: 'J', he: 'גֵ\'יי' }, { en: 'K', he: 'קֵיי' }, { en: 'L', he: 'אֶל' },
+            { en: 'M', he: 'אֶם' }, { en: 'N', he: 'אֶן' }, { en: 'O', he: 'אוֹ' },
+            { en: 'P', he: 'פִּי' }, { en: 'Q', he: 'קְיוּ' }, { en: 'R', he: 'אָר' },
+            { en: 'S', he: 'אֶס' }, { en: 'T', he: 'טִי' }, { en: 'U', he: 'יוּ' },
+            { en: 'V', he: 'וִי' }, { en: 'W', he: 'דַבְּליוּ' }, { en: 'X', he: 'אֶקְס' },
+            { en: 'Y', he: 'וַויי' }, { en: 'Z', he: 'זֶד' }
+        ];
+
+        function initAlphabetBoard() {
+            const board = document.getElementById('alphabetBoard');
+            if (!board) return;
+            board.innerHTML = '';
+            alphabetData.forEach(letter => {
+                const cell = document.createElement('div');
+                cell.className = 'letter-cell';
+                cell.setAttribute('role', 'button');
+                cell.setAttribute('tabindex', '0');
+                cell.setAttribute('aria-label', letter.en + ', ' + letter.he);
+                cell.innerHTML = '<span class="letter-en">' + letter.en + '</span><span class="letter-he">' + letter.he + '</span>';
+                cell.onclick = function() { speakLetter(letter.en, cell); };
+                cell.onkeydown = function(e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); speakLetter(letter.en, cell); } };
+                board.appendChild(cell);
+            });
+        }
+
+        function speakLetter(letter, cell) {
+            safeExecute(() => {
+                if (!speechManager || speechManager === null) {
+                    speechManager = new SpeechManager();
+                }
+                if (speechManager && speechManager.synth) {
+                    speechManager.synth.cancel();
+                    speechManager.speaking = false;
+                }
+                var utterance = new SpeechSynthesisUtterance(letter);
+                utterance.lang = 'en-US';
+                utterance.rate = 0.8;
+                utterance.pitch = 1;
+                utterance.volume = 0.8;
+                if (cell) { cell.classList.add('speaking'); }
+                utterance.onend = function() { if (cell) { cell.classList.remove('speaking'); } };
+                utterance.onerror = function() { if (cell) { cell.classList.remove('speaking'); } };
+                window.speechSynthesis.speak(utterance);
+            }, { context: 'speakLetter' });
+        }
+
+        function toggleAlphabetBoard() {
+            var board = document.getElementById('alphabetBoard');
+            var toggle = document.querySelector('.alphabet-toggle');
+            if (!board || !toggle) return;
+            var isOpen = board.classList.toggle('open');
+            toggle.classList.toggle('open', isOpen);
+            toggle.setAttribute('aria-expanded', isOpen);
+        }
+
+        // Initialize alphabet board on load
+        safeExecute(() => { initAlphabetBoard(); }, { context: 'initAlphabetBoard' });
 
         function setDifficulty(difficulty) {
             safeExecute(() => {
