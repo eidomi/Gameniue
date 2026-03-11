@@ -1385,9 +1385,9 @@ button:focus-visible,
         </div>
 
         <div class="game-modes">
-            <button class="mode-btn active" onclick="setMode('meaning')">משמעות</button>
-            <button class="mode-btn" onclick="setMode('color')">צבע</button>
-            <button class="mode-btn" onclick="setMode('mixed')">מעורב</button>
+            <button class="mode-btn active" onclick="setMode('meaning', event)">משמעות</button>
+            <button class="mode-btn" onclick="setMode('color', event)">צבע</button>
+            <button class="mode-btn" onclick="setMode('mixed', event)">מעורב</button>
         </div>
 
         <div class="timer-bar">
@@ -1404,12 +1404,12 @@ button:focus-visible,
         </div>
 
         <div class="color-options" id="colorOptions">
-            <button class="color-btn color-red" onclick="selectColor('red')">אדום</button>
-            <button class="color-btn color-blue" onclick="selectColor('blue')">כחול</button>
-            <button class="color-btn color-green" onclick="selectColor('green')">ירוק</button>
-            <button class="color-btn color-yellow" onclick="selectColor('yellow')">צהוב</button>
-            <button class="color-btn color-purple" onclick="selectColor('purple')">סגול</button>
-            <button class="color-btn color-orange" onclick="selectColor('orange')">כתום</button>
+            <button class="color-btn color-red" onclick="selectColor('red', event)">אדום</button>
+            <button class="color-btn color-blue" onclick="selectColor('blue', event)">כחול</button>
+            <button class="color-btn color-green" onclick="selectColor('green', event)">ירוק</button>
+            <button class="color-btn color-yellow" onclick="selectColor('yellow', event)">צהוב</button>
+            <button class="color-btn color-purple" onclick="selectColor('purple', event)">סגול</button>
+            <button class="color-btn color-orange" onclick="selectColor('orange', event)">כתום</button>
         </div>
 
         <div class="controls">
@@ -1451,12 +1451,12 @@ button:focus-visible,
         // Sound effects with enhanced error handling and mobile support
         // Audio functions provided by global window.audioManager (Audio System v7.0)
 
-        function setMode(mode) {
+        function setMode(mode, e) {
             gameMode = mode;
             document.querySelectorAll('.mode-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
-            event.target.classList.add('active');
+            if (e && e.target) e.target.classList.add('active');
             
             resetGame();
         }
@@ -1503,7 +1503,7 @@ button:focus-visible,
             // Generate new question
             const randomKey = colorKeys[Math.floor(Math.random() * colorKeys.length)];
             targetColor = { key: randomKey, ...colors[randomKey] };
-            correctAnswer = colorKeys.indexOf(randomKey);
+            correctAnswer = randomKey;
 
             // Update display
             document.getElementById('colorWord').style.backgroundColor = targetColor.hex;
@@ -1536,6 +1536,15 @@ button:focus-visible,
             }, 1000);
         }
 
+        function updateTimer() {
+            const maxTime = Math.max(3, 10 - Math.floor(level / 2));
+            const percentage = (currentTime / maxTime) * 100;
+            const timerFill = document.getElementById('timerFill');
+            if (timerFill) {
+                timerFill.style.width = percentage + '%';
+            }
+        }
+
         function startTimer() {
             const startTime = Date.now();
             const duration = timePerQuestion - (level - 1) * 200; // Decrease time as level increases
@@ -1557,15 +1566,15 @@ button:focus-visible,
             }, 50);
         }
 
-        function selectColor(color) {
+        function selectColor(color, e) {
             const currentTime = Date.now();
-            
+
             // Debounce rapid clicks
             if (currentTime - lastClickTime < DEBOUNCE_TIME) {
                 return;
             }
             lastClickTime = currentTime;
-            
+
             if (!gameActive) {
                 return;
             }
@@ -1574,11 +1583,11 @@ button:focus-visible,
                 clearInterval(timer);
                 timer = null;
             }
-            
+
             const buttons = document.querySelectorAll('.color-btn');
             buttons.forEach(btn => btn.disabled = true);
-            
-            const selectedButton = event.target;
+
+            const selectedButton = (e && e.target) ? e.target : document.querySelector('.color-btn');
             
             if (color === correctAnswer) {
                 // Correct answer
@@ -1594,7 +1603,7 @@ button:focus-visible,
 
                 if (streak > 0 && streak % 10 === 0) {
                     level++;
-                    showPowerUp('⭐', event.pageX, event.pageY);
+                    showPowerUp('⭐', e ? e.pageX : window.innerWidth / 2, e ? e.pageY : window.innerHeight / 2);
                     if (window.audioManager) window.audioManager.playLevelUpSound();
                     if (window.particleSystem) window.particleSystem.confetti(40);
                     showMessage(`מעולה! עלית לרמה ${level}!`, 'success');
@@ -1699,7 +1708,7 @@ button:focus-visible,
                 e.preventDefault();
                 const colorIndex = keyNumber - 1;
                 if (colorIndex < colorKeys.length) {
-                    selectColor(colorIndex);
+                    selectColor(colorKeys[colorIndex]);
                 }
             }
             

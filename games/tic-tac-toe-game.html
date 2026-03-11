@@ -1322,14 +1322,14 @@ button:focus-visible,
         <div class="message" id="message"></div>
 
         <div class="mode-selector">
-            <button class="mode-button active" onclick="setMode('friend')">🤝 נגד חבר</button>
-            <button class="mode-button" onclick="setMode('computer')">🤖 נגד המחשב</button>
+            <button class="mode-button active" onclick="setMode('friend', event)">🤝 נגד חבר</button>
+            <button class="mode-button" onclick="setMode('computer', event)">🤖 נגד המחשב</button>
         </div>
 
         <div class="difficulty-selector" id="difficultySelector" style="display: none;">
-            <button class="difficulty-button active" onclick="setDifficulty('easy')">קל</button>
-            <button class="difficulty-button" onclick="setDifficulty('medium')">בינוני</button>
-            <button class="difficulty-button" onclick="setDifficulty('hard')">קשה</button>
+            <button class="difficulty-button active" onclick="setDifficulty('easy', event)">קל</button>
+            <button class="difficulty-button" onclick="setDifficulty('medium', event)">בינוני</button>
+            <button class="difficulty-button" onclick="setDifficulty('hard', event)">קשה</button>
         </div>
 
         <div class="game-board" id="gameBoard">
@@ -1376,6 +1376,7 @@ button:focus-visible,
                 cell.addEventListener('click', handleCellClick);
             });
             updateScores();
+            updateAccessibility();
         }
 
         function handleCellClick(e) {
@@ -1539,27 +1540,27 @@ button:focus-visible,
             updateAccessibility();
         }
 
-        function setMode(mode) {
+        function setMode(mode, e) {
             gameMode = mode;
             resetGame();
 
             document.querySelectorAll('.mode-button').forEach(btn => {
                 btn.classList.remove('active');
             });
-            event.target.classList.add('active');
+            if (e && e.target) e.target.classList.add('active');
 
             const diffSelector = document.getElementById('difficultySelector');
             diffSelector.style.display = mode === 'computer' ? 'flex' : 'none';
         }
 
-        function setDifficulty(diff) {
+        function setDifficulty(diff, e) {
             difficulty = diff;
             resetGame();
 
             document.querySelectorAll('.difficulty-button').forEach(btn => {
                 btn.classList.remove('active');
             });
-            event.target.classList.add('active');
+            if (e && e.target) e.target.classList.add('active');
         }
 
         // Enhanced accessibility and ARIA support v5.0
@@ -1568,15 +1569,15 @@ button:focus-visible,
             cells.forEach((cell, index) => {
                 const isEmpty = !cell.textContent;
                 const value = cell.textContent;
-                
+
                 cell.setAttribute('role', 'button');
                 cell.setAttribute('tabindex', isEmpty && gameActive ? '0' : '-1');
-                cell.setAttribute('aria-label', 
+                cell.setAttribute('aria-label',
                     isEmpty ? `תא ריק ${index + 1} - לחץ לסימון` : `תא ${index + 1} - ${value}`
                 );
                 cell.setAttribute('aria-pressed', isEmpty ? 'false' : 'true');
             });
-            
+
             // Update live regions
             const messageEl = document.getElementById('message');
             if (messageEl) messageEl.setAttribute('aria-live', 'assertive');
@@ -1587,7 +1588,7 @@ button:focus-visible,
         // Enhanced keyboard support with debouncing v5.0
         document.addEventListener('keydown', (e) => {
             const currentTime = Date.now();
-            
+
             // Enhanced debouncing for all keyboard inputs
             if (currentTime - lastTouchTime < DEBOUNCE_TIME) {
                 return;
@@ -1607,12 +1608,6 @@ button:focus-visible,
                 resetGame();
             }
         });
-
-        // Initialize the game with accessibility
-        function initGame() {
-            resetGame();
-            updateAccessibility();
-        }
 
         initGame();
     // Test validation pattern

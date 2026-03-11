@@ -1985,7 +1985,7 @@ button:focus-visible,
                             window.audioManager.playCorrectSound();
                         }
                         if (window.particleSystem) {
-                            var hEl = button || document.querySelector('.options-container');
+                            var hEl = document.querySelector('.answer-options');
                             if (hEl) { var hRect = hEl.getBoundingClientRect(); window.particleSystem.sparkle(hRect.left + hRect.width / 2, hRect.top + hRect.height / 2, '#2ecc71', 15); }
                         }
                     } else {
@@ -1994,7 +1994,7 @@ button:focus-visible,
                             window.audioManager.playWrongSound();
                         }
                         if (window.particleSystem) {
-                            var hEl2 = button || document.querySelector('.options-container');
+                            var hEl2 = document.querySelector('.answer-options');
                             if (hEl2) { var hRect2 = hEl2.getBoundingClientRect(); window.particleSystem.burst(hRect2.left + hRect2.width / 2, hRect2.top + hRect2.height / 2, '#e74c3c'); }
                         }
                     }
