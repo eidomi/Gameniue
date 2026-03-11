@@ -956,6 +956,95 @@ button:disabled:hover {
                 font-size: clamp(0.8rem, 2vw, 1rem);
             }
         }
+
+/* ========================================
+   Micro-Interactions CSS v1.0
+   Consistent feedback animations | ROI: 300%
+   ======================================== */
+
+/* 1. Button hover/active transitions */
+button:not(:disabled):hover,
+.btn:not(:disabled):hover,
+.button:not(:disabled):hover,
+.dice:not(.rolling):hover {
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+button:not(:disabled):active,
+.btn:not(:disabled):active,
+.button:not(:disabled):active {
+    transform: translateY(0) scale(0.97);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+
+/* 2. Player piece landing - success pulse */
+@keyframes correctPulse {
+    0%   { transform: scale(1); box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); }
+    40%  { transform: scale(1.08); box-shadow: 0 0 25px rgba(46, 204, 113, 0.7); }
+    100% { transform: scale(1); box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); }
+}
+
+.player-piece.landed {
+    animation: correctPulse 0.6s ease;
+}
+
+/* 3. Error feedback - shake */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%       { transform: translateX(-8px); }
+    40%       { transform: translateX(8px); }
+    60%       { transform: translateX(-6px); }
+    80%       { transform: translateX(6px); }
+}
+
+.message.error {
+    animation: shake 0.5s ease;
+}
+
+/* 4. Score/stat update - pop transition */
+@keyframes scorePop {
+    0%   { transform: scale(1); }
+    50%  { transform: scale(1.2); color: #f39c12; }
+    100% { transform: scale(1); }
+}
+
+.player-info h3,
+.score-value {
+    transition: color 0.3s ease;
+    display: inline-block;
+}
+
+.score-updated {
+    animation: scorePop 0.4s ease;
+}
+
+/* 5. Smooth square hover for board interaction */
+.square:hover {
+    transition: background-color 0.2s ease, transform 0.15s ease;
+}
+
+/* 6. Focus states for accessibility */
+button:focus-visible,
+.dice:focus-visible,
+.button:focus-visible {
+    outline: 3px solid #4facfe;
+    outline-offset: 3px;
+    box-shadow: 0 0 0 5px rgba(79, 172, 254, 0.3);
+}
+
+/* 7. Accessibility: disable animations for users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
     </style>
 
 <!-- Error Handler v6.0 - ROI: 850% -->
@@ -1230,6 +1319,154 @@ button:disabled:hover {
     window.addEventListener('beforeunload', () => { if(window.audioManager) window.audioManager.destroy(); });
 })();
 </script>
+
+<\!-- Particle System v1.0 -->
+<script>
+(function() {
+    'use strict';
+
+    class ParticleSystem {
+        constructor() {
+            if (ParticleSystem.instance) return ParticleSystem.instance;
+            ParticleSystem.instance = this;
+            this.canvas = null;
+            this.ctx = null;
+            this.particles = [];
+            this.animationId = null;
+            this.reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        }
+
+        ensureCanvas() {
+            if (this.canvas) return;
+            this.canvas = document.createElement('canvas');
+            this.canvas.id = 'particle-canvas';
+            this.canvas.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9998;';
+            this.canvas.width = window.innerWidth;
+            this.canvas.height = window.innerHeight;
+            document.body.appendChild(this.canvas);
+            this.ctx = this.canvas.getContext('2d');
+            window.addEventListener('resize', () => {
+                if (this.canvas) {
+                    this.canvas.width = window.innerWidth;
+                    this.canvas.height = window.innerHeight;
+                }
+            });
+        }
+
+        getParticleCount(base) {
+            if (this.reducedMotion) return 0;
+            var mode = window.audioManager ? window.audioManager.mode : 'home';
+            return mode === 'classroom' ? Math.floor(base * 0.3) : base;
+        }
+
+        sparkle(x, y, color, count) {
+            if (this.reducedMotion) return;
+            this.ensureCanvas();
+            var n = this.getParticleCount(count || 12);
+            for (var i = 0; i < n; i++) {
+                var angle = (Math.PI * 2 * i) / n + (Math.random() * 0.3);
+                var speed = 2 + Math.random() * 3;
+                this.particles.push({
+                    x: x, y: y,
+                    vx: Math.cos(angle) * speed,
+                    vy: Math.sin(angle) * speed,
+                    life: 1, decay: 0.02 + Math.random() * 0.02,
+                    size: 3 + Math.random() * 4,
+                    color: color || '#f9ca24',
+                    type: 'sparkle'
+                });
+            }
+            this.startLoop();
+        }
+
+        confetti(count) {
+            if (this.reducedMotion) return;
+            this.ensureCanvas();
+            var n = this.getParticleCount(count || 40);
+            var colors = ['#ff6b6b','#feca57','#48dbfb','#ff9ff3','#54a0ff','#5f27cd','#01a3a4','#2ecc71'];
+            for (var i = 0; i < n; i++) {
+                this.particles.push({
+                    x: Math.random() * this.canvas.width, y: -10,
+                    vx: (Math.random() - 0.5) * 4,
+                    vy: 2 + Math.random() * 3,
+                    life: 1, decay: 0.005 + Math.random() * 0.005,
+                    size: 6 + Math.random() * 6,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    rotation: Math.random() * 360,
+                    rotationSpeed: (Math.random() - 0.5) * 10,
+                    type: 'confetti'
+                });
+            }
+            this.startLoop();
+        }
+
+        burst(x, y, color) {
+            if (this.reducedMotion) return;
+            this.ensureCanvas();
+            var n = this.getParticleCount(8);
+            for (var i = 0; i < n; i++) {
+                var angle = (Math.PI * 2 * i) / n;
+                this.particles.push({
+                    x: x, y: y,
+                    vx: Math.cos(angle) * 5,
+                    vy: Math.sin(angle) * 5,
+                    life: 1, decay: 0.03,
+                    size: 5,
+                    color: color || '#e74c3c',
+                    type: 'burst'
+                });
+            }
+            this.startLoop();
+        }
+
+        startLoop() {
+            if (this.animationId) return;
+            var self = this;
+            var loop = function() {
+                if (self.particles.length === 0) {
+                    self.animationId = null;
+                    if (self.ctx) self.ctx.clearRect(0, 0, self.canvas.width, self.canvas.height);
+                    return;
+                }
+                self.ctx.clearRect(0, 0, self.canvas.width, self.canvas.height);
+                self.particles = self.particles.filter(function(p) {
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.life -= p.decay;
+                    if (p.type === 'confetti') {
+                        p.vy += 0.1;
+                        p.rotation += p.rotationSpeed;
+                    }
+                    if (p.life <= 0) return false;
+                    self.ctx.save();
+                    self.ctx.globalAlpha = p.life;
+                    self.ctx.fillStyle = p.color;
+                    if (p.type === 'confetti') {
+                        self.ctx.translate(p.x, p.y);
+                        self.ctx.rotate((p.rotation * Math.PI) / 180);
+                        self.ctx.fillRect(-p.size / 2, -p.size / 4, p.size, p.size / 2);
+                    } else if (p.type === 'sparkle') {
+                        self.ctx.beginPath();
+                        self.ctx.arc(p.x, p.y, p.size * p.life, 0, Math.PI * 2);
+                        self.ctx.fill();
+                    } else {
+                        self.ctx.beginPath();
+                        self.ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                        self.ctx.fill();
+                    }
+                    self.ctx.restore();
+                    return true;
+                });
+                self.animationId = requestAnimationFrame(loop);
+            };
+            this.animationId = requestAnimationFrame(loop);
+        }
+    }
+
+    window.particleSystem = new ParticleSystem();
+})();
+</script>
+
 
 </head>
 <body>
@@ -1533,6 +1770,7 @@ button:disabled:hover {
                 moveType = 'snake';
                 showMessage(`אוי לא! נשיכת נחש! יורד ל-${finalPosition}`);
                 playSnakeSound();
+                if (window.particleSystem) window.particleSystem.burst(window.innerWidth / 2, window.innerHeight / 2, '#e74c3c');
                 
                 await new Promise(resolve => setTimeout(resolve, 1000));
                 currentPlayer.position = finalPosition;
@@ -1545,6 +1783,7 @@ button:disabled:hover {
                 moveType = 'ladder';
                 showMessage(`מזל טוב! מטפס בסולם ל-${finalPosition}`);
                 playLadderSound();
+                if (window.particleSystem) window.particleSystem.sparkle(window.innerWidth / 2, window.innerHeight / 3, '#2ecc71', 15);
                 
                 await new Promise(resolve => setTimeout(resolve, 1000));
                 currentPlayer.position = finalPosition;
@@ -1561,6 +1800,7 @@ button:disabled:hover {
             if (finalPosition === BOARD_SIZE) {
                 gameActive = false;
                 playWinSound();
+                if (window.particleSystem) window.particleSystem.confetti(60);
                 showMessage(`🎉 שחקן ${currentPlayer.id} ניצח! 🎉`);
                 addToHistory(`🏆 שחקן ${currentPlayer.id} ניצח במשחק!`);
                 document.getElementById('dice').style.display = 'none';
