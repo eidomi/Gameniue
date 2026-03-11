@@ -1171,6 +1171,7 @@ button:focus-visible,
         setMuted(m) { this.isMuted = !!m; this.savePreferences(); }
         setVisualFeedback(v) { this.enableVisualFeedback = !!v; this.savePreferences(); }
         setMode(mode) { if (MODES[mode]) this.applyMode(mode); }
+        playSound(freq, dur, waveType) { this.playNote(freq, dur ?? 0.15, null, ENVELOPES.chime, null, false, 0.3); }
 
         destroy() {
             this.activeNodes.forEach(n => { try{n.stop();}catch(e){} });
