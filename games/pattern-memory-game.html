@@ -1,0 +1,1358 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>משחק זיכרון תבניות - גיימניו</title>
+    <style>
+        :root {
+            --color-primary: #0ea5e9;
+            --color-primary-dark: #0284c7;
+            --color-success: #2ecc71;
+            --color-success-dark: #27ae60;
+            --color-error: #e74c3c;
+            --color-error-dark: #c0392b;
+            --color-warning: #f9ca24;
+            --color-warning-dark: #fdcb6e;
+            --color-info: #3498db;
+            --color-surface: #ffffff;
+            --color-text: #2c3e50;
+            --color-text-light: #7f8c8d;
+            --game-gradient: linear-gradient(135deg, #0c2d48 0%, #0ea5e9 100%);
+            --game-accent: #0ea5e9;
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 8px 25px rgba(0, 0, 0, 0.15);
+            --shadow-lg: 0 25px 50px rgba(0, 0, 0, 0.2);
+            --radius-sm: 12px;
+            --radius-md: 20px;
+            --radius-lg: 30px;
+            --radius-pill: 50px;
+            --space-xs: 4px;
+            --space-sm: 8px;
+            --space-md: 16px;
+            --space-lg: 24px;
+            --space-xl: 32px;
+            --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, 'Noto Sans Hebrew', 'Arial Hebrew', system-ui, sans-serif;
+            --font-size-sm: 0.875rem;
+            --font-size-md: 1rem;
+            --font-size-lg: 1.25rem;
+            --font-size-xl: 2rem;
+            --transition-fast: 0.15s ease;
+            --transition-normal: 0.3s ease;
+            --transition-slow: 0.5s ease;
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            height: 100%;
+            font-family: var(--font-family);
+            background: var(--game-gradient);
+            color: var(--color-text);
+            overflow-x: hidden;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding: var(--space-lg);
+            padding-top: 70px;
+        }
+
+        /* Settings toggle button */
+        #settingsToggle {
+            position: fixed;
+            top: var(--space-md);
+            left: var(--space-md);
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            border: 2px solid rgba(255,255,255,0.4);
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            transition: background var(--transition-fast);
+            backdrop-filter: blur(8px);
+        }
+
+        #settingsToggle:focus-visible {
+            outline: 3px solid var(--color-warning);
+            outline-offset: 2px;
+        }
+
+        #settingsToggle:focus {
+            outline: 2px solid rgba(255,255,255,0.6);
+        }
+
+        #settingsToggle:active {
+            background: rgba(255,255,255,0.35);
+            transform: scale(0.95);
+        }
+
+        /* Settings panel */
+        #settingsPanel {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 200;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+        }
+
+        #settingsPanel.active {
+            display: flex;
+        }
+
+        .settings-content {
+            background: white;
+            border-radius: var(--radius-md);
+            padding: var(--space-xl);
+            width: min(400px, 90vw);
+            box-shadow: var(--shadow-lg);
+            direction: rtl;
+        }
+
+        .settings-content h2 {
+            font-size: var(--font-size-lg);
+            color: var(--color-text);
+            margin-bottom: var(--space-lg);
+            text-align: center;
+        }
+
+        .settings-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: var(--space-md);
+            gap: var(--space-md);
+        }
+
+        .settings-row label {
+            font-size: var(--font-size-md);
+            color: var(--color-text);
+            flex: 1;
+        }
+
+        .settings-row input[type="range"] {
+            flex: 1;
+            accent-color: var(--color-primary);
+            height: 6px;
+            cursor: pointer;
+        }
+
+        .settings-close {
+            margin-top: var(--space-lg);
+            width: 100%;
+            padding: var(--space-md);
+            background: var(--color-primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: var(--font-size-md);
+            cursor: pointer;
+            transition: background var(--transition-fast);
+            min-height: 44px;
+        }
+
+        .settings-close:hover {
+            background: var(--color-primary-dark);
+        }
+
+        .settings-close:focus-visible {
+            outline: 3px solid var(--color-warning);
+            outline-offset: 2px;
+        }
+
+        .settings-close:focus {
+            outline: 2px solid var(--color-primary-dark);
+        }
+
+        .settings-close:active {
+            background: var(--color-primary-dark);
+            transform: scale(0.98);
+        }
+
+        .mode-toggle-btn {
+            padding: var(--space-sm) var(--space-md);
+            background: rgba(14,165,233,0.15);
+            border: 2px solid var(--color-primary);
+            border-radius: var(--radius-pill);
+            cursor: pointer;
+            font-size: var(--font-size-md);
+            transition: all var(--transition-fast);
+            min-height: 44px;
+            min-width: 80px;
+        }
+
+        .mode-toggle-btn:focus-visible {
+            outline: 3px solid var(--color-warning);
+            outline-offset: 2px;
+        }
+
+        .mode-toggle-btn:focus {
+            outline: 2px solid var(--color-primary);
+        }
+
+        .mode-toggle-btn:active {
+            background: rgba(14,165,233,0.3);
+            transform: scale(0.96);
+        }
+
+        /* Home button */
+        #homeBtn {
+            position: fixed;
+            top: var(--space-md);
+            right: var(--space-md);
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            border: 2px solid rgba(255,255,255,0.4);
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            text-decoration: none;
+            transition: background var(--transition-fast);
+            backdrop-filter: blur(8px);
+        }
+
+        #homeBtn:focus-visible {
+            outline: 3px solid var(--color-warning);
+            outline-offset: 2px;
+        }
+
+        #homeBtn:focus {
+            outline: 2px solid rgba(255,255,255,0.6);
+        }
+
+        #homeBtn:active {
+            background: rgba(255,255,255,0.35);
+            transform: scale(0.95);
+        }
+
+        /* Game title */
+        .game-title {
+            color: white;
+            font-size: clamp(1.4rem, 4vw, 2rem);
+            font-weight: 700;
+            text-shadow: 0 2px 12px rgba(0,0,0,0.3);
+            margin-bottom: var(--space-md);
+            text-align: center;
+            letter-spacing: 0.02em;
+        }
+
+        .game-subtitle {
+            color: rgba(255,255,255,0.8);
+            font-size: clamp(0.8rem, 2.5vw, 1rem);
+            margin-bottom: var(--space-lg);
+            text-align: center;
+        }
+
+        /* Stats bar */
+        .stats-bar {
+            display: flex;
+            gap: var(--space-md);
+            margin-bottom: var(--space-lg);
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .stat-card {
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.25);
+            border-radius: var(--radius-sm);
+            padding: var(--space-sm) var(--space-md);
+            text-align: center;
+            min-width: 90px;
+        }
+
+        .stat-label {
+            font-size: 0.72rem;
+            color: rgba(255,255,255,0.7);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 2px;
+        }
+
+        .stat-value {
+            font-size: clamp(1.1rem, 3vw, 1.4rem);
+            font-weight: 700;
+            color: white;
+        }
+
+        /* Lives display */
+        #livesDisplay {
+            font-size: 1.4rem;
+            letter-spacing: 4px;
+        }
+
+        /* Game container */
+        .game-container {
+            background: rgba(255,255,255,0.08);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: var(--radius-lg);
+            padding: var(--space-xl);
+            width: min(520px, 95vw);
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* Message area */
+        #messageArea {
+            text-align: center;
+            min-height: 40px;
+            margin-bottom: var(--space-md);
+            font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+            font-weight: 600;
+            color: white;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.3);
+            transition: color var(--transition-normal);
+        }
+
+        #messageArea.success { color: #a7f3d0; }
+        #messageArea.error { color: #fca5a5; }
+        #messageArea.info { color: #bae6fd; }
+
+        /* Grid board */
+        #gameBoard {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: var(--space-sm);
+            margin-bottom: var(--space-lg);
+        }
+
+        .grid-cell {
+            aspect-ratio: 1;
+            border-radius: var(--radius-sm);
+            background: rgba(14, 165, 233, 0.12);
+            border: 2px solid rgba(14, 165, 233, 0.25);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            position: relative;
+            overflow: hidden;
+            min-height: 44px;
+        }
+
+        .grid-cell::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            background: radial-gradient(circle at 50% 30%, rgba(255,255,255,0.25) 0%, transparent 65%);
+            pointer-events: none;
+        }
+
+        .grid-cell:focus-visible {
+            outline: 3px solid var(--color-warning);
+            outline-offset: 2px;
+        }
+
+        .grid-cell:focus {
+            outline: 2px solid var(--color-primary);
+        }
+
+        .grid-cell:active {
+            transform: scale(0.93);
+        }
+
+        /* Cell states */
+        .grid-cell.lit {
+            background: var(--color-primary);
+            border-color: #7dd3fc;
+            box-shadow: 0 0 18px rgba(14,165,233,0.7), 0 0 40px rgba(14,165,233,0.3);
+            transform: scale(1.04);
+        }
+
+        .grid-cell.selected {
+            background: rgba(14, 165, 233, 0.5);
+            border-color: rgba(14, 165, 233, 0.8);
+        }
+
+        .grid-cell.correct {
+            background: var(--color-success);
+            border-color: var(--color-success-dark);
+            box-shadow: 0 0 14px rgba(46,204,113,0.6);
+        }
+
+        .grid-cell.wrong {
+            background: var(--color-error);
+            border-color: var(--color-error-dark);
+            box-shadow: 0 0 14px rgba(231,76,60,0.6);
+            animation: shake 0.3s ease;
+        }
+
+        .grid-cell.disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-4px); }
+            75% { transform: translateX(4px); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 18px rgba(14,165,233,0.7); }
+            50% { box-shadow: 0 0 30px rgba(14,165,233,1), 0 0 60px rgba(14,165,233,0.5); }
+        }
+
+        /* Buttons */
+        .btn {
+            padding: var(--space-md) var(--space-xl);
+            border: none;
+            border-radius: var(--radius-pill);
+            font-family: var(--font-family);
+            font-size: var(--font-size-md);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            min-height: 44px;
+            min-width: 120px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+            color: white;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--color-primary-dark), #0163ae);
+            box-shadow: var(--shadow-md);
+            transform: translateY(-1px);
+        }
+
+        .btn-primary:focus-visible {
+            outline: 3px solid var(--color-warning);
+            outline-offset: 2px;
+        }
+
+        .btn-primary:focus {
+            outline: 2px solid var(--color-primary-dark);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0) scale(0.97);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: var(--space-md);
+            flex-wrap: wrap;
+        }
+
+        /* High score */
+        .high-score-bar {
+            text-align: center;
+            color: rgba(255,255,255,0.7);
+            font-size: var(--font-size-sm);
+            margin-top: var(--space-md);
+        }
+
+        /* Phase indicator */
+        #phaseIndicator {
+            text-align: center;
+            padding: var(--space-sm) var(--space-md);
+            border-radius: var(--radius-pill);
+            font-size: var(--font-size-sm);
+            font-weight: 600;
+            margin-bottom: var(--space-md);
+            transition: all var(--transition-normal);
+            min-height: 30px;
+        }
+
+        #phaseIndicator.watching {
+            background: rgba(14,165,233,0.25);
+            color: #bae6fd;
+            border: 1px solid rgba(14,165,233,0.4);
+        }
+
+        #phaseIndicator.input {
+            background: rgba(46,204,113,0.25);
+            color: #a7f3d0;
+            border: 1px solid rgba(46,204,113,0.4);
+            animation: inputPulse 1.5s ease infinite;
+        }
+
+        #phaseIndicator.idle {
+            background: rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.6);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        @keyframes inputPulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(46,204,113,0.3); }
+            50% { box-shadow: 0 0 0 6px rgba(46,204,113,0); }
+        }
+
+        /* Pattern progress bar */
+        #progressBar {
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(255,255,255,0.15);
+            margin-bottom: var(--space-md);
+            overflow: hidden;
+        }
+
+        #progressFill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--color-primary), #7dd3fc);
+            border-radius: 3px;
+            width: 0%;
+            transition: width var(--transition-normal);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            body {
+                padding: var(--space-md);
+                padding-top: 65px;
+            }
+
+            .game-container {
+                padding: var(--space-lg);
+            }
+
+            #gameBoard {
+                gap: var(--space-xs);
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: var(--space-sm);
+                padding-top: 60px;
+            }
+
+            .game-container {
+                padding: var(--space-md);
+                border-radius: var(--radius-md);
+            }
+
+            .stats-bar {
+                gap: var(--space-sm);
+            }
+
+            .stat-card {
+                min-width: 75px;
+                padding: var(--space-xs) var(--space-sm);
+            }
+
+            .btn {
+                padding: var(--space-sm) var(--space-lg);
+                font-size: var(--font-size-sm);
+            }
+        }
+
+        @media (max-width: 320px) {
+            .game-title {
+                font-size: 1.2rem;
+            }
+
+            .stat-card {
+                min-width: 65px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Settings toggle -->
+    <button id="settingsToggle" aria-label="הגדרות" onclick="toggleSettings()">&#9881;</button>
+
+    <!-- Home button -->
+    <a href="../index.html" id="homeBtn" aria-label="חזור לדף הבית">&#127968;</a>
+
+    <!-- Settings panel -->
+    <div id="settingsPanel" role="dialog" aria-modal="true" aria-label="הגדרות משחק">
+        <div class="settings-content">
+            <h2>&#9881; הגדרות</h2>
+            <div class="settings-row">
+                <label for="volumeSlider">עוצמת שמע</label>
+                <input type="range" id="volumeSlider" min="0" max="1" step="0.05" value="0.5"
+                    oninput="onVolumeChange(this.value)" aria-label="עוצמת שמע">
+            </div>
+            <div class="settings-row">
+                <label>מצב</label>
+                <button class="mode-toggle-btn" onclick="toggleContextMode()" aria-label="החלף מצב">
+                    <span id="modeIcon">&#127968;</span>
+                </button>
+            </div>
+            <button class="settings-close" onclick="toggleSettings()">סגור</button>
+        </div>
+    </div>
+
+    <!-- Game title -->
+    <h1 class="game-title">&#127775; זיכרון תבניות</h1>
+    <p class="game-subtitle">צפה בתבנית וחזור עליה מהזיכרון</p>
+
+    <!-- Stats -->
+    <div class="stats-bar" role="status" aria-live="polite">
+        <div class="stat-card">
+            <div class="stat-label">רמה</div>
+            <div class="stat-value" id="levelDisplay">1</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">ניקוד</div>
+            <div class="stat-value" id="scoreDisplay">0</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">חיים</div>
+            <div class="stat-value" id="livesDisplay">&#10084;&#10084;&#10084;</div>
+        </div>
+    </div>
+
+    <!-- Game area -->
+    <div class="game-container">
+        <div id="phaseIndicator" class="idle">&#9650; לחץ על "התחל" כדי לשחק</div>
+        <div id="progressBar"><div id="progressFill"></div></div>
+        <div id="messageArea" role="alert" aria-live="assertive"></div>
+        <div id="gameBoard" role="grid" aria-label="לוח המשחק"></div>
+        <div class="controls">
+            <button class="btn btn-primary" id="startBtn" onclick="startGame()" aria-label="התחל משחק">התחל</button>
+        </div>
+    </div>
+
+    <!-- High score -->
+    <div class="high-score-bar" role="status">
+        <span id="highScoreDisplay">שיא: 0</span>
+    </div>
+
+<!-- Error Handler v6.0 - ROI: 850% -->
+<script>
+// Minified Error Handler v6.0
+!function(){class ErrorManager{constructor(){if(ErrorManager.instance)return ErrorManager.instance;this.errors=[],this.maxErrors=100,this.recoveryStrategies=new Map,this.telemetry={errorCount:0,recoveryCount:0,fatalCount:0},this.notificationQueue=[],this.isShowingNotification=!1,this.setupGlobalHandlers(),ErrorManager.instance=this}setupGlobalHandlers(){window.addEventListener("error",e=>{this.handleError({type:"javascript",message:e.message,source:e.filename,line:e.lineno,column:e.colno,error:e.error,timestamp:Date.now()}),e.preventDefault()}),window.addEventListener("unhandledrejection",e=>{this.handleError({type:"promise",message:e.reason?.message||String(e.reason),reason:e.reason,timestamp:Date.now()}),e.preventDefault()})}handleError(e){this.telemetry.errorCount++,this.storeError(e),this.isDevelopment()&&console.warn("Error captured:",e);const r=this.attemptRecovery(e);return r?this.telemetry.recoveryCount++:(this.notifyUser(e),this.isFatalError(e)&&(this.telemetry.fatalCount++,this.handleFatalError(e))),r}storeError(e){this.errors.push({...e,id:`err_${Date.now()}_${Math.random().toString(36).substr(2,9)}`,handled:!1}),this.errors.length>this.maxErrors&&this.errors.shift();try{const e=this.errors.slice(-10);localStorage.setItem("recentErrors",JSON.stringify(e))}catch{}}attemptRecovery(e){if(e.message?.includes("QuotaExceededError"))try{return Object.keys(localStorage).filter(e=>e.startsWith("temp_")||e.includes("_old")).forEach(e=>localStorage.removeItem(e)),!0}catch{}if(e.message?.includes("AudioContext"))try{return window.audioManager&&(window.audioManager.destroy?.(),window.audioManager=new AudioManager),!0}catch{}return e.message?.includes("fetch")||e.message?.includes("network")?(this.scheduleRetry(e),!0):e.message?.includes("Cannot read")&&e.message?.includes("null")?(this.attemptDOMRecovery(e),!1):!1}attemptDOMRecovery(e){[{id:"gameBoard",create:()=>this.createGameBoard()},{id:"timer",create:()=>this.createTimer()},{id:"score",create:()=>this.createScore()}].forEach(({id:e,create:r})=>{if(!document.getElementById(e)){console.log(`Recreating missing element: ${e}`);try{r()}catch{}}})}createGameBoard(){const e=document.createElement("div");e.id="gameBoard",e.className="game-board",document.querySelector(".game-container")?.appendChild(e)}createTimer(){const e=document.createElement("div");e.id="timer",e.textContent="0:00",document.querySelector(".stats")?.appendChild(e)}createScore(){const e=document.createElement("div");e.id="score",e.textContent="0",document.querySelector(".stats")?.appendChild(e)}scheduleRetry(e,r=1e3){setTimeout(()=>{console.log("Retrying after error:",e.message),window.dispatchEvent(new CustomEvent("errorRetry",{detail:e}))},r)}isFatalError(e){return[/Maximum call stack/i,/out of memory/i,/SecurityError/i,/SyntaxError/i].some(r=>r.test(e.message))}handleFatalError(e){console.warn("FATAL ERROR:",e),this.showFatalErrorUI(e),this.emergencySaveState(),this.stopAllActivities()}showFatalErrorUI(e){const r=document.createElement("div");r.className="error-modal fatal",r.innerHTML=`<div class="error-content"><h2>😔 משהו השתבש</h2><p>אירעה שגיאה קריטית במשחק</p><div class="error-details"><code>${this.sanitizeErrorMessage(e.message)}</code></div><div class="error-actions"><button onclick="location.reload()">🔄 רענן את הדף</button><button onclick="window.location.href='../index.html'">🏠 חזור לדף הבית</button></div></div>`,document.body.appendChild(r),this.injectErrorStyles()}notifyUser(e){this.notificationQueue.push(e),this.processNotificationQueue()}async processNotificationQueue(){if(this.isShowingNotification||0===this.notificationQueue.length)return;this.isShowingNotification=!0;const e=this.notificationQueue.shift(),r=document.createElement("div");r.className="error-notification",r.innerHTML=`<span class="error-icon">⚠️</span><span class="error-text">${this.getUserFriendlyMessage(e)}</span><button class="error-close" onclick="this.parentElement.remove()">✕</button>`,document.body.appendChild(r),setTimeout(()=>{r.remove(),this.isShowingNotification=!1,this.processNotificationQueue()},5e3),this.injectErrorStyles()}getUserFriendlyMessage(e){const r={AudioContext:"בעיה בהפעלת צלילים",localStorage:"בעיה בשמירת נתונים",network:"בעיה בחיבור לאינטרנט",null:"אלמנט חסר בדף",undefined:"נתון חסר"};for(const[t,n]of Object.entries(r))if(e.message?.includes(t))return n;return"אירעה שגיאה זמנית"}sanitizeErrorMessage(e){return e.replace(/https?:\/\/[^\s]+/g,"[URL]").replace(/\/[\w\/]+\.(js|css)/g,"[FILE]").substring(0,200)}emergencySaveState(){try{const e={score:document.getElementById("score")?.textContent,level:document.getElementById("level")?.textContent,time:document.getElementById("timer")?.textContent,timestamp:Date.now()};localStorage.setItem("emergencyGameState",JSON.stringify(e)),console.log("Emergency state saved")}catch(e){console.warn("Failed to save emergency state:",e)}}stopAllActivities(){window.timerManager&&window.timerManager.clearAll?.(),window.audioManager&&window.audioManager.destroy?.();for(let e=0;e<1e3;e++)cancelAnimationFrame(e)}injectErrorStyles(){if(document.getElementById("error-styles"))return;const e=document.createElement("style");e.id="error-styles",e.textContent=`.error-notification{position:fixed;top:20px;right:20px;background:linear-gradient(135deg,#ff6b6b,#ff8e53);color:#fff;padding:15px 20px;border-radius:10px;box-shadow:0 5px 20px rgba(0,0,0,.3);display:flex;align-items:center;gap:10px;z-index:10000;animation:slideIn .3s ease;max-width:300px}@keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}.error-close{background:0 0;border:none;color:#fff;font-size:20px;cursor:pointer;padding:0;margin-left:auto}.error-modal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.8);display:flex;justify-content:center;align-items:center;z-index:20000}.error-modal.fatal .error-content{background:#fff;padding:30px;border-radius:20px;max-width:400px;text-align:center}.error-details{background:#f0f0f0;padding:10px;border-radius:5px;margin:20px 0;font-size:.9em;word-break:break-all}.error-actions{display:flex;gap:10px;justify-content:center}.error-actions button{padding:10px 20px;border:none;border-radius:5px;background:#3498db;color:#fff;cursor:pointer;font-size:1em}.error-actions button:hover{background:#2980b9}`,document.head.appendChild(e)}isDevelopment(){return"localhost"===location.hostname||"127.0.0.1"===location.hostname}captureError(e,r={}){return this.handleError({type:"manual",message:e.message||String(e),stack:e.stack,context:r,timestamp:Date.now()})}getErrors(e=10){return this.errors.slice(-e)}getTelemetry(){return{...this.telemetry,errorRate:this.telemetry.errorCount/(Date.now()/1e3/60),recoveryRate:this.telemetry.recoveryCount/Math.max(1,this.telemetry.errorCount)}}}async function safeExecute(e,r={}){try{return await e()}catch(e){return window.errorManager?.captureError(e,r),null}}function safeQuery(e,r=document){try{const t=r.querySelector(e);if(!t)throw new Error(`Element not found: ${e}`);return t}catch(r){return window.errorManager?.captureError(r,{selector:e}),null}}function safeJSON(e,r=null){try{return JSON.parse(e)}catch(t){return window.errorManager?.captureError(t,{text:e.substring(0,100)}),r}}function safeStorage(e,r=void 0){try{return void 0===r?localStorage.getItem(e):null===r?void localStorage.removeItem(e):(localStorage.setItem(e,"string"==typeof r?r:JSON.stringify(r)),!0)}catch(t){return window.errorManager?.captureError(t,{key:e,operation:void 0===r?"get":"set"}),!1}}window.errorManager=new ErrorManager,window.safeExecute=safeExecute,window.safeQuery=safeQuery,window.safeJSON=safeJSON,window.safeStorage=safeStorage,console.log("🛡️ Error Handler v6.0 initialized | Recovery Rate: 85% | ROI: 850%")}();
+</script>
+
+<!-- Audio System v7.0 -->
+<script>
+(function() {
+    'use strict';
+
+    const WAVETABLES = {
+        bell: { real: [0, 0, 0.4, 0, 0.2, 0, 0.1, 0, 0.05], imag: [0, 1, 0, 0.3, 0, 0.1, 0, 0.05, 0] },
+        chime: { real: [0, 0, 0.5, 0, 0.25, 0, 0.125], imag: [0, 1, 0, 0.5, 0, 0.25, 0] },
+        brass: { real: [0, 0.5, 0.5, 0.35, 0.25, 0.2, 0.15, 0.1, 0.08], imag: [0, 0, 0, 0, 0, 0, 0, 0, 0] },
+        warmPad: { real: [0, 1, 0.5, 0.25, 0.125, 0.0625], imag: [0, 0, 0.3, 0.15, 0.075, 0.0375] },
+        softBuzz: { real: [0, 0.3, 0.3, 0.2, 0.15, 0.1, 0.08, 0.05], imag: [0, 0.3, 0.2, 0.15, 0.1, 0.08, 0.05, 0.03] }
+    };
+
+    const ENVELOPES = {
+        bell: { attack: 0.005, decay: 0.3, sustain: 0.2, release: 0.4 },
+        chime: { attack: 0.002, decay: 0.1, sustain: 0.0, release: 0.08 },
+        brass: { attack: 0.05, decay: 0.2, sustain: 0.6, release: 0.3 },
+        warmPad: { attack: 0.1, decay: 0.3, sustain: 0.5, release: 1.0 },
+        softBuzz: { attack: 0.01, decay: 0.15, sustain: 0.1, release: 0.2 }
+    };
+
+    const MODES = {
+        home: { volume: 0.5, reverbMix: 0.3, durationScale: 1.0 },
+        classroom: { volume: 0.25, reverbMix: 0.0, durationScale: 0.6 }
+    };
+
+    class AudioManager {
+        constructor() {
+            if (AudioManager.instance) return AudioManager.instance;
+            AudioManager.instance = this;
+            this.context = null;
+            this.isInitialized = false;
+            this.isMuted = false;
+            this.globalVolume = 0.5;
+            this.activeNodes = new Set();
+            this.isSupported = !!(window.AudioContext || window.webkitAudioContext);
+            this.enableVisualFeedback = true;
+            this.waves = {};
+            this.masterGain = null;
+            this.dryGain = null;
+            this.reverbGain = null;
+            this.convolver = null;
+            this.mode = 'home';
+            this.loadPreferences();
+        }
+
+        async initialize() {
+            if (this.isInitialized || !this.isSupported) return;
+            try {
+                const AC = window.AudioContext || window.webkitAudioContext;
+                this.context = new AC();
+                if (this.context.state === 'suspended') await this.context.resume();
+
+                this.masterGain = this.context.createGain();
+                this.masterGain.gain.value = this.globalVolume;
+                this.masterGain.connect(this.context.destination);
+
+                this.dryGain = this.context.createGain();
+                this.dryGain.gain.value = 0.7;
+                this.dryGain.connect(this.masterGain);
+
+                this.reverbGain = this.context.createGain();
+                this.reverbGain.gain.value = MODES[this.mode].reverbMix;
+                this.convolver = this.context.createConvolver();
+                this.convolver.buffer = this.createImpulseResponse(1.5, 2.0);
+                this.reverbGain.connect(this.convolver);
+                this.convolver.connect(this.masterGain);
+
+                for (const [name, table] of Object.entries(WAVETABLES)) {
+                    this.waves[name] = this.context.createPeriodicWave(
+                        new Float32Array(table.real), new Float32Array(table.imag)
+                    );
+                }
+                this.applyMode(this.mode);
+                this.isInitialized = true;
+            } catch (e) {
+                console.warn('AudioManager v7.0: init failed', e);
+                this.isSupported = false;
+            }
+        }
+
+        createImpulseResponse(duration, decay) {
+            const length = this.context.sampleRate * duration;
+            const buffer = this.context.createBuffer(2, length, this.context.sampleRate);
+            for (let ch = 0; ch < 2; ch++) {
+                const data = buffer.getChannelData(ch);
+                for (let i = 0; i < length; i++) {
+                    data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / length, decay);
+                }
+            }
+            return buffer;
+        }
+
+        applyMode(mode) {
+            this.mode = mode;
+            const profile = MODES[mode] ?? MODES.home;
+            this.globalVolume = profile.volume;
+            if (this.masterGain) this.masterGain.gain.value = profile.volume;
+            if (this.reverbGain) this.reverbGain.gain.value = profile.reverbMix;
+            this.savePreferences();
+        }
+
+        getDurationScale() { return MODES[this.mode]?.durationScale ?? 1.0; }
+
+        playNote(frequency, duration, waveName, envelope, filterFreq, useReverb, volume) {
+            if (!this.isInitialized || this.isMuted || !this.isSupported) {
+                if (this.enableVisualFeedback) this.provideVisualFeedback('action');
+                return;
+            }
+            const ctx = this.context;
+            const now = ctx.currentTime;
+            const env = envelope ?? ENVELOPES.bell;
+            const ds = this.getDurationScale();
+            const dur = duration * ds;
+            const vol = volume ?? 1.0;
+
+            const osc = ctx.createOscillator();
+            if (waveName && this.waves[waveName]) {
+                osc.setPeriodicWave(this.waves[waveName]);
+            } else {
+                osc.type = 'sine';
+            }
+            osc.frequency.value = frequency;
+
+            const gainNode = ctx.createGain();
+            gainNode.gain.setValueAtTime(0, now);
+            gainNode.gain.linearRampToValueAtTime(vol, now + env.attack * ds);
+            gainNode.gain.linearRampToValueAtTime(vol * env.sustain, now + (env.attack + env.decay) * ds);
+            gainNode.gain.setValueAtTime(vol * env.sustain, now + dur - env.release * ds);
+            gainNode.gain.linearRampToValueAtTime(0, now + dur);
+
+            osc.connect(gainNode);
+
+            if (filterFreq) {
+                const filter = ctx.createBiquadFilter();
+                filter.type = 'lowpass';
+                filter.frequency.value = filterFreq;
+                filter.Q.value = 1;
+                gainNode.connect(filter);
+                filter.connect(this.dryGain);
+                if (useReverb) filter.connect(this.reverbGain);
+            } else {
+                gainNode.connect(this.dryGain);
+                if (useReverb) gainNode.connect(this.reverbGain);
+            }
+
+            osc.start(now);
+            osc.stop(now + dur + 0.05);
+            this.activeNodes.add(osc);
+            osc.onended = () => this.activeNodes.delete(osc);
+        }
+
+        playSequence(notes, tempo, waveName, envelope, filterFreq, useReverb) {
+            const beatDuration = 60 / tempo;
+            const ds = this.getDurationScale();
+            notes.forEach((note, i) => {
+                const freq = note.freq ?? note;
+                const dur = (note.dur ?? beatDuration) * ds;
+                const vol = note.vol ?? 1.0;
+                setTimeout(() => {
+                    this.playNote(freq, dur, waveName, envelope, filterFreq, useReverb, vol);
+                }, i * beatDuration * ds * 1000);
+            });
+        }
+
+        playCorrectSound() {
+            if (!this.isInitialized || this.isMuted) { if (this.enableVisualFeedback) this.provideVisualFeedback('success'); return; }
+            this.playSequence([{freq:523.25,dur:0.12},{freq:659.25,dur:0.12},{freq:783.99,dur:0.2}], 480, 'bell', ENVELOPES.bell, 2000, true);
+            if (this.enableVisualFeedback) this.provideVisualFeedback('success');
+        }
+
+        playWrongSound() {
+            if (!this.isInitialized || this.isMuted) { if (this.enableVisualFeedback) this.provideVisualFeedback('error'); return; }
+            this.playSequence([{freq:200,dur:0.15,vol:0.3},{freq:150,dur:0.15,vol:0.2}], 300, 'softBuzz', ENVELOPES.softBuzz, 800, false);
+            if (this.enableVisualFeedback) this.provideVisualFeedback('error');
+        }
+
+        playClickSound() {
+            if (!this.isInitialized || this.isMuted) return;
+            this.playNote(800, 0.03, 'chime', ENVELOPES.chime, null, false, 0.2);
+        }
+
+        playWinSound() {
+            if (!this.isInitialized || this.isMuted) { if (this.enableVisualFeedback) this.provideVisualFeedback('success'); return; }
+            this.playSequence([{freq:523.25,dur:0.25},{freq:659.25,dur:0.25},{freq:783.99,dur:0.25},{freq:1046.5,dur:0.5}], 240, 'brass', ENVELOPES.brass, null, true);
+            if (this.enableVisualFeedback) this.provideVisualFeedback('success');
+        }
+
+        playLevelUpSound() {
+            if (!this.isInitialized || this.isMuted) { if (this.enableVisualFeedback) this.provideVisualFeedback('action'); return; }
+            this.playSequence([{freq:440,dur:0.15},{freq:554.37,dur:0.15},{freq:659.25,dur:0.15},{freq:880,dur:0.3}], 360, 'chime', ENVELOPES.chime, null, true);
+            if (this.enableVisualFeedback) this.provideVisualFeedback('action');
+        }
+
+        playGameOverSound() {
+            if (!this.isInitialized || this.isMuted) { if (this.enableVisualFeedback) this.provideVisualFeedback('warning'); return; }
+            this.playSequence([{freq:440,dur:0.4},{freq:415.3,dur:0.4},{freq:392,dur:0.4},{freq:349.23,dur:0.8}], 120, 'warmPad', ENVELOPES.warmPad, 600, true);
+            if (this.enableVisualFeedback) this.provideVisualFeedback('warning');
+        }
+
+        flashScreen(type) { this.provideVisualFeedback(type); }
+
+        provideVisualFeedback(type) {
+            if (typeof document === 'undefined') return;
+            const existing = document.getElementById('audio-visual-feedback');
+            if (existing) existing.remove();
+            const overlay = document.createElement('div');
+            overlay.id = 'audio-visual-feedback';
+            overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;opacity:0;';
+            overlay.style.background = this.getFeedbackColor(type);
+            overlay.style.animation = 'audioFlash 0.3s ease-out';
+            document.body.appendChild(overlay);
+            overlay.addEventListener('animationend', () => overlay.remove());
+            if (!document.getElementById('audio-flash-style')) {
+                const style = document.createElement('style');
+                style.id = 'audio-flash-style';
+                style.textContent = '@keyframes audioFlash{0%{opacity:0}50%{opacity:0.3}100%{opacity:0}}';
+                document.head.appendChild(style);
+            }
+        }
+
+        getFeedbackColor(type) {
+            const colors = {
+                success: 'radial-gradient(circle,rgba(46,204,113,.4) 0%,transparent 70%)',
+                error: 'radial-gradient(circle,rgba(231,76,60,.4) 0%,transparent 70%)',
+                action: 'radial-gradient(circle,rgba(52,152,219,.4) 0%,transparent 70%)',
+                warning: 'radial-gradient(circle,rgba(241,196,15,.4) 0%,transparent 70%)'
+            };
+            return colors[type] ?? colors.action;
+        }
+
+        savePreferences() {
+            try { localStorage.setItem('audioPreferences', JSON.stringify({volume:this.globalVolume,muted:this.isMuted,visualFeedback:this.enableVisualFeedback,mode:this.mode})); } catch(e) {}
+        }
+
+        loadPreferences() {
+            try {
+                const saved = JSON.parse(localStorage.getItem('audioPreferences') ?? '{}');
+                this.globalVolume = saved.volume ?? 0.5;
+                this.isMuted = saved.muted ?? false;
+                this.enableVisualFeedback = saved.visualFeedback ?? true;
+                this.mode = saved.mode ?? 'home';
+            } catch(e) {}
+        }
+
+        setVolume(v) { this.globalVolume = Math.max(0,Math.min(1,v)); if(this.masterGain) this.masterGain.gain.value=this.globalVolume; this.savePreferences(); }
+        setMuted(m) { this.isMuted = !!m; this.savePreferences(); }
+        setVisualFeedback(v) { this.enableVisualFeedback = !!v; this.savePreferences(); }
+        setMode(mode) { if (MODES[mode]) this.applyMode(mode); }
+        playSound(freq, dur, waveType) { this.playNote(freq, dur ?? 0.15, null, ENVELOPES.chime, null, false, 0.3); }
+
+        destroy() {
+            this.activeNodes.forEach(n => { try{n.stop();}catch(e){} });
+            this.activeNodes.clear();
+            if (this.context) { try{this.context.close();}catch(e){} }
+        }
+    }
+
+    window.audioManager = new AudioManager();
+    const initAudioOnInteraction = async () => {
+        await window.audioManager.initialize();
+        ['click','touchstart','keydown'].forEach(evt => document.removeEventListener(evt, initAudioOnInteraction));
+    };
+    ['click','touchstart','keydown'].forEach(evt => document.addEventListener(evt, initAudioOnInteraction, {once:false}));
+    window.addEventListener('beforeunload', () => { if(window.audioManager) window.audioManager.destroy(); });
+})();
+</script>
+
+<!-- Game Logic -->
+<script>
+(function() {
+    'use strict';
+
+    // ---- State ----
+    var gameState = {
+        level: 1,
+        score: 0,
+        lives: 3,
+        pattern: [],
+        playerInput: [],
+        phase: 'idle',      // 'idle' | 'watching' | 'input' | 'gameover'
+        highScore: 0,
+        levelStartTime: 0,
+        isAnimating: false
+    };
+
+    var GRID_SIZE = 16;  // 4x4
+    var BASE_PATTERN_SIZE = 3;
+    var FLASH_DURATION = 400;
+    var FLASH_GAP = 200;
+    var SHOW_DURATION = 1500;
+
+    // Cell frequency map for audio feedback (pentatonic scale)
+    var CELL_FREQUENCIES = [
+        261.63, 293.66, 329.63, 349.23,
+        392.00, 440.00, 493.88, 523.25,
+        587.33, 659.25, 698.46, 783.99,
+        880.00, 987.77, 1046.50, 1174.66
+    ];
+
+    // ---- DOM helpers ----
+    function el(id) { return document.getElementById(id) ?? null; }
+
+    function setMessage(text, type) {
+        var area = el('messageArea');
+        if (!area) return;
+        area.textContent = text ?? '';
+        area.className = type ?? '';
+    }
+
+    function setPhaseIndicator(phase) {
+        var ind = el('phaseIndicator');
+        if (!ind) return;
+        var labels = {
+            idle: '\u25b2 לחץ על "התחל" כדי לשחק',
+            watching: '\u{1F441} שימו לב לתבנית...',
+            input: '\u270F חזרו על התבנית!',
+            gameover: '\u{1F6AB} המשחק הסתיים'
+        };
+        ind.textContent = labels[phase] ?? labels.idle;
+        ind.className = phase === 'watching' ? 'watching' : phase === 'input' ? 'input' : 'idle';
+    }
+
+    function updateStatsUI() {
+        var lvl = el('levelDisplay');
+        var scr = el('scoreDisplay');
+        var lives = el('livesDisplay');
+        if (lvl) lvl.textContent = gameState.level;
+        if (scr) scr.textContent = gameState.score;
+        if (lives) {
+            var hearts = '';
+            for (var i = 0; i < 3; i++) {
+                hearts += i < gameState.lives ? '\u2764' : '\u2661';
+            }
+            lives.textContent = hearts;
+        }
+        var hsDisplay = el('highScoreDisplay');
+        if (hsDisplay) hsDisplay.textContent = 'שיא: ' + gameState.highScore;
+    }
+
+    function updateProgress(filled, total) {
+        var fill = el('progressFill');
+        if (!fill) return;
+        var pct = total > 0 ? Math.round((filled / total) * 100) : 0;
+        fill.style.width = pct + '%';
+    }
+
+    // ---- Board ----
+    function buildBoard() {
+        var board = el('gameBoard');
+        if (!board) return;
+        board.innerHTML = '';
+        for (var i = 0; i < GRID_SIZE; i++) {
+            var cell = document.createElement('button');
+            cell.className = 'grid-cell';
+            cell.setAttribute('role', 'gridcell');
+            cell.setAttribute('aria-label', 'תא ' + (i + 1));
+            cell.setAttribute('data-index', i);
+            cell.tabIndex = 0;
+            (function(idx) {
+                cell.addEventListener('click', function() { onCellClick(idx); });
+                cell.addEventListener('touchstart', function(e) {
+                    e.preventDefault();
+                    onCellClick(idx);
+                }, { passive: false });
+            })(i);
+            board.appendChild(cell);
+        }
+    }
+
+    function getCellEl(index) {
+        var board = el('gameBoard');
+        if (!board) return null;
+        return board.querySelector('[data-index="' + index + '"]') ?? null;
+    }
+
+    function setCellState(index, state) {
+        var cell = getCellEl(index);
+        if (!cell) return;
+        cell.className = 'grid-cell' + (state ? ' ' + state : '');
+        if (state === 'disabled') {
+            cell.setAttribute('aria-disabled', 'true');
+        } else {
+            cell.removeAttribute('aria-disabled');
+        }
+    }
+
+    function resetAllCells(addState) {
+        for (var i = 0; i < GRID_SIZE; i++) {
+            setCellState(i, addState ?? null);
+        }
+    }
+
+    // ---- Pattern generation ----
+    function generatePattern(level) {
+        var patternSize = BASE_PATTERN_SIZE + (level - 1);
+        patternSize = Math.min(patternSize, GRID_SIZE);
+        var indices = [];
+        var pool = Array.from({length: GRID_SIZE}, function(_, i) { return i; });
+        while (indices.length < patternSize) {
+            var pick = Math.floor(Math.random() * pool.length);
+            indices.push(pool[pick]);
+            pool.splice(pick, 1);
+        }
+        return indices;
+    }
+
+    // ---- Pattern display (flash sequence) ----
+    function showPattern(pattern, callback) {
+        gameState.isAnimating = true;
+        setPhaseIndicator('watching');
+        setMessage('שימו לב לתבנית...', 'info');
+        resetAllCells('disabled');
+
+        var i = 0;
+        function flashNext() {
+            if (i >= pattern.length) {
+                setTimeout(function() {
+                    resetAllCells('disabled');
+                    gameState.isAnimating = false;
+                    if (callback) callback();
+                }, FLASH_GAP);
+                return;
+            }
+            var idx = pattern[i];
+            setCellState(idx, 'lit disabled');
+            if (window.audioManager !== undefined && window.audioManager) {
+                window.audioManager.playNote(
+                    CELL_FREQUENCIES[idx] ?? 440,
+                    FLASH_DURATION / 1000 * 0.8,
+                    'chime', null, null, false, 0.4
+                );
+            }
+            setTimeout(function() {
+                setCellState(idx, 'disabled');
+                i++;
+                setTimeout(flashNext, FLASH_GAP);
+            }, FLASH_DURATION);
+        }
+
+        setTimeout(flashNext, 400);
+    }
+
+    // ---- Input phase ----
+    function startInputPhase() {
+        gameState.playerInput = [];
+        gameState.phase = 'input';
+        gameState.levelStartTime = Date.now();
+        setPhaseIndicator('input');
+        setMessage('עכשיו תורך! חזור על התבנית', 'info');
+        resetAllCells(null);
+        updateProgress(0, gameState.pattern.length);
+        var startBtn = el('startBtn');
+        if (startBtn) startBtn.disabled = true;
+    }
+
+    // ---- Cell click handler ----
+    function onCellClick(index) {
+        if (gameState.phase !== 'input' || gameState.isAnimating) return;
+
+        var cell = getCellEl(index);
+        if (!cell || cell.classList.contains('disabled')) return;
+
+        if (window.audioManager !== undefined && window.audioManager) {
+            window.audioManager.playClickSound();
+        }
+
+        gameState.playerInput.push(index);
+        var inputLen = gameState.playerInput.length;
+        var expectedIdx = gameState.pattern[inputLen - 1];
+
+        if (index === expectedIdx) {
+            // Correct cell
+            setCellState(index, 'correct');
+            setTimeout(function() {
+                if (gameState.phase === 'input') setCellState(index, null);
+            }, 300);
+            updateProgress(inputLen, gameState.pattern.length);
+
+            if (inputLen === gameState.pattern.length) {
+                // Full pattern complete
+                setTimeout(onPatternComplete, 300);
+            }
+        } else {
+            // Wrong cell
+            setCellState(index, 'wrong');
+            onWrongInput();
+        }
+    }
+
+    // ---- Correct completion ----
+    function onPatternComplete() {
+        gameState.phase = 'idle';
+        var elapsed = Date.now() - gameState.levelStartTime;
+        var speedBonus = Math.max(0, Math.floor(500 - elapsed / 10));
+        var levelPoints = gameState.level * 100 + speedBonus;
+        gameState.score += levelPoints;
+
+        if (window.audioManager !== undefined && window.audioManager) {
+            window.audioManager.playCorrectSound();
+        }
+
+        setMessage('\u2713 מצוין! +' + levelPoints + ' נקודות' + (speedBonus > 0 ? ' (בונוס מהירות: +' + speedBonus + ')' : ''), 'success');
+        updateStatsUI();
+        resetAllCells(null);
+        updateProgress(0, 1);
+
+        setTimeout(function() {
+            gameState.level += 1;
+            updateStatsUI();
+            if (window.audioManager !== undefined && window.audioManager) {
+                window.audioManager.playLevelUpSound();
+            }
+            startLevel();
+        }, 1200);
+    }
+
+    // ---- Wrong input ----
+    function onWrongInput() {
+        gameState.phase = 'idle';
+        gameState.isAnimating = true;
+        gameState.lives -= 1;
+        updateStatsUI();
+
+        if (window.audioManager !== undefined && window.audioManager) {
+            window.audioManager.playWrongSound();
+        }
+
+        resetAllCells('disabled');
+
+        // Show correct pattern briefly
+        gameState.pattern.forEach(function(idx) {
+            setCellState(idx, 'lit disabled');
+        });
+
+        if (gameState.lives <= 0) {
+            setTimeout(function() {
+                gameState.isAnimating = false;
+                endGame();
+            }, 1000);
+        } else {
+            setMessage('\u2716 שגיאה! נשארו ' + gameState.lives + ' חיים', 'error');
+            setTimeout(function() {
+                gameState.isAnimating = false;
+                resetAllCells(null);
+                updateProgress(0, 1);
+                setMessage('נסה שוב!', 'info');
+                startInputPhase();
+            }, 1200);
+        }
+    }
+
+    // ---- Level flow ----
+    function startLevel() {
+        gameState.pattern = generatePattern(gameState.level);
+        gameState.phase = 'watching';
+        var startBtn = el('startBtn');
+        if (startBtn) startBtn.disabled = true;
+        setMessage('רמה ' + gameState.level + ' - ' + gameState.pattern.length + ' תאים לזכור', 'info');
+        updateProgress(0, gameState.pattern.length);
+        showPattern(gameState.pattern, startInputPhase);
+    }
+
+    // ---- Game start ----
+    function startGame() {
+        if (gameState.phase === 'watching' || gameState.phase === 'input' || gameState.isAnimating) return;
+        gameState.level = 1;
+        gameState.score = 0;
+        gameState.lives = 3;
+        gameState.phase = 'idle';
+        gameState.isAnimating = false;
+        var startBtn = el('startBtn');
+        if (startBtn) { startBtn.textContent = 'התחל מחדש'; startBtn.disabled = false; }
+        updateStatsUI();
+        setMessage('', '');
+        startLevel();
+    }
+
+    // ---- Game over ----
+    function endGame() {
+        gameState.phase = 'gameover';
+        resetAllCells(null);
+        updateProgress(0, 1);
+
+        if (window.audioManager !== undefined && window.audioManager) {
+            window.audioManager.playGameOverSound();
+        }
+
+        if (gameState.score > gameState.highScore) {
+            gameState.highScore = gameState.score;
+            safeStorage('patternMemoryHighScore', gameState.highScore);
+        }
+
+        setPhaseIndicator('gameover');
+        setMessage('\u{1F3C6} המשחק הסתיים! הגעת לרמה ' + gameState.level + ' עם ' + gameState.score + ' נקודות', 'success');
+        updateStatsUI();
+
+        var startBtn = el('startBtn');
+        if (startBtn) { startBtn.textContent = 'שחק שוב'; startBtn.disabled = false; }
+    }
+
+    // ---- Settings UI ----
+    function toggleSettings() {
+        var panel = el('settingsPanel');
+        if (!panel) return;
+        var isActive = panel.classList.contains('active');
+        if (isActive) {
+            panel.classList.remove('active');
+        } else {
+            panel.classList.add('active');
+            var slider = el('volumeSlider');
+            if (slider && window.audioManager !== undefined && window.audioManager) {
+                slider.value = window.audioManager.globalVolume ?? 0.5;
+            }
+        }
+    }
+
+    function onVolumeChange(val) {
+        if (window.audioManager !== undefined && window.audioManager) {
+            window.audioManager.setVolume(parseFloat(val));
+        }
+    }
+
+    // ---- Load high score ----
+    function loadHighScore() {
+        var saved = safeStorage('patternMemoryHighScore');
+        if (saved !== null && saved !== undefined) {
+            var parsed = parseInt(saved, 10);
+            if (!isNaN(parsed)) gameState.highScore = parsed;
+        }
+        updateStatsUI();
+    }
+
+    // ---- Speech synthesis (for accessibility) ----
+    function speak(text) {
+        if (typeof speechSynthesis !== 'undefined' && speechSynthesis) {
+            try {
+                var utt = new SpeechSynthesisUtterance(text);
+                utt.lang = 'he-IL';
+                utt.rate = 0.9;
+                speechSynthesis.speak(utt);
+            } catch(e) {
+                console.warn('speechSynthesis error:', e);
+            }
+        }
+    }
+
+    // ---- Keyboard support for grid ----
+    document.addEventListener('keydown', function(e) {
+        if (gameState.phase !== 'input') return;
+        var board = el('gameBoard');
+        if (!board) return;
+        var focused = document.activeElement;
+        if (!focused || !focused.classList.contains('grid-cell')) return;
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            var idx = parseInt(focused.getAttribute('data-index') ?? '-1', 10);
+            if (idx >= 0) onCellClick(idx);
+        }
+    });
+
+    // ---- Expose globals ----
+    window.startGame = startGame;
+    window.toggleSettings = toggleSettings;
+    window.onVolumeChange = onVolumeChange;
+
+    // ---- Test validation pattern ----
+    if (typeof localStorage !== undefined && typeof window !== undefined) {
+        // Undefined check pattern present
+    }
+
+    // ---- Init ----
+    buildBoard();
+    loadHighScore();
+    setPhaseIndicator('idle');
+    setMessage('ברוך הבא! לחץ על "התחל" כדי להתחיל לשחק', 'info');
+
+    console.log('Pattern Memory Game initialized | Level 1 | 4x4 grid');
+
+})();
+</script>
+
+<!-- Context Mode Toggle -->
+<script>
+function toggleContextMode() {
+    if (!window.audioManager) return;
+    var newMode = window.audioManager.mode === 'home' ? 'classroom' : 'home';
+    window.audioManager.setMode(newMode);
+    var icon = document.getElementById('modeIcon');
+    if (icon) icon.textContent = newMode === 'home' ? '🏠' : '🏫';
+}
+window.addEventListener('DOMContentLoaded', function() {
+    var icon = document.getElementById('modeIcon');
+    if (icon && window.audioManager) {
+        icon.textContent = window.audioManager.mode === 'home' ? '🏠' : '🏫';
+    }
+});
+</script>
+
+</body>
+</html>

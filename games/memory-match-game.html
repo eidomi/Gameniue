@@ -58,25 +58,40 @@
 
         .settings-toggle {
             position: fixed;
-            top: 16px;
-            left: 16px;
+            top: var(--space-md);
+            left: var(--space-md);
             width: 44px;
             height: 44px;
             border-radius: 50%;
-            border: none;
-            background: var(--game-gradient);
+            background: rgba(255,255,255,0.2);
+            border: 2px solid rgba(255,255,255,0.4);
             color: white;
             font-size: 1.2rem;
             cursor: pointer;
-            box-shadow: var(--shadow-sm);
-            transition: transform var(--transition-fast);
-            z-index: 1000;
             display: flex;
             align-items: center;
             justify-content: center;
+            z-index: 100;
+            transition: background var(--transition-fast);
+            backdrop-filter: blur(8px);
         }
+
         .settings-toggle:hover {
-            transform: scale(1.1);
+            background: rgba(255,255,255,0.3);
+        }
+
+        .settings-toggle:focus-visible {
+            outline: 3px solid var(--color-warning);
+            outline-offset: 2px;
+        }
+
+        .settings-toggle:focus {
+            outline: 2px solid rgba(255,255,255,0.6);
+        }
+
+        .settings-toggle:active {
+            background: rgba(255,255,255,0.35);
+            transform: scale(0.95);
         }
 
         * {
@@ -85,39 +100,22 @@
             box-sizing: border-box;
         }
 
-        body {
+        html, body {
+            height: 100%;
             font-family: var(--font-family);
             background: var(--game-gradient);
+            color: var(--color-text);
+            overflow-x: hidden;
+        }
+
+        body {
             min-height: 100vh;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
-            padding: 20px;
-            position: relative;
-        }
-
-        body::before {
-            content: '';
-            position: fixed;
-            inset: 0;
-            background-image:
-                radial-gradient(2px 2px at 15% 25%, rgba(45, 139, 87, 0.2) 0%, transparent 100%),
-                radial-gradient(1.5px 1.5px at 40% 65%, rgba(45, 139, 87, 0.15) 0%, transparent 100%),
-                radial-gradient(1px 1px at 65% 35%, rgba(255, 255, 255, 0.1) 0%, transparent 100%),
-                radial-gradient(2px 2px at 80% 75%, rgba(45, 139, 87, 0.18) 0%, transparent 100%),
-                radial-gradient(1px 1px at 25% 85%, rgba(255, 255, 255, 0.08) 0%, transparent 100%);
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        body::after {
-            content: '';
-            position: fixed;
-            inset: 0;
-            opacity: 0.025;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
-            pointer-events: none;
-            z-index: 0;
+            justify-content: flex-start;
+            padding: var(--space-lg);
+            padding-top: 70px;
         }
 
         /* Back button */
@@ -129,48 +127,58 @@
         }
 
         .back-button button {
-            background: var(--game-gradient);
+            background: rgba(255,255,255,0.2);
             color: white;
-            border: none;
+            border: 2px solid rgba(255,255,255,0.4);
             padding: 12px 25px;
             border-radius: var(--radius-pill);
             font-size: 1.1em;
             font-weight: bold;
             cursor: pointer;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
             transition: all var(--transition-normal);
+            backdrop-filter: blur(8px);
         }
 
         .back-button button:hover {
+            background: rgba(255,255,255,0.3);
             transform: scale(1.05);
         }
 
-        @media (hover: none) {
-            .back-button button:hover {
-                transform: none;
-            }
+        .back-button button:focus-visible {
+            outline: 3px solid var(--color-warning);
+            outline-offset: 2px;
+        }
+
+        .back-button button:focus {
+            outline: 2px solid rgba(255,255,255,0.6);
+        }
+
+        .back-button button:active {
+            background: rgba(255,255,255,0.35);
+            transform: scale(0.95);
         }
 
         .game-container {
-            background: linear-gradient(145deg, rgba(240, 255, 245, 0.88) 0%, rgba(220, 245, 230, 0.84) 100%);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(45, 139, 87, 0.25);
+            background: rgba(255,255,255,0.08);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.2);
             border-radius: var(--radius-lg);
-            padding: 40px;
-            box-shadow: var(--shadow-lg), inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 0 60px rgba(45, 139, 87, 0.06);
-            max-width: 700px;
-            width: 100%;
+            padding: var(--space-xl);
+            box-shadow: var(--shadow-lg);
+            width: min(700px, 95vw);
             position: relative;
             z-index: 1;
         }
 
         h1 {
             text-align: center;
-            color: #2c3e50;
+            color: white;
             margin-bottom: 30px;
-            font-size: 2.5em;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            font-size: clamp(1.4rem, 4vw, 2rem);
+            font-weight: 700;
+            text-shadow: 0 2px 12px rgba(0,0,0,0.3);
         }
 
         .stats {
@@ -181,12 +189,13 @@
         }
 
         .stat-box {
-            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.25);
             color: white;
-            padding: 15px 25px;
+            padding: 15px;
             border-radius: 15px;
             text-align: center;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
             flex: 1;
         }
 
