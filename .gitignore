@@ -43,3 +43,6 @@ Thumbs.db
 .mcp.json
 .firecrawl/
 tests/incremental-results-*
+
+# Worktrees
+.worktrees/
