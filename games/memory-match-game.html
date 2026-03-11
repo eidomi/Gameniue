@@ -8,8 +8,8 @@
         /* === Design System v1.0 === */
         :root {
             /* Color palette */
-            --color-primary: #667eea;
-            --color-primary-dark: #764ba2;
+            --color-primary: #2d8b57;
+            --color-primary-dark: #1a5e3a;
             --color-success: #2ecc71;
             --color-success-dark: #27ae60;
             --color-error: #e74c3c;
@@ -22,8 +22,8 @@
             --color-text-light: #7f8c8d;
 
             /* Game-specific theme */
-            --game-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --game-accent: #667eea;
+            --game-gradient: linear-gradient(160deg, #0b3d2e 0%, #1a5e3a 45%, #0d4a5c 100%);
+            --game-accent: #2d8b57;
 
             /* Shadows (3-tier depth) */
             --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -93,6 +93,31 @@
             justify-content: center;
             align-items: center;
             padding: 20px;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                radial-gradient(2px 2px at 15% 25%, rgba(45, 139, 87, 0.2) 0%, transparent 100%),
+                radial-gradient(1.5px 1.5px at 40% 65%, rgba(45, 139, 87, 0.15) 0%, transparent 100%),
+                radial-gradient(1px 1px at 65% 35%, rgba(255, 255, 255, 0.1) 0%, transparent 100%),
+                radial-gradient(2px 2px at 80% 75%, rgba(45, 139, 87, 0.18) 0%, transparent 100%),
+                radial-gradient(1px 1px at 25% 85%, rgba(255, 255, 255, 0.08) 0%, transparent 100%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            opacity: 0.025;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 0;
         }
 
         /* Back button */
@@ -104,7 +129,7 @@
         }
 
         .back-button button {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--game-gradient);
             color: white;
             border: none;
             padding: 12px 25px;
@@ -127,15 +152,17 @@
         }
 
         .game-container {
-            background: rgba(255, 255, 255, 0.85);
+            background: linear-gradient(145deg, rgba(240, 255, 245, 0.88) 0%, rgba(220, 245, 230, 0.84) 100%);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(45, 139, 87, 0.25);
             border-radius: var(--radius-lg);
             padding: 40px;
-            box-shadow: var(--shadow-lg);
+            box-shadow: var(--shadow-lg), inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 0 60px rgba(45, 139, 87, 0.06);
             max-width: 700px;
             width: 100%;
+            position: relative;
+            z-index: 1;
         }
 
         h1 {
