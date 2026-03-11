@@ -90,6 +90,40 @@ const PATTERNS = {
         ],
         description: 'Unified CSS variables and glassmorphism'
     },
+    audioSystemV7: {
+        name: 'Audio System v7.0',
+        roi: 800,
+        searchPattern: '<!-- Audio System v7.0',
+        features: [
+            'reverbMix',
+            'reverbGain',
+            'playCorrectSound',
+            'setMode'
+        ],
+        description: 'ADSR envelopes with algorithmic reverb'
+    },
+    particleSystem: {
+        name: 'Particle System v1.0',
+        roi: 400,
+        searchPattern: '<!-- Particle System v1.0',
+        features: [
+            'ParticleSystem',
+            'particle-canvas',
+            'window.particleSystem'
+        ],
+        description: 'Canvas-based particle effects on game events'
+    },
+    contextMode: {
+        name: 'Context Mode Toggle',
+        roi: 300,
+        searchPattern: 'toggleContextMode',
+        features: [
+            'classroom',
+            'setMode',
+            'toggleContextMode'
+        ],
+        description: 'Classroom/home context switching'
+    },
 };
 
 // Dashboard class
