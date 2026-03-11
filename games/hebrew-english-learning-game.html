@@ -9,8 +9,8 @@
         /* === Design System v1.0 === */
         :root {
             /* Color palette */
-            --color-primary: #667eea;
-            --color-primary-dark: #764ba2;
+            --color-primary: #c78c3a;
+            --color-primary-dark: #a06e20;
             --color-success: #2ecc71;
             --color-success-dark: #27ae60;
             --color-error: #e74c3c;
@@ -23,8 +23,8 @@
             --color-text-light: #7f8c8d;
 
             /* Game-specific theme */
-            --game-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --game-accent: #667eea;
+            --game-gradient: linear-gradient(160deg, #1a120b 0%, #2d1f0e 40%, #3d2b16 100%);
+            --game-accent: #c78c3a;
 
             /* Shadows (3-tier depth) */
             --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -92,6 +92,31 @@
             min-height: 100vh;
             direction: rtl;
             overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                radial-gradient(2px 2px at 15% 25%, rgba(199, 140, 58, 0.2) 0%, transparent 100%),
+                radial-gradient(1.5px 1.5px at 40% 65%, rgba(199, 140, 58, 0.15) 0%, transparent 100%),
+                radial-gradient(1px 1px at 65% 35%, rgba(255, 255, 255, 0.1) 0%, transparent 100%),
+                radial-gradient(2px 2px at 80% 75%, rgba(199, 140, 58, 0.18) 0%, transparent 100%),
+                radial-gradient(1px 1px at 25% 85%, rgba(255, 255, 255, 0.08) 0%, transparent 100%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            opacity: 0.025;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 0;
         }
 
         /* Back Button */
@@ -103,7 +128,7 @@
         }
 
         .back-button button {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            background: var(--game-gradient);
             color: white;
             border: none;
             padding: 12px 25px;
@@ -126,6 +151,8 @@
             margin: 0 auto;
             padding: 20px;
             min-height: 100vh;
+            position: relative;
+            z-index: 1;
         }
 
         /* Header */
@@ -133,9 +160,10 @@
             text-align: center;
             margin-bottom: 30px;
             padding: 20px;
-            background: rgba(255, 255, 255, 0.1);
+            background: linear-gradient(145deg, rgba(253, 246, 227, 0.12) 0%, rgba(245, 230, 200, 0.08) 100%);
             border-radius: 20px;
             backdrop-filter: blur(10px);
+            border: 1px solid rgba(199, 140, 58, 0.2);
         }
 
         .game-title {
@@ -236,7 +264,7 @@
         }
 
         .question-category {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--game-gradient);
             color: white;
             padding: 8px 20px;
             border-radius: 20px;
@@ -313,7 +341,7 @@
         }
 
         .answer-button {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--game-gradient);
             color: white;
             border: none;
             padding: 20px;
