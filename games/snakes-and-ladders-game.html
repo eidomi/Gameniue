@@ -156,7 +156,7 @@
             gap: 24px;
             flex-wrap: wrap;
             justify-content: center;
-            max-width: 1100px;
+            max-width: 1200px;
             width: 100%;
             position: relative;
             z-index: 1;
@@ -174,10 +174,10 @@
         }
 
         .board-section {
-            flex: 1;
-            min-width: 280px;
+            flex: 1.4;
+            min-width: 320px;
             width: 100%;
-            max-width: 500px;
+            max-width: 600px;
         }
 
         .board {
@@ -194,7 +194,7 @@
                 0 0 0 3px rgba(92, 58, 30, 0.2);
             position: relative;
             width: 100%;
-            max-width: 500px;
+            max-width: 600px;
             aspect-ratio: 1/1;
             margin: 0 auto;
             direction: ltr;
@@ -209,7 +209,7 @@
             align-items: center;
             justify-content: center;
             font-weight: 800;
-            font-size: clamp(0.55em, 1.5vw, 0.9em);
+            font-size: clamp(0.6em, 1.6vw, 1em);
             color: #3d2612;
             position: relative;
             cursor: default;
@@ -233,10 +233,11 @@
 
         /* Snake/ladder destination label */
         .square .dest {
-            font-size: 0.7em;
+            font-size: 0.75em;
             font-weight: 600;
             opacity: 0.85;
             line-height: 1;
+            letter-spacing: -0.02em;
         }
 
         .square.snake-start {
@@ -284,13 +285,13 @@
 
         .player-piece {
             position: absolute;
-            width: min(28px, 42%);
-            height: min(28px, 42%);
+            width: min(32px, 44%);
+            height: min(32px, 44%);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: clamp(0.7em, 1.8vw, 1.1em);
+            font-size: clamp(0.8em, 2vw, 1.2em);
             transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
             z-index: 10;
             box-shadow: 0 3px 10px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.3);
@@ -539,10 +540,10 @@
                 max-width: calc(100vw - 20px);
             }
             .board {
-                width: calc(100vw - 30px);
-                max-width: 400px;
-                height: calc(100vw - 30px);
-                max-height: 400px;
+                width: calc(100vw - 24px);
+                max-width: 95vw;
+                height: calc(100vw - 24px);
+                max-height: 95vw;
                 padding: 5px;
                 gap: 1px;
             }
@@ -582,8 +583,8 @@
 
         @media (max-width: 400px) {
             .board {
-                width: calc(100vw - 20px); height: calc(100vw - 20px);
-                max-width: 350px; max-height: 350px;
+                width: calc(100vw - 16px); height: calc(100vw - 16px);
+                max-width: 96vw; max-height: 96vw;
                 padding: 3px; gap: 0.5px;
             }
             .square { font-size: 0.5em; }
